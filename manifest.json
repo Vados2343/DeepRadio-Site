@@ -1,0 +1,20 @@
+{
+  "name": "DeepRadio",
+  "short_name": "DeepRadio",
+  "description": "Modern Internet Radio with Liquid Glass UI",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F172A",
+  "theme_color": "#08f7fe",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["music", "entertainment"],
+  "lang": "ru",
+  "dir": "ltr"
+}
