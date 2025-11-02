@@ -1,4 +1,5 @@
 import { logger } from './Logger.js';
+import { AudioPoolManager } from './AudioPoolManager.js';
 
 function extractOriginalUrl(proxiedUrl) {
   try {

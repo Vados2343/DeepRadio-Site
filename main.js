@@ -621,14 +621,23 @@ class EnhancedApp {
 }
 
 // Initialize app on DOM ready
-document.addEventListener('DOMContentLoaded', () => {
-  window.app = new EnhancedApp();
+window.debugRadio = () => {
 
-  // Add debug function to window
-  window.debugRadio = () => {
-    console.log('DeepRadio Debug Info:', window.app.getDebugInfo());
-  };
-});
+  if (!window.app) {
+
+    console.warn('DeepRadio app is not initialized yet. Please wait for DOMContentLoaded.');
+
+    return null;
+
+  }
+
+  const debugInfo = window.app.getDebugInfo();
+
+  console.log('DeepRadio Debug Info:', debugInfo);
+
+  return debugInfo;
+
+};
 
 // Smooth page transition
 window.addEventListener('load', () => {

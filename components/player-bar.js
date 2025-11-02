@@ -10,197 +10,39 @@ const escapeHTML = (str) => {
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
-    :host {
-      display: block;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: var(--total-player-height);
-      padding-bottom: var(--safe-area-bottom);
-      background: var(--surface);
-      backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
-      border-top: 1px solid var(--border);
-      z-index: 100;
-      transition: var(--transition);
-    }
-    .player-container {
-      height: var(--player-height);
-      display: flex;
-      align-items: center;
-      padding: 0 max(1.5rem, var(--safe-area-left)) 0 max(1.5rem, var(--safe-area-right));
-      gap: 1.5rem;
-    }
-    .station-info {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      min-width: 0;
-      flex: 1;
-    }
-    .station-icon-wrapper {
-      position: relative;
-      flex-shrink: 0;
-      cursor: pointer;
-      border-radius: var(--radius);
-    }
-    .station-icon {
-      width: 60px;
-      height: 60px;
-      border-radius: var(--radius);
-      object-fit: cover;
-      box-shadow: 0 4px 12px rgba(0,0,0,.3);
-      transition: var(--transition);
-      display: block;
-    }
-    .fav-indicator {
-      position: absolute;
-      top: 4px;
-      right: 4px;
-      width: 20px;
-      height: 20px;
-      color: var(--accent3);
-      background: rgba(0,0,0,0.5);
-      border-radius: 50%;
-      padding: 2px;
-      display: none;
-      pointer-events: none;
-      transition: transform 0.2s, opacity 0.2s;
-      opacity: 0;
-      transform: scale(0.8);
-    }
-    .fav-indicator.is-favorite {
-      display: block;
-      transform: scale(1);
-      opacity: 1;
-    }
-    .station-details {
-      min-width: 0;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: .25rem;
-      overflow: hidden;
-    }
-    .station-name {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text-primary);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .track-info {
-      color: var(--text-secondary);
-      font-size: 14px;
-      overflow: hidden;
-      white-space: nowrap;
-      min-height: 1.2em;
-    }
+    :host { display: block; position: fixed; bottom: 0; left: 0; right: 0; height: var(--total-player-height); padding-bottom: var(--safe-area-bottom); background: var(--surface); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border-top: 1px solid var(--border); z-index: 100; transition: var(--transition); }
+    .player-container { height: var(--player-height); display: flex; align-items: center; padding: 0 max(1.5rem, var(--safe-area-left)) 0 max(1.5rem, var(--safe-area-right)); gap: 1.5rem; }
+    .station-info { display: flex; align-items: center; gap: 1rem; min-width: 0; flex: 1; }
+    .station-icon-wrapper { position: relative; flex-shrink: 0; cursor: pointer; border-radius: var(--radius); }
+    .station-icon { width: 60px; height: 60px; border-radius: var(--radius); object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,.3); transition: var(--transition); display: block; }
+    .fav-indicator { position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; color: var(--accent3); background: rgba(0,0,0,0.5); border-radius: 50%; padding: 2px; display: none; pointer-events: none; transition: transform 0.2s, opacity 0.2s; opacity: 0; transform: scale(0.8); }
+    .fav-indicator.is-favorite { display: block; transform: scale(1); opacity: 1; }
+    .station-details { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: .25rem; overflow: hidden; }
+    .station-name { font-size: 16px; font-weight: 600; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .track-info { color: var(--text-secondary); font-size: 14px; overflow: hidden; white-space: nowrap; min-height: 1.2em; }
     .track-info.loading { opacity: 0.7; animation: pulse 1.5s ease-in-out infinite; }
-    .track-info.buffering::after {
-      content: '';
-      display: inline-block;
-      width: 12px;
-      height: 12px;
-      margin-left: 8px;
-      border: 2px solid transparent;
-      border-top-color: var(--accent1);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      vertical-align: middle;
-    }
+    .track-info.buffering::after { content: ''; display: inline-block; width: 12px; height: 12px; margin-left: 8px; border: 2px solid transparent; border-top-color: var(--accent1); border-radius: 50%; animation: spin 1s linear infinite; vertical-align: middle; }
     @keyframes pulse { 0%, 100% { opacity: 0.7; } 50% { opacity: 0.4; } }
     @keyframes spin { to { transform: rotate(360deg); } }
     .track-text-wrapper { display: inline-block; }
     .track-text-wrapper.marquee { animation: marquee 15s linear infinite; }
-    @keyframes marquee {
-      0% { transform: translateX(0%); }
-      15% { transform: translateX(0%); }
-      85% { transform: translateX(calc(100% - 100vw)); }
-      100% { transform: translateX(calc(100% - 100vw)); }
-    }
-    .player-controls {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-    .control-btn {
-      background: none;
-      border: none;
-      color: var(--text-secondary);
-      cursor: pointer;
-      padding: .5rem;
-      border-radius: 50%;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    @keyframes marquee { 0% { transform: translateX(0%); } 15% { transform: translateX(0%); } 85% { transform: translateX(calc(100% - 100vw)); } 100% { transform: translateX(calc(100% - 100vw)); } }
+    .player-controls { display: flex; align-items: center; gap: 1rem; }
+    .control-btn { background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: .5rem; border-radius: 50%; transition: var(--transition); display: flex; align-items: center; justify-content: center; }
     .control-btn:hover { background: var(--surface-hover); color: var(--text-primary); }
     .control-btn:active { transform: scale(.9); }
     .control-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .play-btn {
-      width: 48px;
-      height: 48px;
-      background: var(--accent1);
-      color: #000;
-    }
-    .play-btn:hover:not(:disabled) {
-      background: var(--accent2);
-      color: #000;
-      box-shadow: 0 4px 12px rgba(8, 247, 254, 0.4);
-    }
+    .play-btn { width: 48px; height: 48px; background: var(--accent1); color: #000; }
+    .play-btn:hover:not(:disabled) { background: var(--accent2); color: #000; box-shadow: 0 4px 12px rgba(8, 247, 254, 0.4); }
     .play-btn.loading svg { animation: rotate 1s linear infinite; }
     @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-    .volume-control {
-      display: flex;
-      align-items: center;
-      gap: .75rem;
-      min-width: 150px;
-    }
-    .volume-slider {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 100px;
-      height: 4px;
-      background: var(--surface-hover);
-      border-radius: 2px;
-      outline: none;
-      cursor: pointer;
-    }
-    .volume-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 16px;
-      height: 16px;
-      background: var(--accent1);
-      border-radius: 50%;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
+    .volume-control { display: flex; align-items: center; gap: .75rem; min-width: 150px; }
+    .volume-slider { -webkit-appearance: none; appearance: none; width: 100px; height: 4px; background: var(--surface-hover); border-radius: 2px; outline: none; cursor: pointer; }
+    .volume-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; background: var(--accent1); border-radius: 50%; cursor: pointer; transition: transform 0.2s; }
     .volume-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
-    .volume-slider::-moz-range-thumb {
-      width: 16px;
-      height: 16px;
-      background: var(--accent1);
-      border-radius: 50%;
-      cursor: pointer;
-      border: none;
-      transition: transform 0.2s;
-    }
+    .volume-slider::-moz-range-thumb { width: 16px; height: 16px; background: var(--accent1); border-radius: 50%; cursor: pointer; border: none; transition: transform 0.2s; }
     .volume-slider::-moz-range-thumb:hover { transform: scale(1.2); }
-    @media (max-width: 768px) {
-      :host { height: var(--total-player-height-mobile); }
-      .player-container { height: var(--player-height-mobile); padding: 0 1rem; gap: 0.75rem; }
-      .station-icon { width: 50px; height: 50px; }
-      .station-name { font-size: 14px; }
-      .track-info { font-size: 12px; }
-      .volume-control { display: none; }
-      .step-btn { display: none !important; }
-      .play-btn { width: 42px; height: 42px; }
-    }
+    @media (max-width: 768px) { :host { height: var(--total-player-height-mobile); } .player-container { height: var(--player-height-mobile); padding: 0 1rem; gap: 0.75rem; } .station-icon { width: 50px; height: 50px; } .station-name { font-size: 14px; } .track-info { font-size: 12px; } .volume-control { display: none; } .step-btn { display: none !important; } .play-btn { width: 42px; height: 42px; } }
   </style>
   <div class="player-container">
     <div class="station-info">
@@ -210,9 +52,7 @@ template.innerHTML = `
       </div>
       <div class="station-details">
         <div class="station-name">Выберите станцию</div>
-        <div class="track-info">
-            <span class="track-text-wrapper"><span class="track-text">Нажмите на станцию для воспроизведения</span></span>
-        </div>
+        <div class="track-info"><span class="track-text-wrapper"><span class="track-text">Нажмите на станцию для воспроизведения</span></span></div>
       </div>
     </div>
     <div class="player-controls">
@@ -270,22 +110,14 @@ export class PlayerBar extends HTMLElement {
 
   setupEventListeners() {
     this.elements.playBtn.addEventListener('click', async () => {
-      try {
-        await store.toggle();
-      } catch (e) {
-        console.error('[PlayerBar] Toggle error:', e);
-      }
+      try { await store.toggle(); } catch (e) { console.error('[PlayerBar] Toggle error:', e); }
     });
 
     this.elements.stepBtns.forEach(btn => {
       btn.addEventListener('click', async () => {
         const step = Number(btn.dataset.step) || 0;
         if (step !== 0) {
-          try {
-            await store.step(step);
-          } catch (e) {
-            console.error('[PlayerBar] Step error:', e);
-          }
+          try { await store.step(step); } catch (e) { console.error('[PlayerBar] Step error:', e); }
         }
       });
     });
@@ -296,18 +128,13 @@ export class PlayerBar extends HTMLElement {
       store.setVolume(val / 100);
     });
 
-    this.elements.volumeBtn.addEventListener('click', () => {
-      store.toggleMute();
-    });
-
+    this.elements.volumeBtn.addEventListener('click', () => { store.toggleMute(); });
     this.elements.stationIconWrapper.addEventListener('click', () => {
       if (store.current) store.toggleFavorite(store.current.id);
     });
 
     store.on('station-changing', (e) => this.updateStation(e.detail, true));
-    store.on('station-active', (e) => {
-      this.updateStation(e.detail, false);
-    });
+    store.on('station-active', (e) => { this.updateStation(e.detail, false); });
     store.on('track-update', (e) => this.updateTrack(e.detail));
     store.on('favorites-change', () => this.updateFavoriteStatus());
     store.on('volume-change', (e) => this.updateVolume(e.detail));
@@ -321,10 +148,7 @@ export class PlayerBar extends HTMLElement {
   }
 
   handleStateChange({ state, previousState, data }) {
-    if (this.stateUpdateDebounce) {
-      clearTimeout(this.stateUpdateDebounce);
-    }
-
+    if (this.stateUpdateDebounce) clearTimeout(this.stateUpdateDebounce);
     this.stateUpdateDebounce = setTimeout(() => {
       this.processStateChange(state, previousState, data);
     }, 50);
@@ -334,20 +158,13 @@ export class PlayerBar extends HTMLElement {
     this.currentState = state;
 
     switch (state) {
-      case 'PLAYING': {
+      case 'PLAYING':
         this.isPlaying = true;
         this.realPlayingState = true;
         this.clearStates();
-
-        // Немедленно применяем pending данные
-        if (this.pendingTrackData) {
-          this.applyTrackData(this.pendingTrackData);
-          this.pendingTrackData = null;
-        }
-
+        this.applyPendingTrackData();
         this.updatePlayButton();
         break;
-      }
 
       case 'PAUSED':
       case 'PAUSED_WAITING':
@@ -359,33 +176,23 @@ export class PlayerBar extends HTMLElement {
 
       case 'LOADING':
         this.isPlaying = false;
-
-        // Показываем loading только если еще не играли
-        if (!this.realPlayingState) {
-          this.showLoading();
-        }
+        if (!this.realPlayingState) this.showLoading();
         this.updatePlayButton();
         break;
 
       case 'BUFFERING':
       case 'WAITING':
-        // Показываем буферизацию только если не играем
-        if (!this.realPlayingState) {
-          this.showBuffering();
-        }
+        if (!this.realPlayingState) this.showBuffering();
         this.updatePlayButton();
         break;
 
       case 'SWITCHING':
-        // При переключении показываем загрузку
         this.showLoading();
         this.updatePlayButton();
         break;
 
       case 'STALLED':
-        if (!this.realPlayingState) {
-          this.showStalled();
-        }
+        if (!this.realPlayingState) this.showStalled();
         this.updatePlayButton();
         break;
 
@@ -408,18 +215,11 @@ export class PlayerBar extends HTMLElement {
         this.updatePlayButton();
         break;
 
-      case 'READY': {
+      case 'READY':
         this.clearStates();
-
-        // Применяем pending данные
-        if (this.pendingTrackData) {
-          this.applyTrackData(this.pendingTrackData);
-          this.pendingTrackData = null;
-        }
-
+        this.applyPendingTrackData();
         this.updatePlayButton();
         break;
-      }
     }
   }
 
@@ -430,31 +230,20 @@ export class PlayerBar extends HTMLElement {
     this.isPlaying = !!isPlaying;
     this.realPlayingState = !!isPlaying;
 
-    if (wasPlaying !== this.realPlayingState) {
-      this.updatePlayButton();
-    }
-
+    if (wasPlaying !== this.realPlayingState) this.updatePlayButton();
     if (typeof volume === 'number') {
       const safeVolume = Math.max(0, Math.min(1, volume));
       this.elements.volumeSlider.value = String(Math.round(safeVolume * 100));
       this.updateVolumeIcon(safeVolume, !!muted);
     }
-
-    if (station && station !== this.currentStation) {
-      this.updateStation(station, false);
-    }
-
+    if (station && station !== this.currentStation) this.updateStation(station, false);
     if (this.realPlayingState) {
       this.clearStates();
       this.applyPendingTrackData();
       return;
     }
-
-    if (isBuffering && !this.realPlayingState) {
-      this.showBuffering();
-    } else if (isError) {
-      this.showError('Ошибка подключения');
-    }
+    if (isBuffering && !this.realPlayingState) this.showBuffering();
+    else if (isError) this.showError('Ошибка подключения');
   }
 
   updateStation(station, isChanging = false) {
@@ -462,43 +251,31 @@ export class PlayerBar extends HTMLElement {
     this.currentStation = station;
     this.elements.stationName.innerHTML = escapeHTML(station.name || 'Радио');
     const nextSrc = `/Icons/icon${(station.id ?? 0) + 1}.png`;
-    if (this.elements.stationIcon.src !== nextSrc) {
-      this.elements.stationIcon.src = nextSrc;
-    }
+    if (this.elements.stationIcon.src !== nextSrc) this.elements.stationIcon.src = nextSrc;
     this.elements.stationIcon.alt = escapeHTML(station.name || 'Station');
     this.elements.stationIcon.onerror = () => {
       this.elements.stationIcon.src = '/Icons/default.png';
     };
-
-    // НЕ показываем loading при переключении - это делает processStateChange
     this.updateFavoriteStatus();
   }
 
   updateTrack(track) {
     const station = this.currentStation || store.current;
     if (!station) return;
+    if (track.stationId && track.stationId !== station.id) return;
 
-    if (track.stationId && track.stationId !== station.id) {
-      return;
-    }
-
-    // Если мы не в состоянии воспроизведения, сохраняем данные
     if (['BUFFERING', 'LOADING', 'WAITING', 'SWITCHING'].includes(this.currentState) && !this.realPlayingState) {
       this.pendingTrackData = track;
       return;
     }
 
-    // Применяем данные трека немедленно
     this.applyTrackData(track);
   }
 
   applyTrackData(track) {
     const station = this.currentStation || store.current;
     if (!station) return;
-
-    if (track.stationId && track.stationId !== station.id) {
-      return;
-    }
+    if (track.stationId && track.stationId !== station.id) return;
 
     let textToShow = station.name || 'Радио';
 
@@ -506,12 +283,8 @@ export class PlayerBar extends HTMLElement {
       if (track.loading) {
         textToShow = 'Загрузка информации...';
       } else if (track.error || track.serverError) {
-        // При ошибке показываем кэшированные данные или название станции
-        if (track.artist && track.song) {
-          textToShow = `${track.artist} - ${track.song}`;
-        } else {
-          textToShow = station.name || 'Радио';
-        }
+        if (track.artist && track.song) textToShow = `${track.artist} - ${track.song}`;
+        else textToShow = station.name || 'Радио';
       } else if (track.noData) {
         textToShow = station.name || 'В эфире';
       } else if (track.artist && track.song) {
@@ -525,13 +298,16 @@ export class PlayerBar extends HTMLElement {
       textToShow = station.name || 'В эфире';
     }
 
-    // Очищаем состояния loading/buffering при применении track data
-    if (this.realPlayingState && (track.artist || track.song)) {
-      this.clearStates();
-    }
-
+    if (this.realPlayingState && (track.artist || track.song)) this.clearStates();
     this.elements.trackText.innerHTML = escapeHTML(textToShow);
     this.checkMarquee();
+  }
+
+  applyPendingTrackData() {
+    if (this.pendingTrackData) {
+      this.applyTrackData(this.pendingTrackData);
+      this.pendingTrackData = null;
+    }
   }
 
   updatePlayButton() {
@@ -560,7 +336,6 @@ export class PlayerBar extends HTMLElement {
   updateVolumeIcon(volume, muted) {
     const icon = this.elements.volumeBtn.querySelector('svg');
     if (!icon) return;
-
     const safeVolume = Math.max(0, Math.min(1, volume));
 
     if (muted || safeVolume === 0) {
@@ -584,6 +359,13 @@ export class PlayerBar extends HTMLElement {
   }
 
   showBuffering() {
+    const audio = store.audioPool?.activeAudio;
+    if (audio && !audio.paused && audio.readyState >= 3) {
+      this.realPlayingState = true;
+      this.clearStates();
+      this.applyPendingTrackData();
+      return;
+    }
     if (this.realPlayingState) return;
     this.clearStates();
     this.elements.trackInfo.classList.add('buffering');
@@ -591,12 +373,26 @@ export class PlayerBar extends HTMLElement {
   }
 
   showStalled() {
+    const audio = store.audioPool?.activeAudio;
+    if (audio && !audio.paused && audio.readyState >= 3) {
+      this.realPlayingState = true;
+      this.clearStates();
+      this.applyPendingTrackData();
+      return;
+    }
     this.clearStates();
     this.elements.trackInfo.classList.add('buffering');
     this.elements.trackText.textContent = 'Проверка соединения';
   }
 
   showRecovering() {
+    const audio = store.audioPool?.activeAudio;
+    if (audio && !audio.paused && audio.readyState >= 3) {
+      this.realPlayingState = true;
+      this.clearStates();
+      this.applyPendingTrackData();
+      return;
+    }
     this.clearStates();
     this.elements.trackInfo.classList.add('buffering');
     this.elements.trackText.textContent = 'Восстановление';
@@ -619,9 +415,7 @@ export class PlayerBar extends HTMLElement {
     this.marqueeTimer = setTimeout(() => {
       const textElement = this.elements.trackText;
       const container = textElement.parentElement;
-      if (textElement.scrollWidth > container.clientWidth) {
-        wrapper.classList.add('marquee');
-      }
+      if (textElement.scrollWidth > container.clientWidth) wrapper.classList.add('marquee');
     }, 250);
   }
 
@@ -632,10 +426,7 @@ export class PlayerBar extends HTMLElement {
 
     const lastId = store.getStorage('last');
     const lastStation = store.stations.find(s => s.id === lastId);
-    if (lastStation) {
-      this.updateStation(lastStation);
-    }
-
+    if (lastStation) this.updateStation(lastStation);
     this.updatePlayButton();
   }
 }
