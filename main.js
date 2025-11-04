@@ -638,7 +638,15 @@ window.debugRadio = () => {
   return debugInfo;
 
 };
-
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    window.app = new EnhancedApp();
+  }, { once: true });
+} else {
+  setTimeout(() => {
+    window.app = new EnhancedApp();
+  }, 0);
+}
 // Smooth page transition
 window.addEventListener('load', () => {
   document.body.style.opacity = '0';

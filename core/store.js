@@ -1102,6 +1102,31 @@ class Store extends EventTarget {
       fsmDebug: this.playerFSM.getDebugInfo()
     };
   }
+   // Методы для статистики
+
+  getStats() {
+
+    return this.getStorage('listeningStats', {
+      sessions: [],
+      genres: {},
+      stations: {},
+      totalTime: 0,
+      lastUpdated: Date.now(),
+      dailyStats: {}
+    });
+  }
+   resetStats() {
+    const emptyStats = {
+      sessions: [],
+      genres: {},
+      stations: {},
+      totalTime: 0,
+      lastUpdated: Date.now(),
+      dailyStats: {}
+    };
+    this.setStorage('listeningStats', emptyStats);
+    this.emit('stats-update');
+  }
 }
 
 export const store = new Store();

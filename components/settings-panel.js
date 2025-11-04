@@ -6,42 +6,36 @@ const template = document.createElement('template');
 template.innerHTML = `
   <style>
    :host {
-      display: none;
+       display: none;
       position: fixed;
       inset: 0;
       z-index: var(--z-modals, 1000);
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      animation: fadeIn 0.3s ease;
+       animation: fadeIn 0.3s ease;
     }
-    
     :host([open]) {
       display: block !important;
       pointer-events: auto;
       visibility: visible;
     }
-    
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
     }
-    
     .overlay {
       position: absolute;
       inset: 0;
       background: rgba(0, 0, 0, 0);
       backdrop-filter: blur(0px);
+      -webkit-backdrop-filter: blur(0px);
       transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       opacity: 0;
     }
-    
     :host([open]) .overlay {
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(10px);
-      opacity: 1;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+        opacity: 1;
     }
-    
     .panel {
       position: absolute;
       right: 0;
@@ -1630,13 +1624,14 @@ export class SettingsPanel extends HTMLElement {
     store.emit('stations-update');
   }
 
-  open() {
+ open() {
     if (this.isOpen) return;
-
+    if (window.burgerMenu && window.burgerMenu.isOpen) {
+      window.burgerMenu.close();
+    }
     this.setAttribute('open', '');
     this.isOpen = true;
     document.body.style.overflow = 'hidden';
-
     this.shadowRoot.querySelectorAll('.section').forEach(section => {
       section.style.animation = 'none';
       section.offsetHeight;

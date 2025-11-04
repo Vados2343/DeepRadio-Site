@@ -72,6 +72,15 @@ class BurgerMenu {
           pointer-events: auto;
         }
         @media (max-width: 768px) {
+         #sidebar-overlay {
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+          }
+          #sidebar-overlay.show {
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+          }
           #sidebar {
             position: fixed !important;
             top: var(--total-header-height);
@@ -227,8 +236,20 @@ class BurgerMenu {
   }
 
   open() {
+
     if (!this.mq.matches || this.isOpen) return;
+    const settingsPanel = document.querySelector('settings-panel');
+    const changelogPanel = document.querySelector('changelog-panel');
+    if (settingsPanel && settingsPanel.hasAttribute('open')) {
+
+      settingsPanel.close();
+
+    }
+    if (changelogPanel && changelogPanel.style.display !== 'none') {
+      changelogPanel.close();
+    }
     this.applyState(true);
+
   }
 
   close() {
