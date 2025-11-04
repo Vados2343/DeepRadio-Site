@@ -10,6 +10,7 @@ template.innerHTML = `
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       animation: fadeIn 0.3s ease;
+          pointer-events: none;
     }
     @keyframes fadeIn {
       from { opacity: 0; }
@@ -28,6 +29,9 @@ template.innerHTML = `
       overflow-y: auto;
       transform: translateX(100%);
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+        :host(.open) {
+      pointer-events: auto;
     }
     :host(.open) .panel {
       transform: translateX(0);

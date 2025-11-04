@@ -27,28 +27,23 @@
           </svg>
         </button>
         <div class="header-center">
-          <div class="logo-wrapper" data-logo>
-          <h1 class="app-title">DEEPRADIO</h1>
+     <div class="capsule-wrapper" id="capsule">
+
+            <div class="capsule-scene">
+              <div class="capsule-face capsule-front">
+                <h1 class="app-title">DEEPRADIO</h1>
+              </div>
+              <div class="capsule-face capsule-back">
+                <div class="input-wrapper">
+                  <input type="search" id="capsule-search" class="capsule-search-input" placeholder="Поиск станций...">
+                  <button id="capsule-clear" class="capsule-clear">✕</button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
       <div class="header-right">
-        <div class="search-container">
-          <div class="search-wrapper">
-            <input type="search" id="search" class="search-input glass" placeholder="Поиск станций...">
-            <button class="search-clear" style="display:none">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 6L6 18M6 6l12 12"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-        <button class="icon-btn mobile-search-btn" id="mobile-search" aria-label="Поиск">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/>
-            <path d="m21 21-4.35-4.35"/>
-          </svg>
-        </button>
         <button class="icon-btn brand-action" id="changelog-toggle" aria-label="Изменения">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -141,8 +136,7 @@
   </div>
 
   <script type="module" src="/src/components/burger-menu.js"></script>
-  <script type="module" src="/src/components/header-search.js"></script>
-  <script type="module" src="/src/components/mobile-search.js"></script>
   <script type="module" src="/src/components/header-manager.js"></script>
+  <script type="module" src="/src/components/capsule-search.js"></script>
 </body>
 </html>

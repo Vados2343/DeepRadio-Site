@@ -29,12 +29,14 @@ template.innerHTML = `
       -webkit-backdrop-filter: blur(0px);
       transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       opacity: 0;
+       pointer-events: none;
     }
-    :host([open]) .overlay {
+     :host([open]) .overlay {
       background: rgba(0, 0, 0, 0.4);
       backdrop-filter: blur(5px);
       -webkit-backdrop-filter: blur(5px);
-        opacity: 1;
+      opacity: 1;
+      pointer-events: auto;
     }
     .panel {
       position: absolute;

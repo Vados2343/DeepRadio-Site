@@ -77,7 +77,7 @@ class BurgerMenu {
             -webkit-backdrop-filter: none !important;
           }
           #sidebar-overlay.show {
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.4);
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
           }
@@ -199,41 +199,44 @@ class BurgerMenu {
     }
   }
 
-  applyState(open) {
-    this.isOpen = open;
+ applyState(open) {
+  this.isOpen = open;
 
-    if (this.mq.matches) {
-      if (open) {
-        this.scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        this.panel.classList.add('open');
-        this.overlay.classList.add('show');
-        document.body.classList.add('menu-open');
-        document.body.style.top = `-${this.scrollTop}px`;
-      } else {
-        this.panel.classList.remove('open');
-        this.overlay.classList.remove('show');
-        document.body.classList.remove('menu-open');
-        document.body.style.top = '';
-        window.scrollTo(0, this.scrollTop);
-      }
-
-      if (this.btn) {
-        this.btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-      }
-      this.panel.setAttribute('aria-hidden', open ? 'false' : 'true');
+  if (this.mq.matches) {
+    if (open) {
+      this.scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      this.panel.classList.add('open');
+      this.overlay.classList.add('show');
+      document.body.classList.add('menu-open');
+      document.body.style.top = `-${this.scrollTop}px`;
     } else {
-      // Desktop mode - remove mobile states
       this.panel.classList.remove('open');
       this.overlay.classList.remove('show');
       document.body.classList.remove('menu-open');
       document.body.style.top = '';
-
-      if (this.btn) {
-        this.btn.setAttribute('aria-expanded', 'false');
-      }
-      this.panel.setAttribute('aria-hidden', 'false');
+      window.scrollTo(0, this.scrollTop);
+      setTimeout(() => {
+        if (this.overlay) {
+          this.overlay.style.pointerEvents = 'none';
+          this.overlay.style.visibility = 'hidden';
+        }
+      }, 300);
     }
+
+    if (this.btn) this.btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    this.panel.setAttribute('aria-hidden', open ? 'false' : 'true');
+  } else {
+    this.panel.classList.remove('open');
+    this.overlay.classList.remove('show');
+    this.overlay.style.pointerEvents = 'none';
+    this.overlay.style.visibility = 'hidden';
+    document.body.classList.remove('menu-open');
+    document.body.style.top = '';
+
+    if (this.btn) this.btn.setAttribute('aria-expanded', 'false');
+    this.panel.setAttribute('aria-hidden', 'false');
   }
+}
 
   open() {
 
