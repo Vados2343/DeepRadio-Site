@@ -5,17 +5,26 @@ import { t, setLanguage } from '../utils/i18n.js';
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
-    :host {
+   :host {
+      display: none;
       position: fixed;
       inset: 0;
-      z-index: 1000;
-      pointer-events: none;
-      visibility: hidden;
+      z-index: var(--z-modals, 1000);
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      animation: fadeIn 0.3s ease;
     }
     
     :host([open]) {
+      display: block !important;
       pointer-events: auto;
       visibility: visible;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
     
     .overlay {
@@ -175,6 +184,7 @@ template.innerHTML = `
     .section:nth-child(4) { animation-delay: 0.6s; }
     .section:nth-child(5) { animation-delay: 0.7s; }
     .section:nth-child(6) { animation-delay: 0.8s; }
+    .section:nth-child(7) { animation-delay: 0.9s; }
     
     @keyframes sectionFadeIn {
       to {
@@ -849,6 +859,37 @@ template.innerHTML = `
       border-color: var(--accent1);
     }
     
+    .toast-positions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+    
+    .toast-position-btn {
+      padding: 0.75rem 0.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+    
+    .toast-position-btn:hover {
+      background: var(--surface-hover);
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+    }
+    
+    .toast-position-btn.active {
+      background: var(--accent1);
+      color: #000;
+      border-color: var(--accent1);
+    }
+    
     @media (max-width: 480px) {
       .panel {
         width: 100%;
@@ -859,6 +900,9 @@ template.innerHTML = `
       .accent-colors {
         justify-content: center;
       }
+      .toast-positions {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
   
@@ -867,7 +911,7 @@ template.innerHTML = `
     <div class="header">
       <h2 class="title">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.47.41h3.84c.24 0 .44-.17.47.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+          <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.47.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
         </svg>
         <span data-i18n="settings.title">Настройки</span>
       </h2>
@@ -997,6 +1041,25 @@ template.innerHTML = `
               <input type="checkbox" id="center-elements-toggle">
               <span class="toggle-slider"></span>
             </label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3 class="section-title">Уведомления</h3>
+        
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Позиция уведомлений</div>
+            <div class="setting-description">Где отображать тосты на экране</div>
+            <div class="toast-positions">
+              <button class="toast-position-btn" data-position="top-left">Сверху слева</button>
+              <button class="toast-position-btn" data-position="top-center">Сверху по центру</button>
+              <button class="toast-position-btn active" data-position="top-right">Сверху справа</button>
+              <button class="toast-position-btn" data-position="bottom-left">Снизу слева</button>
+              <button class="toast-position-btn" data-position="bottom-center">Снизу по центру</button>
+              <button class="toast-position-btn" data-position="bottom-right">Снизу справа</button>
+            </div>
           </div>
         </div>
       </div>
@@ -1226,6 +1289,7 @@ export class SettingsPanel extends HTMLElement {
     const headerLayout = store.getStorage('headerLayout', 'default');
     const playerStyle = store.getStorage('playerStyle', 'default');
     const centerElements = store.getStorage('centerElements', false);
+    const toastPosition = store.getStorage('toastPosition', 'top-right');
 
     this.themeSelect.value = theme;
     this.langSelect.value = lang;
@@ -1251,6 +1315,10 @@ export class SettingsPanel extends HTMLElement {
 
     this.shadowRoot.querySelectorAll('.viz-tab').forEach(tab => {
       tab.classList.toggle('active', tab.dataset.class === vizClass);
+    });
+
+    this.shadowRoot.querySelectorAll('.toast-position-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.position === toastPosition);
     });
 
     if (vizClass === 'geometric') {
@@ -1284,7 +1352,7 @@ export class SettingsPanel extends HTMLElement {
       document.documentElement.dataset.theme = theme;
       this.shadowRoot.host.dataset.theme = theme;
       store.setStorage('theme', theme);
-      showToast(t('messages.themeChanged'), 'success');
+      showToast('Тема изменена', 'success');
     });
 
     this.langSelect.addEventListener('change', (e) => {
@@ -1332,7 +1400,7 @@ export class SettingsPanel extends HTMLElement {
       }));
 
       if (style === 'island') {
-        showToast('🏝️ Островок активирован! Перетаскивайте плеер', 'success', 3000);
+        showToast('🏝️ Островок активирован! Перетаскивайте плеер', 'success');
       } else {
         showToast('Стиль плеера изменен', 'success');
       }
@@ -1458,6 +1526,19 @@ export class SettingsPanel extends HTMLElement {
         showToast(`Тип молний: ${btn.textContent}`, 'success');
       });
     });
+
+    this.shadowRoot.querySelectorAll('.toast-position-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const position = btn.dataset.position;
+        this.shadowRoot.querySelectorAll('.toast-position-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        store.setStorage('toastPosition', position);
+        document.dispatchEvent(new CustomEvent('toast-position-change', {
+          detail: position
+        }));
+        showToast('Позиция уведомлений изменена', 'success');
+      });
+    });
   }
 
   updateOpacityDisplay() {
@@ -1539,7 +1620,7 @@ export class SettingsPanel extends HTMLElement {
     store.setStorage('customStations', customStations);
     store.stations.push(newStation);
 
-    showToast(`${t('messages.stationAdded')}: "${name}"`, 'success');
+    showToast(`Станция "${name}" добавлена`, 'success');
 
     this.shadowRoot.getElementById('station-name').value = '';
     this.shadowRoot.getElementById('station-url').value = '';

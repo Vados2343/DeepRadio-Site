@@ -231,27 +231,56 @@ export class StationGrid extends HTMLElement {
     this.updatePlayRafId = null;
     this.renderThrottle = null;
     this.stationsGridCache = null;
-    this.currentStation = null;
-    this.playingStationId = null;
+    this.currentStation = store?.current ?? null;
+
+    // Инициализируем playingStationId консистентно с FSM
+    try {
+      const isPlaying = store?.playerFSM?.isInState?.(PlayerStates.PLAYING);
+      this.playingStationId = isPlaying ? (this.currentStation?.id ?? null) : null;
+    } catch {
+      this.playingStationId = null;
+    }
   }
+
   getElements() {
-    return { genreFilter: this.shadowRoot.getElementById('genre-filter'), container: this.shadowRoot.getElementById('stations-container'), editBanner: this.shadowRoot.getElementById('edit-mode-banner'), exitEditBtn: this.shadowRoot.getElementById('exit-edit-btn') };
+    return {
+      genreFilter: this.shadowRoot.getElementById('genre-filter'),
+      container: this.shadowRoot.getElementById('stations-container'),
+      editBanner: this.shadowRoot.getElementById('edit-mode-banner'),
+      exitEditBtn: this.shadowRoot.getElementById('exit-edit-btn')
+    };
   }
+
   initState() {
     return { selectedGenre: 'all', displayMode: 'grid', viewMode: 'all', isEditMode: false, isRendering: false };
   }
+
   initDragState() {
     return { draggedCard: null, draggedStationId: null, draggedIndex: -1, dropTarget: null, dropPosition: null, touchStartPos: { x: 0, y: 0 }, isDragging: false, dragOffset: { x: 0, y: 0 }, lastMoveTime: 0, currentPos: { x: 0, y: 0 }, pushedCards: new Map(), animationFrame: null, ghost: null };
   }
+
   bindMethods() {
-    return { handleDragStart: this.handleDragStart.bind(this), handleDragOver: this.handleDragOver.bind(this), handleDrop: this.handleDrop.bind(this), handleDragEnd: this.handleDragEnd.bind(this), handleTouchStart: this.handleTouchStart.bind(this), handleTouchMove: this.handleTouchMove.bind(this), handleTouchEnd: this.handleTouchEnd.bind(this), handleClickOutside: this.handleClickOutside.bind(this) };
+    return {
+      handleDragStart: this.handleDragStart.bind(this),
+      handleDragOver: this.handleDragOver.bind(this),
+      handleDrop: this.handleDrop.bind(this),
+      handleDragEnd: this.handleDragEnd.bind(this),
+      handleTouchStart: this.handleTouchStart.bind(this),
+      handleTouchMove: this.handleTouchMove.bind(this),
+      handleTouchEnd: this.handleTouchEnd.bind(this),
+      handleClickOutside: this.handleClickOutside.bind(this)
+    };
   }
+
   connectedCallback() {
     this.initGenres();
     this.render();
     this.createContextMenu();
     this.setupEventListeners();
+    // Первая синхронизация после монтирования
+    this.syncFromStore();
   }
+
   disconnectedCallback() {
     this.cleanup();
     document.removeEventListener('click', this.boundMethods.handleClickOutside);
@@ -260,6 +289,7 @@ export class StationGrid extends HTMLElement {
       navigator.mediaSession.setActionHandler('nexttrack', null);
     }
   }
+
   cleanup() {
     if (this.updateActiveRafId) cancelAnimationFrame(this.updateActiveRafId);
     if (this.updatePlayRafId) cancelAnimationFrame(this.updatePlayRafId);
@@ -269,40 +299,88 @@ export class StationGrid extends HTMLElement {
     this.renderThrottle = null;
     this.stationsGridCache = null;
   }
+
   setupEventListeners() {
     this.setupStoreListeners();
     this.setupDocumentListeners();
     this.setupContainerListeners();
     this.elements.exitEditBtn.addEventListener('click', () => { store.setEditMode(false) });
   }
+
+  // ЕДИНЫЙ метод консистентной синхронизации UI с состоянием плеера/стора
+  syncFromStore() {
+    try {
+      this.currentStation = store.current ?? null;
+      const fsm = store?.playerFSM;
+
+      const isPlaying = fsm?.isInState?.(PlayerStates.PLAYING) ?? false;
+      const isTransitioning = fsm?.isInStates?.(
+        PlayerStates.LOADING,
+        PlayerStates.BUFFERING,
+        PlayerStates.SWITCHING,
+        PlayerStates.READY,
+        PlayerStates.WAITING
+      ) ?? false;
+
+      if (isPlaying) {
+        this.playingStationId = this.currentStation?.id ?? null;
+      } else if (isTransitioning && this.currentStation) {
+        this.playingStationId = this.currentStation.id;
+      } else {
+        this.playingStationId = null;
+      }
+    } catch {
+      this.playingStationId = null;
+    }
+    this.updateActiveStation();
+    this.updatePlayStates();
+  }
+
   setupStoreListeners() {
-    store.on('track-change', () => { this.updateActiveStation(); this.updatePlayStates() });
-    store.on('station-active', () => { this.updateActiveStation(); this.updatePlayStates() });
-    store.on('station-changing', () => { this.updateActiveStation() });
-    store.on('play', () => this.updatePlayStates());
-    store.on('pause', () => this.updatePlayStates());
+    const sync = () => this.syncFromStore();
+
+    // Активная станция/трек меняются — синхронизируем
+    store.on('track-change', sync);
+    store.on('station-active', sync);
+    store.on('station-changing', sync);
+
+    // Простые события плеера — синхронизируем (без дублей)
+    store.on('play', sync);
+    store.on('pause', sync);
+
+    // Событие для целевого UI-синка из плеера/баров
     store.on('ui-sync', (e) => {
-      const { isPlaying, isBuffering, station } = e.detail;
-      this.currentStation = station;
-      this.playingStationId = isPlaying ? station?.id : null;
+      const { isPlaying, station } = e.detail;
+      this.currentStation = station ?? store.current ?? null;
+      this.playingStationId = isPlaying ? (this.currentStation?.id ?? null) : null;
+      this.updateActiveStation();
       this.updatePlayStates();
     });
+
+    // Прочие изменения представления/фильтров
     store.on('view-change', (e) => { this.state.viewMode = e.detail; this.render() });
     store.on('filter-change', () => { if (!this.state.isRendering) this.throttledRender() });
     store.on('favorites-change', () => { this.updateFavorites(); if (this.state.viewMode === 'favorites') this.render() });
     store.on('edit-mode-change', (e) => { this.handleEditModeChange(e.detail) });
   }
+
   setupDocumentListeners() {
-    document.addEventListener('display-mode-change', (e) => { this.state.displayMode = e.detail; this.elements.container.setAttribute('data-display', this.state.displayMode); if (this.state.viewMode !== 'stats') this.render() });
+    document.addEventListener('display-mode-change', (e) => {
+      this.state.displayMode = e.detail;
+      this.elements.container.setAttribute('data-display', this.state.displayMode);
+      if (this.state.viewMode !== 'stats') this.render();
+    });
     document.addEventListener('click', this.boundMethods.handleClickOutside);
     if ('mediaSession' in navigator) {
       navigator.mediaSession.setActionHandler('previoustrack', () => { store.step(-1) });
       navigator.mediaSession.setActionHandler('nexttrack', () => { store.step(1) });
     }
   }
+
   handleClickOutside(e) {
     if (this.contextMenu && !this.contextMenu.contains(e.target)) this.contextMenu.style.display = 'none';
   }
+
   setupContainerListeners() {
     this.elements.container.addEventListener('dragstart', this.boundMethods.handleDragStart, true);
     this.elements.container.addEventListener('dragover', this.boundMethods.handleDragOver);
@@ -312,6 +390,7 @@ export class StationGrid extends HTMLElement {
     this.elements.container.addEventListener('touchmove', this.boundMethods.handleTouchMove, { passive: false });
     this.elements.container.addEventListener('touchend', this.boundMethods.handleTouchEnd);
   }
+
   handleEditModeChange(enabled) {
     this.state.isEditMode = enabled;
     const shouldShow = enabled && this.state.viewMode === 'favorites';
@@ -325,6 +404,7 @@ export class StationGrid extends HTMLElement {
       this.render();
     }
   }
+
   createContextMenu() {
     const existingMenu = document.getElementById('station-context-menu');
     if (existingMenu) existingMenu.remove();
@@ -333,21 +413,28 @@ export class StationGrid extends HTMLElement {
     this.contextMenu.style.cssText = `position:fixed;background:var(--bg-gradient-start);border:1px solid var(--border);border-radius:var(--radius);padding:0.5rem;min-width:200px;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:1000;display:none;backdrop-filter:blur(20px)`;
     document.body.appendChild(this.contextMenu);
   }
+
   initGenres() {
     const genres = ['all', 'Pop', 'EDM', 'Dance', 'House', 'Trance', 'Bass', 'Rap/Urban', 'Chill', 'Rock', 'Oldschool', 'Rus', 'Ukr'];
-    this.elements.genreFilter.innerHTML = genres.map(genre => `<button class="genre-btn ${genre === 'all' ? 'active' : ''}" data-genre="${genre}">${genre === 'all' ? 'Все жанры' : genre}</button>`).join('');
+    this.elements.genreFilter.innerHTML = genres
+      .map(genre => `<button class="genre-btn ${genre === 'all' ? 'active' : ''}" data-genre="${genre}">${genre === 'all' ? 'Все жанры' : genre}</button>`)
+      .join('');
     this.elements.genreFilter.addEventListener('click', e => {
       if (e.target.classList.contains('genre-btn') && !this.state.isEditMode) {
         this.state.selectedGenre = e.target.dataset.genre;
-        this.shadowRoot.querySelectorAll('.genre-btn').forEach(btn => { btn.classList.toggle('active', btn.dataset.genre === this.state.selectedGenre) });
+        this.shadowRoot.querySelectorAll('.genre-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.genre === this.state.selectedGenre);
+        });
         this.render();
       }
     });
   }
+
   throttledRender() {
     if (this.renderThrottle) return;
     this.renderThrottle = setTimeout(() => { this.render(); this.renderThrottle = null }, 16);
   }
+
   render() {
     if (this.state.isRendering) return;
     this.state.isRendering = true;
@@ -362,21 +449,27 @@ export class StationGrid extends HTMLElement {
       this.elements.genreFilter.style.display = 'flex';
       const shouldShowBanner = this.state.isEditMode && this.state.viewMode === 'favorites';
       this.elements.editBanner.classList.toggle('show', shouldShowBanner);
+
       const stations = this.getFilteredStations();
       if (stations.length === 0) {
         this.renderEmpty();
         this.state.isRendering = false;
         return;
       }
-      this.elements.container.innerHTML = `<div class="stations-grid">${stations.map((station, index) => this.renderStation(station, index)).join('')}</div>`;
+
+      this.elements.container.innerHTML =
+        `<div class="stations-grid">${stations.map((station, index) => this.renderStation(station, index)).join('')}</div>`;
       this.stationsGridCache = this.elements.container.querySelector('.stations-grid');
+
       this.attachEventListeners();
-      this.updateActiveStation();
-      this.updatePlayStates();
+      // После рендера — привести UI в консистентное состояние
+      this.syncFromStore();
+
       this.updateFavorites();
       this.state.isRendering = false;
     });
   }
+
   getFilteredStations() {
     let stations = store.getFilteredStations();
     if (this.state.viewMode === 'favorites') {
@@ -391,6 +484,7 @@ export class StationGrid extends HTMLElement {
     if (this.state.selectedGenre !== 'all') stations = stations.filter(s => s.tags.includes(this.state.selectedGenre));
     return stations;
   }
+
   renderStation(station, index) {
     const isActive = store.current?.id === station.id;
     const isFavorite = store.isFavorite(station.id);
@@ -407,28 +501,33 @@ export class StationGrid extends HTMLElement {
           <div class="station-name">${stationNameEscaped}</div>
           ${this.state.displayMode !== 'cover' ? `<div class="station-tags">${station.tags.slice(0, 3).map(tag => `<span class="tag">${this.escapeHtml(tag)}</span>`).join('')}</div>` : ''}
         </div>
-        ${this.state.displayMode !== 'list' ? `<div class="action-buttons"><button class="action-btn ${isFavorite ? 'active' : ''}" data-action="favorite" data-id="${station.id}" title="${isFavorite ? 'Удалить из избранного' : 'В избранное'}"><svg width="20" height="20" viewBox="0 0 24 24" fill="${isFavorite ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button></div>` : ''}
-        ${this.state.displayMode === 'list' ? `<div class="action-buttons"><button class="action-btn ${isFavorite ? 'active' : ''}" data-action="favorite" data-id="${station.id}" title="${isFavorite ? 'Удалить из избранного' : 'В избранное'}"><svg width="18" height="18" viewBox="0 0 24 24" fill="${isFavorite ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button></div>` : ''}
+        ${this.state.displayMode !== 'list'
+          ? `<div class="action-buttons"><button class="action-btn ${isFavorite ? 'active' : ''}" data-action="favorite" data-id="${station.id}" title="${isFavorite ? 'Удалить из избранного' : 'В избранное'}"><svg width="20" height="20" viewBox="0 0 24 24" fill="${isFavorite ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button></div>`
+          : `<div class="action-buttons"><button class="action-btn ${isFavorite ? 'active' : ''}" data-action="favorite" data-id="${station.id}" title="${isFavorite ? 'Удалить из избранного' : 'В избранное'}"><svg width="18" height="18" viewBox="0 0 24 24" fill="${isFavorite ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button></div>`
+        }
         <button class="play-btn" data-id="${station.id}"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
         ${this.state.displayMode !== 'list' && isActive && !isEditMode ? '<div class="pulse-indicator"></div>' : ''}
         <div class="drop-indicator after"></div>
       </div>
     `;
   }
+
   escapeHtml(text) {
     if (typeof text !== 'string') return '';
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
   }
+
   attachEventListeners() {
     this.shadowRoot.querySelectorAll('.station-icon').forEach(img => {
       img.addEventListener('error', (e) => {
         const card = e.target.closest('.station-card');
         const stationId = parseInt(card.dataset.id);
-        e.target.src = `data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180"%3E%3Crect width="180" height="180" rx="24" fill="%231e293b"/%3E%3Ctext x="90" y="100" text-anchor="middle" fill="%2364748b" font-size="60" font-family="Arial"%3E${stationId + 1}%3C/text%3E%3C/svg%3E`;
+        e.target.src = `data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180%22%3E%3Crect width="180" height="180" rx="24" fill="%231e293b"/%3E%3Ctext x="90" y="100" text-anchor="middle" fill="%2364748b" font-size="60" font-family="Arial"%3E${stationId + 1}%3C/text%3E%3C/svg%3E`;
       });
     });
+
     this.shadowRoot.querySelectorAll('.station-card').forEach(card => {
       card.addEventListener('click', async (e) => {
         if (e.target.closest('.action-btn') || e.target.closest('.drag-handle') || e.target.closest('.play-btn')) return;
@@ -446,6 +545,7 @@ export class StationGrid extends HTMLElement {
           await store.play(station);
         }
       });
+
       card.addEventListener('contextmenu', e => {
         if (this.state.isEditMode) return;
         e.preventDefault();
@@ -453,6 +553,7 @@ export class StationGrid extends HTMLElement {
         this.showContextMenu(e, id);
       });
     });
+
     this.shadowRoot.querySelectorAll('.play-btn').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         e.stopPropagation();
@@ -470,6 +571,7 @@ export class StationGrid extends HTMLElement {
         }
       });
     });
+
     this.shadowRoot.querySelectorAll('.action-btn').forEach(btn => {
       btn.addEventListener('click', e => {
         e.stopPropagation();
@@ -484,6 +586,7 @@ export class StationGrid extends HTMLElement {
       });
     });
   }
+
   handleDragStart(e) {
     if (!this.state.isEditMode || this.state.viewMode !== 'favorites') return;
     const card = e.target.closest('.station-card');
@@ -509,6 +612,7 @@ export class StationGrid extends HTMLElement {
     setTimeout(() => document.body.removeChild(dragImage), 0);
     this.startPhysicsAnimation();
   }
+
   startPhysicsAnimation() {
     const animate = () => {
       if (!this.dragState.isDragging && !this.dragState.draggedCard) return;
@@ -517,12 +621,18 @@ export class StationGrid extends HTMLElement {
     };
     this.dragState.animationFrame = requestAnimationFrame(animate);
   }
+
   applyPushPhysics() {
     if (!this.dragState.currentPos.x || !this.dragState.currentPos.y) return;
     const draggedCard = this.dragState.draggedCard;
     if (!draggedCard) return;
     const draggedRect = draggedCard.getBoundingClientRect();
-    const dragRect = { left: this.dragState.currentPos.x - this.dragState.dragOffset.x, top: this.dragState.currentPos.y - this.dragState.dragOffset.y, right: this.dragState.currentPos.x - this.dragState.dragOffset.x + draggedRect.width, bottom: this.dragState.currentPos.y - this.dragState.dragOffset.y + draggedRect.height };
+    const dragRect = {
+      left: this.dragState.currentPos.x - this.dragState.dragOffset.x,
+      top: this.dragState.currentPos.y - this.dragState.dragOffset.y,
+      right: this.dragState.currentPos.x - this.dragState.dragOffset.x + draggedRect.width,
+      bottom: this.dragState.currentPos.y - this.dragState.dragOffset.y + draggedRect.height
+    };
     const cards = this.shadowRoot.querySelectorAll('.station-card:not(.dragging)');
     cards.forEach(card => {
       const rect = card.getBoundingClientRect();
@@ -547,6 +657,7 @@ export class StationGrid extends HTMLElement {
       }
     });
   }
+
   handleDragOver(e) {
     if (!this.state.isEditMode || !this.dragState.draggedCard) return;
     e.preventDefault();
@@ -556,6 +667,7 @@ export class StationGrid extends HTMLElement {
     const targetCard = this.getCardUnderCursor(e.clientX, e.clientY);
     if (targetCard && targetCard !== this.dragState.draggedCard) this.updateDropTarget(targetCard);
   }
+
   getCardUnderCursor(x, y) {
     const allCards = this.shadowRoot.querySelectorAll('.station-card');
     for (const card of allCards) {
@@ -565,6 +677,7 @@ export class StationGrid extends HTMLElement {
     }
     return null;
   }
+
   updateDropTarget(targetCard) {
     const targetIndex = parseInt(targetCard.dataset.index);
     const draggedIndex = this.dragState.draggedIndex;
@@ -576,6 +689,7 @@ export class StationGrid extends HTMLElement {
       if (targetIndex > draggedIndex) targetCard.classList.add('shift-right'); else targetCard.classList.add('shift-left');
     }
   }
+
   handleDrop(e) {
     if (!this.state.isEditMode) return;
     e.preventDefault();
@@ -595,16 +709,26 @@ export class StationGrid extends HTMLElement {
     }
     this.resetDragState();
   }
+
   handleDragEnd() {
     this.cleanupDragEffects();
     this.resetDragState();
   }
+
   cleanupDragEffects() {
     if (this.dragState.animationFrame) cancelAnimationFrame(this.dragState.animationFrame);
-    if (this.dragState.ghost) { try { document.body.removeChild(this.dragState.ghost) } catch {} this.dragState.ghost = null }
-    this.shadowRoot.querySelectorAll('.station-card').forEach(card => { card.style.transform = ''; card.style.transition = ''; card.classList.remove('dragging', 'drop-target', 'shift-left', 'shift-right') });
+    if (this.dragState.ghost) {
+      try { document.body.removeChild(this.dragState.ghost) } catch {}
+      this.dragState.ghost = null;
+    }
+    this.shadowRoot.querySelectorAll('.station-card').forEach(card => {
+      card.style.transform = '';
+      card.style.transition = '';
+      card.classList.remove('dragging', 'drop-target', 'shift-left', 'shift-right');
+    });
     this.dragState.pushedCards.clear();
   }
+
   handleTouchStart(e) {
     if (!this.state.isEditMode || this.state.viewMode !== 'favorites') return;
     const card = e.target.closest('.station-card');
@@ -619,6 +743,7 @@ export class StationGrid extends HTMLElement {
     this.dragState.dragOffset.x = touch.clientX - rect.left;
     this.dragState.dragOffset.y = touch.clientY - rect.top;
   }
+
   handleTouchMove(e) {
     if (!this.state.isEditMode || !this.dragState.draggedCard) return;
     const touch = e.touches[0];
@@ -653,6 +778,7 @@ export class StationGrid extends HTMLElement {
       if (targetCard) this.updateDropTarget(targetCard);
     }
   }
+
   handleTouchEnd(e) {
     if (this.dragState.ghost) {
       try { document.body.removeChild(this.dragState.ghost) } catch {}
@@ -669,27 +795,33 @@ export class StationGrid extends HTMLElement {
     this.cleanupDragEffects();
     this.resetDragState();
   }
+
   resetDragState() {
     if (this.dragState.draggedCard) this.dragState.draggedCard.classList.remove('dragging');
     this.cleanupDragEffects();
     this.dragState = this.initDragState();
   }
+
   showContextMenu(e, stationId) {
     const station = store.stations.find(s => s.id === stationId);
     if (!station) return;
     if (!this.contextMenu || !document.body.contains(this.contextMenu)) this.createContextMenu();
+
     const isFavorite = store.isFavorite(stationId);
     const isPlaying = this.playingStationId === stationId;
+
     const menuItems = [
       { action: 'play', icon: isPlaying ? 'M6 4h4v16H6zm8 0h4v16h-4z' : 'M8 5v14l11-7z', text: isPlaying ? 'Пауза' : 'Воспроизвести' },
       { action: 'favorite', icon: '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>', text: isFavorite ? 'Удалить из избранного' : 'Добавить в избранное', fill: isFavorite ? 'currentColor' : 'none', stroke: true }
     ];
+
     if (this.state.viewMode === 'favorites') {
       menuItems.push({ divider: true });
       menuItems.push({ action: 'edit-favorites', icon: 'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z', text: 'Режим редактирования' });
     }
     menuItems.push({ divider: true });
     menuItems.push({ action: 'copy-url', icon: '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>', text: 'Копировать URL', stroke: true });
+
     this.contextMenu.innerHTML = `
       <style>
         .context-menu-item { display:flex; align-items:center; gap:.75rem; padding:.75rem 1rem; border-radius:var(--radius-sm); color:var(--text-secondary); font-size:.875rem; cursor:pointer; transition:var(--transition); border:none; background:none; width:100%; text-align:left }
@@ -702,6 +834,7 @@ export class StationGrid extends HTMLElement {
     this.positionContextMenu(e);
     this.attachContextMenuListeners();
   }
+
   positionContextMenu(e) {
     this.contextMenu.style.display = 'block';
     this.contextMenu.style.left = `${e.pageX}px`;
@@ -712,6 +845,7 @@ export class StationGrid extends HTMLElement {
       if (rect.bottom > window.innerHeight) this.contextMenu.style.top = `${e.pageY - rect.height}px`;
     });
   }
+
   attachContextMenuListeners() {
     this.contextMenu.querySelectorAll('.context-menu-item').forEach(item => {
       item.addEventListener('click', async (e) => {
@@ -752,6 +886,7 @@ export class StationGrid extends HTMLElement {
       });
     });
   }
+
   updateFavorites() {
     this.shadowRoot.querySelectorAll('.action-btn[data-action="favorite"]').forEach(btn => {
       const id = parseInt(btn.dataset.id);
@@ -761,6 +896,7 @@ export class StationGrid extends HTMLElement {
       if (svg) svg.setAttribute('fill', isFavorite ? 'currentColor' : 'none');
     });
   }
+
   updateActiveStation() {
     if (this.updateActiveRafId) return;
     this.updateActiveRafId = requestAnimationFrame(() => {
@@ -779,6 +915,7 @@ export class StationGrid extends HTMLElement {
       this.updateActiveRafId = null;
     });
   }
+
   updatePlayStates() {
     const grid = this.stationsGridCache || this.shadowRoot.querySelector('.stations-grid');
     if (!grid) return;
@@ -787,9 +924,12 @@ export class StationGrid extends HTMLElement {
       const playBtn = card.querySelector('.play-btn');
       if (!playBtn) return;
       const shouldShowPause = id === this.playingStationId;
-      playBtn.innerHTML = shouldShowPause ? `<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>` : `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
+      playBtn.innerHTML = shouldShowPause
+        ? `<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`
+        : `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
     });
   }
+
   renderEmpty() {
     this.elements.container.innerHTML = `
       <div class="empty-state">

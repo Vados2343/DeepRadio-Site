@@ -137,12 +137,6 @@ AudioPoolManager.prototype.loadHLSStream = async function(audio, url, preload = 
     hls.on(Hls.Events.MANIFEST_PARSED, () => {
       logger.log('HLS', 'Manifest parsed', { index, preload });
 
-      // НЕ запускаем автоматически play() - это решает Store
-      if (!preload && !state.isPreload && state.playIntended) {
-        audio.play().catch(e => {
-          logger.error('HLS', 'Auto-play failed', e);
-        });
-      }
     });
 
     hls.on(Hls.Events.ERROR, (event, data) => {

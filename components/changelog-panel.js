@@ -173,6 +173,92 @@ template.innerHTML = `
     <div class="changelog-content">
       <div class="version-block">
         <div class="version-header">
+          <span class="version-number">v2.0.2</span>
+          <span class="version-badge">КРИТИЧЕСКИЙ ФИКС</span>
+          <span class="version-date">02.11.2025</span>
+        </div>
+
+        <div class="category-title">🚨 Критические исправления мобильной версии</div>
+        <ul class="changes-list">
+          <li class="change-item">
+            <svg class="change-icon fix" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
+            </svg>
+            <span class="change-text">Исправлена критическая проблема с перекрытием контента боковой панелью на мобильных устройствах</span>
+          </li>
+          <li class="change-item">
+            <svg class="change-icon fix" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
+            </svg>
+            <span class="change-text">Правильно настроены отступы контента от фиксированного header и player на мобильных устройствах</span>
+          </li>
+          <li class="change-item">
+            <svg class="change-icon improve" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+            </svg>
+            <span class="change-text">Оптимизированы z-index слои для корректного наложения элементов интерфейса</span>
+          </li>
+          <li class="change-item">
+            <svg class="change-icon fix" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
+            </svg>
+            <span class="change-text">Исправлен синтаксис в header-manager.js (template literal)</span>
+          </li>
+          <li class="change-item">
+            <svg class="change-icon improve" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+            </svg>
+            <span class="change-text">Унифицированы стили sidebar для мобильной и desktop версий</span>
+          </li>
+        </ul>
+
+        <div class="category-title">📱 Мобильные улучшения</div>
+        <ul class="changes-list">
+          <li class="change-item">
+            <svg class="change-icon new" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
+            </svg>
+            <span class="change-text">Контент теперь правильно позиционируется под header и над player</span>
+          </li>
+          <li class="change-item">
+            <svg class="change-icon new" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
+            </svg>
+            <span class="change-text">Боковая панель больше не перекрывает основной контент</span>
+          </li>
+          <li class="change-item">
+            <svg class="change-icon improve" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+            </svg>
+            <span class="change-text">Улучшена работа скролла контента на мобильных устройствах</span>
+          </li>
+        </ul>
+
+        <div class="category-title">🎨 CSS оптимизация</div>
+        <ul class="changes-list">
+          <li class="change-item">
+            <svg class="change-icon improve" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+            </svg>
+            <span class="change-text">Убраны дублирующиеся CSS селекторы для sidebar</span>
+          </li>
+          <li class="change-item">
+            <svg class="change-icon improve" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+            </svg>
+            <span class="change-text">Правильно настроены медиа-запросы для разных разрешений</span>
+          </li>
+          <li class="change-item">
+            <svg class="change-icon new" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
+            </svg>
+            <span class="change-text">Добавлены CSS переменные для правильного расчета высот на мобильных устройствах</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="version-block">
+        <div class="version-header">
           <span class="version-number">v2.0.1</span>
           <span class="version-badge">ИСПРАВЛЕНИЕ</span>
           <span class="version-date">02.11.2025</span>
@@ -265,238 +351,6 @@ template.innerHTML = `
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
             </svg>
             <span class="change-text">Добавлена принудительная эмиссия track-update при смене состояний</span>
-          </li>
-          <li class="change-item">
-            <svg class="change-icon fix" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
-            </svg>
-            <span class="change-text">Исправлена задержка отображения метаданных при загрузке</span>
-          </li>
-        </ul>
-
-        <div class="category-title">✅ Исправления состояний Play/Pause</div>
-        <ul class="changes-list">
-          <li class="change-item">
-            <svg class="change-icon fix" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
-            </svg>
-            <span class="change-text">Полностью переписана логика синхронизации состояний playingStationId</span>
-          </li>
-          <li class="change-item">
-            <svg class="change-icon new" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
-            </svg>
-            <span class="change-text">Добавлен флаг isActuallyPlaying для точного отслеживания состояния</span>
-          </li>
-          <li class="change-item">
-            <svg class="change-icon fix" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
-            </svg>
-            <span class="change-text">Исправлена проблема с несоответствием иконки play/pause реальному состоянию</span>
-          </li>
-          <li class="change-item">
-            <svg class="change-icon improve" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-            </svg>
-            <span class="change-text">Улучшена обработка быстрых переключений станций</span>
-          </li>
-        </ul>
-
-        <div class="category-title">✅ Мобильная версия</div>
-        <ul class="changes-list">
-          <li class="change-item">
-            <svg class="change-icon new" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
-            </svg>
-            <span class="change-text">Реализована анимация превращения логотипа в поиск на 180°</span>
-          </li>
-          <li class="change-item">
-            <svg class="change-icon new" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
-            </svg>
-            <span class="change-text">Создан модуль mobile-search.js с плавной анимацией</span>
-          </li>
-          <li class="change-item">
-            <svg class="change-icon fix" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
-            </svg>
-            <span class="change-text">Исправлена работа кнопки поиска на мобильных устройствах</span>
-          </li>
-        </ul>
-
-        <div class="category-title">✅ Навигация и Header</div>
-        <ul class="changes-list">
-          <li class="change-item">
-            <svg class="change-icon fix" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
-            </svg>
-            <span class="change-text">Исправлена проблема с заблюренным навигационным ящиком</span>
-          </li>
-          <li class="change-item">
-            <svg class="change-icon new" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
-            </svg>
-            <span class="change-text">Создан модуль header-manager.js для управления layout</span>
-          </li>
-          <li class="change-item">
-            <svg class="change-icon fix" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
-            </svg>
-            <span class="change-text">Настройка «Центрировать элементы» теперь работает корректно</span>
-          </li>
-        </ul>
-      </div>
-
-      <div class="version-block">
-        <div class="version-header">
-          <span class="version-number">v1.2.0</span>
-          <span class="version-badge">МЕТАДАННЫЕ</span>
-          <span class="version-date">02.11.2025</span>
-        </div>
-
-        <div class="category-title">🎵 Метаданные - главное обновление</div>
-        <ul class="changes-list">
-          <li class="change-item">
-            <svg class="change-icon new" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
-            </svg>
-            <span class="change-text">Полностью реализована система метаданных — теперь отображаются названия треков</span>
-          </li>
-          <li class="change-item">
-            <svg class="change-icon new" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
-            </svg>
-            <span class="change-text">Автоматическое обновление метаданных каждые 30 секунд</span>
-          </li>
-          <li class="change-item">
-            <svg class="change-icon new" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
-            </svg>
-            <span class="change-text">Поддержка atomic.radio, 101.ru, radiorecord.ru, dfm.ru и других API</span>
-          </li>
-          <li class="change-item">
-            <svg class="change-icon improve" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-            </svg>
-            <span class="change-text">Кэширование метаданных для быстрого доступа</span>
-          </li>
-          <li class="change-item">
-            <svg class="change-icon improve" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-            </svg>
-            <span class="change-text">Fallback к названию станции при ошибках получения метаданных</span>
-          </li>
-        </ul>
-
-        <div class="category-title">🔧 Критические исправления</div>
-        <ul class="changes-list">
-          <li class="change-item">
-            <svg class="change-icon fix" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
-            </svg>
-            <span class="change-text">Полностью переписан patch-hls.js</span>
-          </li>
-          <li class="change-item">
-            <svg class="change-icon fix" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
-            </svg>
-            <span class="change-text">Исправлено зависание PlayerBar на состоянии «Загрузка…»</span>
-          </li>
-          <li class="change-item">
-            <svg class="change-icon fix" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
-            </svg>
-            <span class="change-text">Исправлены быстрые переключения состояний и гонки UI</span>
-          </li>
-          <li class="change-item">
-            <svg class="change-icon improve" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-            </svg>
-            <span class="change-text">Оптимизированы таймауты и повторные попытки подключения</span>
-          </li>
-          <li class="change-item">
-            <svg class="change-icon improve" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-            </svg>
-            <span class="change-text">Улучшена обработка HLS потоков</span>
-          </li>
-        </ul>
-      </div>
-
-      <div class="version-block">
-        <div class="version-header">
-          <span class="version-number">v1.1.3</span>
-          <span class="version-badge">КРИТИЧЕСКИЙ ФИКС</span>
-          <span class="version-date">01.11.2025</span>
-        </div>
-
-        <div class="category-title">🐛 Критические исправления</div>
-        <ul class="changes-list">
-          <li class="change-item">
-            <svg class="change-icon fix" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
-            </svg>
-            <span class="change-text">Исправлена ошибка «logger.isDebugEnabled is not a function»</span>
-          </li>
-          <li class="change-item">
-            <svg class="change-icon new" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
-            </svg>
-            <span class="change-text">Добавлена простая функция isDebugEnabled()</span>
-          </li>
-          <li class="change-item">
-            <svg class="change-icon fix" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
-            </svg>
-            <span class="change-text">Воспроизведение станций полностью восстановлено</span>
-          </li>
-        </ul>
-      </div>
-
-      <div class="version-block">
-        <div class="version-header">
-          <span class="version-number">v1.1.0</span>
-          <span class="version-badge">ОБНОВЛЕНИЕ</span>
-          <span class="version-date">30.07.2025</span>
-        </div>
-
-        <div class="category-title">✨ Новые возможности</div>
-        <ul class="changes-list">
-          <li class="change-item">
-            <svg class="change-icon new" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
-            </svg>
-            <span class="change-text">Новая вкладка «Изменения» с локальным логом релизов</span>
-          </li>
-          <li class="change-item">
-            <svg class="change-icon new" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
-            </svg>
-            <span class="change-text">Гибридный стриминг: прямой URL и автопереход на прокси при ошибках</span>
-          </li>
-          <li class="change-item">
-            <svg class="change-icon new" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
-            </svg>
-            <span class="change-text">Умная дельта-логика метаданных</span>
-          </li>
-          <li class="change-item">
-            <svg class="change-icon new" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
-            </svg>
-            <span class="change-text">Лайк-промпт после первого трека</span>
-          </li>
-          <li class="change-item">
-            <svg class="change-icon fix" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
-            </svg>
-            <span class="change-text">Фикс гонок UI при быстрых переключениях</span>
-          </li>
-          <li class="change-item">
-            <svg class="change-icon improve" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-            </svg>
-            <span class="change-text">Тихий режим консоли</span>
           </li>
         </ul>
       </div>

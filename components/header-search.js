@@ -86,6 +86,7 @@ class HeaderSearch {
   }
 }
 
+// Initialize when DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     window.headerSearch = new HeaderSearch();

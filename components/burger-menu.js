@@ -54,9 +54,9 @@ class BurgerMenu {
         #sidebar-overlay {
           position: fixed;
           inset: 0;
-          background: rgba(0,0,0,0.6);
-          backdrop-filter: blur(8px);
-          -webkit-backdrop-filter: blur(8px);
+          background: rgba(0,0,0,0);
+          backdrop-filter: blur(0px);
+          -webkit-backdrop-filter: blur(0px);
           z-index: 45;
           opacity: 0;
           visibility: hidden;
@@ -64,6 +64,9 @@ class BurgerMenu {
           transition: all 0.3s ease;
         }
         #sidebar-overlay.show {
+          background: rgba(0,0,0,0.6);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
           opacity: 1;
           visibility: visible;
           pointer-events: auto;
@@ -95,6 +98,8 @@ class BurgerMenu {
         @media (min-width: 769px) {
           #sidebar-overlay {
             display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
           }
           #sidebar {
             position: relative !important;
@@ -289,6 +294,13 @@ class BurgerMenu {
   handleNavClick(e) {
     const link = e.target.closest('a, button, .nav-item');
     if (link && !link.hasAttribute('data-no-close')) {
+      // Обработка data-view атрибута
+      const view = link.getAttribute('data-view');
+      if (view && window.store) {
+        console.log('[BurgerMenu] Switching view to:', view);
+        window.store.setView(view);
+      }
+
       if (link.tagName === 'A') {
         const href = link.getAttribute('href');
         if (href && href !== '#' && !href.startsWith('javascript:')) {

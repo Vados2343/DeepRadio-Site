@@ -352,6 +352,15 @@ class Store extends EventTarget {
       });
     }
 
+    // КРИТИЧНО: Игнорируем события от неактивных audio элементов
+    const isActiveAudio = event.index === this.audioPool.activeIndex;
+
+    // Для паузы проверяем что это активный audio
+    if (event.state === 'paused' && !isActiveAudio) {
+      logger.log('Store', 'Ignoring pause from inactive audio', { index: event.index, activeIndex: this.audioPool.activeIndex });
+      return;
+    }
+
     switch (event.state) {
       case 'loaded':
         if (this.playerFSM.canTransition('LOADED')) {
@@ -1096,3 +1105,6 @@ class Store extends EventTarget {
 }
 
 export const store = new Store();
+if (typeof window !== 'undefined') {
+  window.store = store;
+}

@@ -50,6 +50,7 @@ class HeaderManager {
 
 export default HeaderManager;
 
+// Initialize when DOM is ready
 if (typeof window !== 'undefined') {
   document.addEventListener('DOMContentLoaded', () => {
     new HeaderManager();
