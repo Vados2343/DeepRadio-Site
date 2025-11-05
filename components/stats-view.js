@@ -1180,19 +1180,21 @@ updateTexts() {
 
     container.style.display = 'block';
 
-    const station = store.stations.find(s => s.id === currentSession.stationId);
-    const iconUrl = station ? `/Icons/icon${station.id + 1}.png` : '/Icons/default.png';
+    // ФИКС: Брать данные из store.current (актуальная станция), а не из currentSession!
+    const station = store.current;
+    const iconUrl = `/Icons/icon${station.id + 1}.png`;
 
     const icon = this.shadowRoot.getElementById('current-session-icon');
     icon.src = iconUrl;
-    icon.alt = currentSession.stationName;
+    icon.alt = station.name;
 
     const stationEl = this.shadowRoot.getElementById('current-session-station');
-    stationEl.textContent = currentSession.stationName;
+    stationEl.textContent = station.name;
 
+    // ФИКС: Брать текущий трек из store.currentTrack, а не из старой сессии!
     const trackEl = this.shadowRoot.getElementById('current-session-track');
-    if (currentSession.track && currentSession.track.artist && currentSession.track.song) {
-      trackEl.textContent = `${currentSession.track.artist} - ${currentSession.track.song}`;
+    if (store.currentTrack && store.currentTrack.artist && store.currentTrack.song) {
+      trackEl.textContent = `${store.currentTrack.artist} - ${store.currentTrack.song}`;
       trackEl.style.display = 'block';
     } else {
       trackEl.textContent = '';
@@ -1201,8 +1203,8 @@ updateTexts() {
 
     const timeEl = this.shadowRoot.getElementById('current-session-time');
     const duration = this.formatTime(currentSession.duration || 0);
-    const genres = currentSession.genres && currentSession.genres.length > 0
-      ? currentSession.genres.join(', ')
+    const genres = station.tags && station.tags.length > 0
+      ? station.tags.join(', ')
       : '';
     timeEl.textContent = `${duration}${genres ? ` • ${genres}` : ''}`;
   }

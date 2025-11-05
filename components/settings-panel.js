@@ -1357,23 +1357,33 @@ export class SettingsPanel extends HTMLElement {
           // Сохранить что floating включен
           store.setStorage('floatingEnabled', true);
 
+          // ФИКС: Читать все настройки из localStorage, а не hardcode!
+          const draggingEnabled = store.getStorage('floatingDraggingEnabled', true);
+          const marqueeEnabled = store.getStorage('floatingMarqueeEnabled', true);
+          const showIcon = store.getStorage('floatingShowIcon', true);
+          const showStationName = store.getStorage('floatingShowStationName', true);
+          const showTrackInfo = store.getStorage('floatingShowTrackInfo', true);
+          const showVolume = store.getStorage('floatingShowVolume', true);
+          const showPlayButton = store.getStorage('floatingShowPlayButton', true);
+          const showStepButtons = store.getStorage('floatingShowStepButtons', false);
+
           // Dispatch floating player event для активации
           const event = new CustomEvent('floating-player-change', {
             detail: {
               enabled: true,
-              draggingEnabled: true,
-              marqueeEnabled: true,
+              draggingEnabled,
+              marqueeEnabled,
               visibility: {
-                showIcon: true,
-                showStationName: true,
-                showTrackInfo: true,
-                showVolume: true,
-                showPlayButton: true,
-                showStepButtons: true
+                showIcon,
+                showStationName,
+                showTrackInfo,
+                showVolume,
+                showPlayButton,
+                showStepButtons
               }
             }
           });
-          console.log('[Island Mode] Dispatching event:', event.detail);
+          console.log('[Island Mode] Dispatching event with settings:', event.detail);
           document.dispatchEvent(event);
 
           // Проверить FloatingPlayerManager через небольшую задержку
@@ -1381,6 +1391,14 @@ export class SettingsPanel extends HTMLElement {
             console.log('[Island Mode] FloatingPlayerManager:', window.floatingPlayerManager);
             console.log('[Island Mode] PlayerBar classes:', playerBar.className);
             console.log('[Island Mode] PlayerBar styles:', playerBar.style.cssText);
+            console.log('[Island Mode] PlayerBar attributes:', {
+              'data-show-icon': playerBar.getAttribute('data-show-icon'),
+              'data-show-station-name': playerBar.getAttribute('data-show-station-name'),
+              'data-show-track-info': playerBar.getAttribute('data-show-track-info'),
+              'data-show-volume': playerBar.getAttribute('data-show-volume'),
+              'data-show-play-button': playerBar.getAttribute('data-show-play-button'),
+              'data-show-step-buttons': playerBar.getAttribute('data-show-step-buttons')
+            });
           }, 200);
 
           showToast(t('messages.islandModeActivated'), 'success');
