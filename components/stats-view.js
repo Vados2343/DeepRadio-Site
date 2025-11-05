@@ -1,5 +1,6 @@
 import { store } from '../core/store.js';
 import { showToast } from '../utils/toast.js';
+import { t } from '../utils/i18n.js';
 
 const template = document.createElement('template');
 
@@ -726,12 +727,12 @@ template.innerHTML = `
   </style>
   
   <div class="stats-header">
-    <h1 class="page-title">Статистика прослушивания</h1>
+ <h1 class="page-title" data-i18n="stats.title">Статистика прослушивания</h1>
     <button class="export-btn" id="export-btn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
       </svg>
-      <span>Экспорт</span>
+      <span data-i18n="stats.export">Экспорт</span>
     </button>
   </div>
 
@@ -745,6 +746,7 @@ template.innerHTML = `
       </div>
       <div class="card-value" id="today-time">0 мин</div>
       <div class="card-label">Сегодня</div>
+
     </div>
     <div class="summary-card">
       <div class="card-icon">
@@ -811,44 +813,40 @@ template.innerHTML = `
   <div class="content-section" id="history-section">
     <div class="history-filters">
       <select class="filter-select" id="time-filter">
-        <option value="all">Все время</option>
-        <option value="today">Сегодня</option>
-        <option value="week">Неделя</option>
-        <option value="month">Месяц</option>
+       <option value="all" data-i18n="stats.allTime">Все время</option>
+        <option value="today" data-i18n="stats.today">Сегодня</option>
+        <option value="week" data-i18n="stats.thisWeek">Неделя</option>
+        <option value="month" data-i18n="stats.thisMonth">Месяц</option>
       </select>
       <select class="filter-select" id="station-filter">
-        <option value="all">Все станции</option>
+        <option value="all" data-i18n="stats.allStations">Все станции</option>
       </select>
       <div class="search-filter">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8"/>
           <path d="m21 21-4.35-4.35"/>
         </svg>
-        <input type="search" id="track-search" placeholder="Поиск по трекам...">
+        <input type="search" id="track-search" placeholder="Поиск по трекам..." data-i18n-placeholder="stats.searchTracks">
       </div>
     </div>
     <div class="history-list" id="history-list"></div>
     <div class="pagination" id="history-pagination"></div>
   </div>
-
   <div class="content-section" id="genres-section">
     <div class="genre-chart" id="genre-chart"></div>
   </div>
-
   <div class="content-section" id="stations-section">
     <div class="history-list" id="top-stations"></div>
   </div>
-
   <div class="stats-footer">
-    <button class="clear-stats-btn" id="clear-stats">Очистить статистику</button>
+    <button class="clear-stats-btn" id="clear-stats" data-i18n="stats.clearStats">Очистить статистику</button>
   </div>
-
   <div class="confirm-dialog" id="confirm-dialog">
-    <h3 class="confirm-title">Подтверждение</h3>
-    <p class="confirm-text">Вы уверены, что хотите очистить всю статистику? Это действие необратимо.</p>
+    <h3 class="confirm-title" data-i18n="stats.confirmClear">Подтверждение</h3>
+    <p class="confirm-text" data-i18n="stats.confirmClearText">Вы уверены, что хотите очистить всю статистику? Это действие необратимо.</p>
     <div class="confirm-actions">
-      <button class="confirm-btn cancel" id="confirm-cancel">Отмена</button>
-      <button class="confirm-btn confirm" id="confirm-clear">Очистить</button>
+      <button class="confirm-btn cancel" id="confirm-cancel" data-i18n="stats.cancel">Отмена</button>
+      <button class="confirm-btn confirm" id="confirm-clear" data-i18n="stats.clear">Очистить</button>
     </div>
   </div>
 `;
@@ -871,8 +869,14 @@ class StatsView extends HTMLElement {
     this.setupEventListeners();
     this.loadStats();
     this.initCalendar();
+    this.updateTexts();
     store.on('stats-update', () => this.updateRealtimeStats());
     this.updateTimer = setInterval(() => this.updateRealtimeStats(), 5000);
+    document.addEventListener('language-change', () => {
+      this.updateTexts();
+      this.renderCalendar();
+      this.filterHistory();
+       });
   }
 
   disconnectedCallback() {
@@ -1012,6 +1016,22 @@ class StatsView extends HTMLElement {
     }
     return sanitized;
   }
+updateTexts() {
+  this.shadowRoot.querySelectorAll('[data-i18n]').forEach(element => {
+    const key = element.getAttribute('data-i18n');
+    const text = t(key);
+    element.textContent = text;
+  });
+
+  this.shadowRoot.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+    const key = element.getAttribute('data-i18n-placeholder');
+    const text = t(key);
+    element.placeholder = text;
+  });
+
+  this.updateStationFilterOptions();
+}
+
 
   escapeHtml(text) {
     const div = document.createElement('div');
@@ -1023,7 +1043,7 @@ class StatsView extends HTMLElement {
     const stats = this.getAllStats();
     this.updateSummaryCards(stats);
     const indicator = this.shadowRoot.getElementById('realtime-indicator');
-    if (store.current && !store.audio.paused) {
+    if (store.current && store.audio && !store.audio.paused) {
       indicator.style.display = 'inline-flex';
     } else {
       indicator.style.display = 'none';
@@ -1044,13 +1064,12 @@ class StatsView extends HTMLElement {
   renderCalendar() {
     const year = this.currentDate.getFullYear();
     const month = this.currentDate.getMonth();
-    const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  const monthNames = t('stats.months');
     this.shadowRoot.getElementById('calendar-current').textContent = `${monthNames[month]} ${year}`;
-
     const grid = this.shadowRoot.getElementById('calendar-grid');
     grid.innerHTML = '';
-
-    ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].forEach(d => {
+    const weekdays = t('stats.weekdays');
+    weekdays.forEach(d => {
       const e = document.createElement('div');
       e.className = 'calendar-weekday';
       e.textContent = d;
@@ -1115,7 +1134,7 @@ class StatsView extends HTMLElement {
     if (!dayStats || !dayStats.sessions || dayStats.sessions.length === 0) {
       container.innerHTML = `
         <div class="empty-state">
-          <div class="empty-title">Нет данных за ${new Date(dateStr).toLocaleDateString('ru-RU')}</div>
+           <div class="empty-title">${t('stats.noDataFor')} ${new Date(dateStr).toLocaleDateString()}</div>
         </div>
       `;
       return;
@@ -1193,8 +1212,8 @@ class StatsView extends HTMLElement {
             <circle cx="12" cy="12" r="10"/>
             <path d="M12 6v6l4 2"/>
           </svg>
-          <div class="empty-title">История пуста</div>
-          <div>Начните слушать радио, чтобы увидеть статистику</div>
+           <div class="empty-title">${t('stats.noHistory')}</div>
+          <div>${t('stats.startListening')}</div>
         </div>
       `;
       this.updatePagination(0);
@@ -1341,7 +1360,7 @@ class StatsView extends HTMLElement {
     const entries = Object.entries(genres);
 
     if (entries.length === 0) {
-      container.innerHTML = `<div class="empty-state"><div class="empty-title">Нет данных по жанрам</div></div>`;
+     container.innerHTML = `<div class="empty-state"><div class="empty-title">${t('stats.noGenres')}</div></div>`;
       return;
     }
 
@@ -1367,7 +1386,7 @@ class StatsView extends HTMLElement {
     const entries = Object.entries(stations);
 
     if (entries.length === 0) {
-      container.innerHTML = `<div class="empty-state"><div class="empty-title">Нет данных о станциях</div></div>`;
+      container.innerHTML = `<div class="empty-state"><div class="empty-title">${t('stats.noStations')}</div></div>`;
       return;
     }
 
@@ -1391,13 +1410,10 @@ class StatsView extends HTMLElement {
       `;
     }).join('');
   }
-
   updateStationFilter(stations) {
     const select = this.shadowRoot.getElementById('station-filter');
     const current = select.value;
-
-    select.innerHTML = `<option value="all">Все станции</option>`;
-
+select.innerHTML = `<option value="all">${t('stats.allStations')}</option>`;
     Object.entries(stations)
       .sort((a, b) => a[1].name.localeCompare(b[1].name))
       .forEach(([id, data]) => {
@@ -1406,9 +1422,14 @@ class StatsView extends HTMLElement {
         option.textContent = data.name;
         select.appendChild(option);
       });
-
     if (current && select.querySelector(`option[value="${current}"]`)) {
       select.value = current;
+    }
+  }
+  updateStationFilterOptions() {
+    const stats = this.getAllStats();
+    if (stats && stats.stations) {
+      this.updateStationFilter(stats.stations);
     }
   }
 
@@ -1450,27 +1471,23 @@ class StatsView extends HTMLElement {
         delete stats.dailyStats[dayStr];
       }
     }
-
     store.setStorage('listeningStats',stats);
     this.loadStats();
     this.renderCalendar();
-    showToast('Сессия удалена из статистики','success');
+   showToast(t('stats.sessionRemoved'),'success');
   }
-
   showConfirmDialog() {
     this.shadowRoot.getElementById('confirm-dialog').classList.add('show');
   }
-
   hideConfirmDialog() {
     this.shadowRoot.getElementById('confirm-dialog').classList.remove('show');
   }
-
   clearAllStats() {
     store.resetStats();
     this.currentPage = 1;
     this.loadStats();
     this.renderCalendar();
-    showToast('Статистика очищена','success');
+    showToast(t('stats.statsCleared'),'success');
   }
 
   exportStats() {
@@ -1506,7 +1523,7 @@ class StatsView extends HTMLElement {
     a.click();
 
     URL.revokeObjectURL(url);
-    showToast('Статистика экспортирована', 'success');
+     showToast(t('stats.statsExported'), 'success');
   }
 
   formatTime(ms) {
@@ -1514,9 +1531,9 @@ class StatsView extends HTMLElement {
     const hours = Math.floor(minutes/60);
     const days = Math.floor(hours/24);
 
-    if (days > 0) return `${days} ${this.pluralize(days,'день','дня','дней')}`;
-    if (hours > 0) return `${hours} ${this.pluralize(hours,'час','часа','часов')}`;
-    return `${minutes} мин`;
+    if (days > 0) return `${days} ${this.pluralize(days,t('stats.day'),t('stats.days'),t('stats.daysMany'))}`;
+    if (hours > 0) return `${hours} ${this.pluralize(hours,t('stats.hour'),t('stats.hours'),t('stats.hoursMany'))}`;
+    return `${minutes} ${t('stats.minutes')}`;
   }
 
   formatShortTime(ms) {

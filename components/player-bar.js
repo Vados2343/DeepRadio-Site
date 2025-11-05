@@ -1,4 +1,5 @@
 import { store } from '../core/store.js';
+import { t } from '../utils/i18n.js';
 
 const escapeHTML = (str) => {
   if (typeof str !== 'string') return '';
@@ -100,6 +101,11 @@ export class PlayerBar extends HTMLElement {
       this.setupEventListeners();
       this.loadInitialState();
       this.bound = true;
+        document.addEventListener('language-change', () => {
+        if (this.pendingTrackData) {
+          this.updateTrackText(this.pendingTrackData);
+        }
+      });
     }
   }
 
@@ -277,25 +283,24 @@ export class PlayerBar extends HTMLElement {
     if (!station) return;
     if (track.stationId && track.stationId !== station.id) return;
 
-    let textToShow = station.name || 'Радио';
-
+  let textToShow = station.name || t('player.selectStation');
     if (track) {
       if (track.loading) {
-        textToShow = 'Загрузка информации...';
+        textToShow = t('messages.loadingInfo');
       } else if (track.error || track.serverError) {
         if (track.artist && track.song) textToShow = `${track.artist} - ${track.song}`;
-        else textToShow = station.name || 'Радио';
+        else textToShow = station.name || t('player.selectStation');
       } else if (track.noData) {
-        textToShow = station.name || 'В эфире';
+        textToShow = station.name || t('player.onAir');
       } else if (track.artist && track.song) {
         textToShow = `${track.artist} - ${track.song}`;
       } else if (track.song) {
         textToShow = track.song;
       } else if (track.fallback) {
-        textToShow = station.name || 'Радиостанция';
+        textToShow = station.name || t('player.selectStation');
       }
     } else if (this.realPlayingState || this.currentState === 'PLAYING') {
-      textToShow = station.name || 'В эфире';
+      textToShow = station.name || t('player.onAir');
     }
 
     if (this.realPlayingState && (track.artist || track.song)) this.clearStates();

@@ -1,7 +1,7 @@
 import { store } from '../core/store.js';
 import { showToast } from '../utils/toast.js';
 import { PlayerStates } from '../core/PlayerStateMachine.js';
-
+import { t } from '../utils/i18n.js';
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
@@ -416,9 +416,8 @@ export class StationGrid extends HTMLElement {
 
   initGenres() {
     const genres = ['all', 'Pop', 'EDM', 'Dance', 'House', 'Trance', 'Bass', 'Rap/Urban', 'Chill', 'Rock', 'Oldschool', 'Rus', 'Ukr'];
-    this.elements.genreFilter.innerHTML = genres
-      .map(genre => `<button class="genre-btn ${genre === 'all' ? 'active' : ''}" data-genre="${genre}">${genre === 'all' ? 'Все жанры' : genre}</button>`)
-      .join('');
+   this.genres = genres;
+    this.updateGenreButtons();
     this.elements.genreFilter.addEventListener('click', e => {
       if (e.target.classList.contains('genre-btn') && !this.state.isEditMode) {
         this.state.selectedGenre = e.target.dataset.genre;
@@ -428,6 +427,12 @@ export class StationGrid extends HTMLElement {
         this.render();
       }
     });
+  }
+  updateGenreButtons() {
+    if (!this.genres || !this.elements.genreFilter) return;
+    this.elements.genreFilter.innerHTML = this.genres
+      .map(genre => `<button class="genre-btn ${genre === 'all' ? 'active' : ''}" data-genre="${genre}">${genre === 'all' ? t('nav.allGenres') : genre}</button>`)
+      .join('');
   }
 
   throttledRender() {
@@ -462,9 +467,12 @@ export class StationGrid extends HTMLElement {
       this.stationsGridCache = this.elements.container.querySelector('.stations-grid');
 
       this.attachEventListeners();
-      // После рендера — привести UI в консистентное состояние
       this.syncFromStore();
+     document.addEventListener('language-change', () => {
 
+      this.updateGenreButtons();
+
+    });
       this.updateFavorites();
       this.state.isRendering = false;
     });
@@ -811,17 +819,25 @@ export class StationGrid extends HTMLElement {
     const isPlaying = this.playingStationId === stationId;
 
     const menuItems = [
-      { action: 'play', icon: isPlaying ? 'M6 4h4v16H6zm8 0h4v16h-4z' : 'M8 5v14l11-7z', text: isPlaying ? 'Пауза' : 'Воспроизвести' },
-      { action: 'favorite', icon: '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>', text: isFavorite ? 'Удалить из избранного' : 'Добавить в избранное', fill: isFavorite ? 'currentColor' : 'none', stroke: true }
+     { action: 'play', icon: isPlaying ? 'M6 4h4v16H6zm8 0h4v16h-4z' : 'M8 5v14l11-7z', text: isPlaying ? t('contextMenu.pause') : t('contextMenu.play') },
+
+      { action: 'favorite', icon: '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>', text: isFavorite ? t('contextMenu.removeFromFavorites') : t('contextMenu.addToFavorites'), fill: isFavorite ? 'currentColor' : 'none', stroke: true }
+
     ];
 
-    if (this.state.viewMode === 'favorites') {
-      menuItems.push({ divider: true });
-      menuItems.push({ action: 'edit-favorites', icon: 'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z', text: 'Режим редактирования' });
-    }
-    menuItems.push({ divider: true });
-    menuItems.push({ action: 'copy-url', icon: '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>', text: 'Копировать URL', stroke: true });
 
+
+    if (this.state.viewMode === 'favorites') {
+
+      menuItems.push({ divider: true });
+
+      menuItems.push({ action: 'edit-favorites', icon: 'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z', text: t('contextMenu.editMode') });
+
+    }
+
+    menuItems.push({ divider: true });
+
+    menuItems.push({ action: 'copy-url', icon: '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>', text: t('contextMenu.copyUrl'), stroke: true });
     this.contextMenu.innerHTML = `
       <style>
         .context-menu-item { display:flex; align-items:center; gap:.75rem; padding:.75rem 1rem; border-radius:var(--radius-sm); color:var(--text-secondary); font-size:.875rem; cursor:pointer; transition:var(--transition); border:none; background:none; width:100%; text-align:left }

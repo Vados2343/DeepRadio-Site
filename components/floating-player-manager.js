@@ -16,7 +16,6 @@ export class FloatingPlayerManager {
     this.dragThreshold = 5;
     this.hasMovedPastThreshold = false;
 
-    // класс, который будем вешать на хост, чтобы убрать right:0 и width:100%
     this.floatingClass = 'floating-player-host';
 
     this.handleResize = this.handleResize.bind(this);

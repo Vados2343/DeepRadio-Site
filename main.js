@@ -7,8 +7,7 @@ import './components/settings-panel.js';
 import './components/stats-view.js';
 import './components/like-prompt.js';
 import './components/changelog-panel.js';
-import './components/header-search.js';
-import './components/mobile-search.js';
+import './components/capsule-search.js';
 import './components/header-manager.js';
 import { BurgerMenu } from './components/burger-menu.js';
 import { FloatingPlayerManager } from './components/floating-player-manager.js';
@@ -203,29 +202,15 @@ class EnhancedApp {
 
     const settingsBtn = document.getElementById('settings-toggle');
     const changelogBtn = document.getElementById('changelog-toggle');
-    const searchContainer = document.querySelector('.search-container');
-    const searchWrapper = document.querySelector('.search-wrapper');
-    const searchInput = document.querySelector('.search-input');
-    const mobileSearchBtn = document.getElementById('mobile-search');
-    const viewToggle = document.getElementById('view-toggle');
-
+   const viewToggle = document.getElementById('view-toggle');
     if (isMobile) {
-      // Mobile layout
       if (settingsBtn) settingsBtn.style.display = 'none';
       if (changelogBtn) changelogBtn.style.display = 'none';
-      if (searchContainer) searchContainer.style.display = 'none';
-      if (searchWrapper) searchWrapper.style.display = 'none';
-      if (searchInput) searchInput.style.display = 'none';
-      if (mobileSearchBtn) mobileSearchBtn.style.display = 'flex';
       if (viewToggle) viewToggle.style.display = 'flex';
     } else {
-      // Desktop layout
+
       if (settingsBtn) settingsBtn.style.display = '';
       if (changelogBtn) changelogBtn.style.display = '';
-      if (searchContainer) searchContainer.style.display = '';
-      if (searchWrapper) searchWrapper.style.display = '';
-      if (searchInput) searchInput.style.display = '';
-      if (mobileSearchBtn) mobileSearchBtn.style.display = 'none';
     }
   }
 

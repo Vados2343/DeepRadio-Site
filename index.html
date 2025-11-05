@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -35,8 +35,7 @@
               </div>
               <div class="capsule-face capsule-back">
                 <div class="input-wrapper">
-                  <input type="search" id="capsule-search" class="capsule-search-input" placeholder="Поиск станций...">
-                  <button id="capsule-clear" class="capsule-clear">✕</button>
+                   <input type="search" id="capsule-search" class="capsule-search-input" placeholder="Поиск станций..." data-i18n="app.search">
                 </div>
               </div>
             </div>
@@ -72,30 +71,30 @@
       <aside class="sidebar glass" id="sidebar" data-sidebar>
         <nav class="sidebar-nav">
           <div class="nav-section">
-            <h3 class="nav-title">Коллекции</h3>
+           <h3 class="nav-title" data-i18n="nav.collections">Коллекции</h3>
             <button class="nav-item active" data-view="all">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M3 3h18v18H3V3zm16 16V5H5v14h14z"/>
               </svg>
-              <span>Все станции</span>
+              <span data-i18n="nav.allStations">Все станции</span>
             </button>
             <button class="nav-item" data-view="favorites">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
               </svg>
-              <span>Избранное</span>
+              <span data-i18n="nav.favorites">Избранное</span>
             </button>
             <button class="nav-item" data-view="recent">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/>
               </svg>
-              <span>Недавние</span>
+              <span data-i18n="nav.recent">Недавние</span>
             </button>
             <button class="nav-item" data-view="stats">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
               </svg>
-              <span>Статистика</span>
+              <span data-i18n="nav.stats">Статистика</span>
             </button>
             <button class="nav-item" id="changelog-sidebar-btn">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -104,17 +103,17 @@
                 <line x1="16" y1="13" x2="8" y2="13"></line>
                 <line x1="16" y1="17" x2="8" y2="17"></line>
               </svg>
-              <span>Изменения</span>
+              <span data-i18n="nav.changelog">Изменения</span>
             </button>
           </div>
           <div class="nav-section">
-            <h3 class="nav-title">Плейлисты</h3>
+            <h3 class="nav-title" data-i18n="nav.playlists">Плейлисты</h3>
             <div id="playlists-nav"></div>
             <button class="nav-item nav-add" id="add-playlist">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
               </svg>
-              <span>Создать плейлист</span>
+              <span data-i18n="nav.createPlaylist">Создать плейлист</span>
             </button>
           </div>
         </nav>

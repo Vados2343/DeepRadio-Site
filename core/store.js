@@ -1,5 +1,6 @@
 import { stations as defaultStations } from '../data/stations.js';
 import { showToast } from '../utils/toast.js';
+import { t } from '../utils/i18n.js';
 import { PlayerStateMachine, PlayerStates } from './PlayerStateMachine.js';
 import { AudioPoolManager } from './AudioPoolManager.js';
 import { Config, getStorageKey, isEpisodicStation } from './config.js';
@@ -252,13 +253,13 @@ class Store extends EventTarget {
         break;
 
       case PlayerStates.WAITING:
-        this.showNotification('buffering', '⏳ Буферизация...', 'info', 2000);
+       this.showNotification('buffering', '⏳ ' + t('messages.buffering'), 'info', 2000);
         this.emitUISync();
         break;
 
       case PlayerStates.RETRYING:
         this.clearRetryTimer();
-        this.showNotification('retrying', '🔄 Повторная попытка подключения...', 'info', 2000);
+        this.showNotification('retrying', t('messages.retrying'), 'info', 2000);
         this.retryTimer = setTimeout(() => {
           if (this.playerFSM.isInState(PlayerStates.RETRYING) && this.current) {
             this.playerFSM.transition('LOAD');
@@ -296,7 +297,7 @@ class Store extends EventTarget {
           logger.metric('stall_count', (stateChange.metadata?.stallCount || 0));
         }
         if (stateChange.metadata?.stallCount > 2) {
-          this.showNotification('connection-problem', '⚠️ Проблемы с подключением', 'warning', 3000);
+         this.showNotification('connection-problem', t('messages.connectionProblem'), 'warning', 3000);
         }
         this.emitUISync();
         break;
@@ -351,11 +352,8 @@ class Store extends EventTarget {
         stationId: event.stationId
       });
     }
-
-    // КРИТИЧНО: Игнорируем события от неактивных audio элементов
     const isActiveAudio = event.index === this.audioPool.activeIndex;
 
-    // Для паузы проверяем что это активный audio
     if (event.state === 'paused' && !isActiveAudio) {
       logger.log('Store', 'Ignoring pause from inactive audio', { index: event.index, activeIndex: this.audioPool.activeIndex });
       return;
@@ -449,7 +447,7 @@ class Store extends EventTarget {
 
     window.addEventListener('offline', () => {
       logger.log('Network', 'Offline');
-      this.showNotification('offline', '📡 Отсутствует подключение к интернету', 'warning', 5000);
+     this.showNotification('offline', '📡 Отсутствует подключение к интернету', 'warning', 5000);
     });
   }
 
@@ -748,25 +746,26 @@ class Store extends EventTarget {
         this.likePromptShown.add(stationId);
 
         const notification = showToast(
-          `Нравится "${this.current.name}"? 💖`,
+           `${t('messages.likePrompt')} "${this.current.name}"? 💖`,
           'info',
           0,
           {
             actions: [
               {
-                text: '❤️ В избранное',
+                text: t('messages.addToFavoritesAction'),
+
                 onClick: () => {
                   store.toggleFavorite(stationId);
                   this.sessionLikes.set(stationId, true);
-                  showToast(`"${this.current.name}" добавлена в избранное`, 'success');
+                  showToast(`"${this.current.name}" ${t('messages.addedToFavorites')}`, 'success');
                 }
               },
               {
-                text: '🔕 Больше не спрашивать',
+                text: t('messages.noMorePrompts'),
                 onClick: () => {
                   this.likePromptsDisabled = true;
                   this.setStorage('likePromptsDisabled', true);
-                  showToast('Подсказки отключены', 'info');
+                showToast(t('messages.hintsDisabled'), 'info');
                 }
               }
             ]

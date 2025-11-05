@@ -1,9 +1,3 @@
-// src/utils/episode-modal.js
-// ЕДИНЫЙ модальный компонент:
-//   mode: 'info' | 'warn'
-//   title, message, linkUrl, linkLabel
-// Совместим с прошлым API: setLink(url), close().
-
 export function createEpisodeModal(options = {}) {
   const {
     mode = 'info',
@@ -15,7 +9,6 @@ export function createEpisodeModal(options = {}) {
     linkLabel = mode === 'warn' ? 'Связаться с нами' : 'Перейти к эпизодам'
   } = options;
 
-  // Закрываем предыдущий, если открыт
   const existingModal = document.getElementById('episode-modal');
   if (existingModal) existingModal.remove();
 

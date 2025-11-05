@@ -8,8 +8,8 @@ class MetadataService {
     this.retryBackoff = new Map();
     this.abortControllers = new Map();
     this.lastTrackId = new Map();
-    this.retryCount = new Map(); // Счетчик попыток
-    this.fallbackCache = new Map(); // Fallback кэш
+    this.retryCount = new Map();
+    this.fallbackCache = new Map();
   }
 
   async getTrackMeta(station) {
@@ -25,24 +25,24 @@ class MetadataService {
     const cacheKey = `track_${station.id}`;
     const cached = this.cache.get(cacheKey);
 
-    // Определяем TTL в зависимости от типа станции
+
     const ttl = isEpisodicStation(station)
       ? Config.metadata.episodicTTL
       : Config.metadata.cacheTTL;
 
-    // Возвращаем кэшированные данные если они еще валидны
+
     if (cached && Date.now() - cached.timestamp < ttl) {
       debugLog('metadata', 'Cache hit', { station: station.name, cached: cached.data });
       return cached.data;
     }
 
-    // Если уже есть запрос в процессе, возвращаем его
+
     if (this.pendingRequests.has(station.id)) {
       debugLog('metadata', 'Request already pending', { station: station.name });
       return this.pendingRequests.get(station.id);
     }
 
-    // Отменяем предыдущий запрос если он есть
+
     const existingController = this.abortControllers.get(station.id);
     if (existingController) {
       existingController.abort();
@@ -104,7 +104,7 @@ class MetadataService {
       if (!response.ok) {
         debugLog('metadata', 'HTTP error', { status: response.status, station: station.name });
 
-        // Помечаем URL как проблемный для будущих запросов
+
         if (response.status === 403 || response.status === 429 || response.status === 404) {
           this.failedUrls.add(station.trackInfo);
         }
@@ -141,7 +141,7 @@ class MetadataService {
         }
       }
 
-      // Если есть данные, обновляем кэш
+
       if (result.artist || result.song) {
         this.lastTrackId.set(station.id, trackId);
         this.cache.set(`track_${station.id}`, {
@@ -172,11 +172,11 @@ class MetadataService {
         return { artist: station.name, song: '', loading: true };
       }
 
-      // Увеличиваем счетчик попыток
+
       this.retryCount.set(station.id, retries + 1);
       this.updateBackoff(station.id, false);
 
-      // Пробуем fallback: сначала обычный кэш, потом fallback кэш
+
       const cached = this.cache.get(`track_${station.id}`);
       if (cached) {
         debugLog('metadata', 'Using cached data (error fallback)', { station: station.name });
@@ -189,18 +189,18 @@ class MetadataService {
         return { ...fallback, serverError: true };
       }
 
-      // Если попыток меньше лимита и это не abort, пробуем еще раз с прокси
+
       if (retries < Config.metadata.maxRetries && error.name !== 'AbortError') {
         debugLog('metadata', 'Retrying with proxy', { station: station.name, attempt: retries + 1 });
 
-        // Небольшая задержка перед повтором
+
         await new Promise(resolve => setTimeout(resolve, Config.metadata.retryDelay));
 
-        // Рекурсивно вызываем себя
+
         return this.fetchMetadata(station, signal);
       }
 
-      // Если все попытки исчерпаны, возвращаем fallback данные
+
       debugLog('metadata', 'All retries exhausted', { station: station.name });
       return {
         artist: station.name,
@@ -212,7 +212,7 @@ class MetadataService {
   }
 
   parseJSONResponse(data, url) {
-    // Если уже есть поля artist/song
+
     if (data.artist !== undefined || data.song !== undefined) {
       return {
         artist: this.cleanArtist(data.artist || ''),
@@ -291,7 +291,6 @@ class MetadataService {
   }
 
   parseRadioRecord(data) {
-    // Пробуем разные варианты структуры данных Radio Record
     if (data?.result?.history?.[0]) {
       const track = data.result.history[0];
       return {
@@ -612,7 +611,6 @@ class MetadataService {
     }
   }
 
-  // Метод для ручной очистки кэша конкретной станции
   clearStationCache(stationId) {
     this.cache.delete(`track_${stationId}`);
     this.lastTrackId.delete(stationId);
