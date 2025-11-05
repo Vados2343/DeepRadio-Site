@@ -219,6 +219,8 @@ const translations = {
       sessionRemoved: 'Сессия удалена из статистики',
       statsCleared: 'Статистика очищена',
       statsExported: 'Статистика экспортирована',
+      genresLabel: 'Жанры',
+      andMore: 'и еще',
       months: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
       weekdays: ['Пн','Вт','Ср','Чт','Пт','Сб','Вс']
     },
@@ -500,6 +502,8 @@ const translations = {
       sessionRemoved: 'Session removed from statistics',
       statsCleared: 'Statistics cleared',
       statsExported: 'Statistics exported',
+      genresLabel: 'Genres',
+      andMore: 'and',
       months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
       weekdays: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
     },
@@ -781,6 +785,8 @@ const translations = {
       sessionRemoved: 'Сесію видалено зі статистики',
       statsCleared: 'Статистику очищено',
        statsExported: 'Статистику експортовано',
+      genresLabel: 'Жанри',
+      andMore: 'і ще',
       months: ['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'],
       weekdays: ['Пн','Вт','Ср','Чт','Пт','Сб','Нд']
     },
