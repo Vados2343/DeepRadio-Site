@@ -36,6 +36,7 @@ export class FloatingPlayerManager {
   }
 
   setupEventListeners() {
+
     document.addEventListener('settings-change', (e) => {
       if (e.detail.key === 'playerStyle') {
         const style = e.detail.value;
@@ -47,6 +48,22 @@ export class FloatingPlayerManager {
         }
       }
     });
+    document.addEventListener('floating-settings-change', (e) => {
+  console.log('[FloatingPlayerManager] Received event:', e.detail);
+
+  const { enabled, draggingEnabled, marqueeEnabled, visibility } = e.detail;
+
+  if (enabled) {
+    console.log('[FloatingPlayerManager] Enabling floating mode...');
+    this.enableFloating();
+    this.draggingEnabled = draggingEnabled;
+    this.applyVisibilitySettings();
+  } else {
+    console.log('[FloatingPlayerManager] Disabling floating mode...');
+    this.disableFloating();
+  }
+});
+
 
     if (this.playerBar) {
       // Mouse events
@@ -71,16 +88,32 @@ export class FloatingPlayerManager {
     this.playerBar.classList.add(this.floatingClass);
 
     // принудительно сбрасываем то, что мешает
-    this.playerBar.style.right = 'auto';
-    this.playerBar.style.left = '50%';
-    this.playerBar.style.top = 'auto';
-    this.playerBar.style.bottom = '20px';
-    this.playerBar.style.transform = 'translateX(-50%)';
-    this.playerBar.style.maxWidth = '460px';
-    this.playerBar.style.width = 'auto';
-    this.playerBar.style.zIndex = '500';
+ this.playerBar.style.position = 'fixed';
 
-    // Add animation class temporarily
+    this.playerBar.style.right = 'auto';
+
+    this.playerBar.style.left = '50%';
+
+    this.playerBar.style.top = 'auto';
+
+    this.playerBar.style.bottom = '20px';
+
+    this.playerBar.style.transform = 'translateX(-50%)';
+
+    this.playerBar.style.maxWidth = '460px';
+
+    this.playerBar.style.width = 'auto';
+
+    this.playerBar.style.zIndex = '500';
+    document.body.style.paddingBottom = '0';
+
+    const mainElement = document.querySelector('.app-main');
+
+    if (mainElement) {
+
+      mainElement.style.paddingBottom = '0';
+
+    }
     this.playerBar.classList.add('animating');
     setTimeout(() => {
       if (this.playerBar) {
@@ -98,7 +131,14 @@ export class FloatingPlayerManager {
     this.playerBar.classList.remove('draggable', 'dragging', this.floatingClass);
 
     this.resetPosition();
+    document.body.style.paddingBottom = '';
 
+    const mainElement = document.querySelector('.app-main');
+
+    if (mainElement) {
+
+      mainElement.style.paddingBottom = '';
+    }
     console.log('[FloatingPlayer] Floating mode disabled');
   }
 

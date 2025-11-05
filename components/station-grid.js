@@ -950,8 +950,8 @@ export class StationGrid extends HTMLElement {
     this.elements.container.innerHTML = `
       <div class="empty-state">
         <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <div class="empty-title">Ничего не найдено</div>
-        <div>Попробуйте изменить фильтры или поисковый запрос</div>
+         <div class="empty-title">${t('messages.notFound')}</div>
+        <div>${t('messages.changeFiltersOrSearch')}</div>
       </div>
     `;
   }

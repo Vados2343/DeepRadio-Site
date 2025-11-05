@@ -457,9 +457,15 @@ class Store extends EventTarget {
         logger.log('Visibility', 'Hidden');
       } else {
         logger.log('Visibility', 'Visible');
-        if (this.current && this.isActuallyPlaying) {
-          this.syncAudioState();
-        }
+      const currentState = this.playerFSM.getState();
+
+        const pausedStates = ['PAUSED', 'PAUSED_WAITING', 'ERROR', 'IDLE'];
+
+        const isManuallyPaused = pausedStates.includes(currentState);
+
+
+
+        if (this.current && this.isActuallyPlaying && !isManuallyPaused) {}
       }
     });
   }
@@ -744,9 +750,12 @@ class Store extends EventTarget {
 
       if (!store.isFavorite(stationId)) {
         this.likePromptShown.add(stationId);
-
+      let displayName = this.current.name;
+        if (this.currentTrack && this.currentTrack.artist && this.currentTrack.song) {
+          displayName = `${this.currentTrack.artist} - ${this.currentTrack.song}`;
+        }
         const notification = showToast(
-           `${t('messages.likePrompt')} "${this.current.name}"? 💖`,
+           `${t('messages.likePrompt')} "${displayName}"? 💖`,
           'info',
           0,
           {
@@ -789,7 +798,11 @@ class Store extends EventTarget {
     this.sessionStartTime = Date.now();
     this.totalPausedTime = 0;
     this.sessionPauseTime = null;
-
+     const currentTrack = this.currentTrack && this.currentTrack.artist && this.currentTrack.song ? {
+      id: `${this.currentTrack.artist}_${this.currentTrack.song}`,
+      artist: this.currentTrack.artist,
+      song: this.currentTrack.song
+    } : null;
     this.currentSessionData = {
       id: this.currentSessionId,
       stationId: this.current.id,
@@ -797,12 +810,15 @@ class Store extends EventTarget {
       startTime: this.sessionStartTime,
       endTime: null,
       duration: 0,
-      pausedTime: 0
+      pausedTime: 0,
+      track: currentTrack,
+      tracks: [],
+      genres: this.current.tags || []
     };
-
     logger.log('Session', 'Started', {
       sessionId: this.currentSessionId,
-      station: this.current.name
+      station: this.current.name,
+      track: currentTrack
     });
   }
 
@@ -844,6 +860,8 @@ class Store extends EventTarget {
     this.currentSessionData.endTime = endTime;
     this.currentSessionData.duration = totalTime;
     this.currentSessionData.pausedTime = this.totalPausedTime;
+     this.currentSessionData.time = totalTime;
+    this.currentSessionData.timestamp = this.sessionStartTime;
 
     const stats = this.getStorage('listeningStats', {
       sessions: [],
@@ -853,22 +871,39 @@ class Store extends EventTarget {
       lastUpdated: Date.now(),
       dailyStats: {}
     });
-
     stats.sessions.push(this.currentSessionData);
     stats.totalTime += totalTime;
     stats.lastUpdated = Date.now();
-
-    if (!stats.stations[this.current.id]) {
+     if (!stats.stations[this.current.id]) {
       stats.stations[this.current.id] = {
-        id: this.current.id,
         name: this.current.name,
-        totalTime: 0,
+        time: 0,
         sessions: 0
       };
     }
-    stats.stations[this.current.id].totalTime += totalTime;
+    stats.stations[this.current.id].time += totalTime;
     stats.stations[this.current.id].sessions += 1;
-
+    if (this.current.tags && Array.isArray(this.current.tags)) {
+      this.current.tags.forEach(genre => {
+        if (!stats.genres[genre]) {
+          stats.genres[genre] = 0;
+        }
+        stats.genres[genre] += totalTime;
+      });
+    }
+   const date = new Date(this.sessionStartTime);
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    if (!stats.dailyStats[dateStr]) {
+      stats.dailyStats[dateStr] = {
+        time: 0,
+        sessions: []
+      };
+    }
+    stats.dailyStats[dateStr].time += totalTime;
+    stats.dailyStats[dateStr].sessions.push({
+      ...this.currentSessionData,
+      date: dateStr
+    });
     this.setStorage('listeningStats', stats);
 
     logger.log('Session', 'Ended', {
@@ -939,7 +974,18 @@ class Store extends EventTarget {
 
         this.emit('track-update', trackData);
         this.emit('track-change', this.current);
-
+         if (this.currentSessionData && trackData.artist && trackData.song) {
+          this.currentSessionData.track = {
+            id: trackId,
+            artist: trackData.artist,
+            song: trackData.song
+          };
+          this.currentSessionData.tracks.push({
+            artist: trackData.artist,
+            song: trackData.song,
+            timestamp: Date.now()
+          });
+        }
         logger.log('Track', 'Updated', {
           station: this.current.name,
           artist: trackData.artist,
@@ -1062,7 +1108,6 @@ class Store extends EventTarget {
   isFavorite(id) {
     return this.favorites.includes(id);
   }
-
   addToRecent(id) {
     const index = this.recent.indexOf(id);
     if (index !== -1) {
@@ -1073,25 +1118,19 @@ class Store extends EventTarget {
     if (this.recent.length > 50) {
       this.recent = this.recent.slice(-50);
     }
-
     this.setStorage('recent', this.recent);
     this.emit('recent-change', this.recent);
   }
-
   isEditMode() {
     return this.editMode;
   }
-
   setEditMode(enabled) {
     this.editMode = enabled;
     this.emit('edit-mode-change', enabled);
   }
-
   getFavoriteIndex(stationId) {
     return this.favorites.indexOf(stationId);
   }
-
-  // Добавляем методы для отладки
   getDebugInfo() {
     return {
       currentState: this.playerFSM.getState(),
@@ -1101,11 +1140,8 @@ class Store extends EventTarget {
       fsmDebug: this.playerFSM.getDebugInfo()
     };
   }
-   // Методы для статистики
-
   getStats() {
-
-    return this.getStorage('listeningStats', {
+    const stats = this.getStorage('listeningStats', {
       sessions: [],
       genres: {},
       stations: {},
@@ -1113,6 +1149,46 @@ class Store extends EventTarget {
       lastUpdated: Date.now(),
       dailyStats: {}
     });
+    let needsMigration = false;
+    if (stats.stations && typeof stats.stations === 'object') {
+      for (const [id, data] of Object.entries(stats.stations)) {
+        if (data && data.totalTime !== undefined && data.time === undefined) {
+          stats.stations[id].time = data.totalTime;
+          delete stats.stations[id].totalTime;
+          delete stats.stations[id].id;
+          needsMigration = true;
+        }
+      }
+    }
+    if (stats.genres && typeof stats.genres === 'object') {
+      for (const [genre, value] of Object.entries(stats.genres)) {
+        if (value && typeof value === 'object' && value.time !== undefined) {
+          stats.genres[genre] = value.time;
+          needsMigration = true;
+        }
+      }
+    }
+    if ((!stats.dailyStats || Object.keys(stats.dailyStats).length === 0) && stats.sessions && stats.sessions.length > 0) {
+      stats.dailyStats = {};
+      stats.sessions.forEach(session => {
+       let dateStr = session.date;
+        if (!dateStr && session.timestamp) {
+          const date = new Date(session.timestamp);
+          dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        }
+        if (!stats.dailyStats[dateStr]) {
+          stats.dailyStats[dateStr] = { time: 0, sessions: [] };
+        }
+        stats.dailyStats[dateStr].time += session.time || 0;
+        stats.dailyStats[dateStr].sessions.push({ ...session, date: dateStr });
+      });
+      needsMigration = true;
+    }
+
+    if (needsMigration) {
+      this.setStorage('listeningStats', stats);
+    }
+    return stats;
   }
    resetStats() {
     const emptyStats = {

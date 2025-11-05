@@ -139,7 +139,10 @@ const translations = {
       description: 'Современное интернет-радио с продвинутой визуализацией. Более 150 станций различных жанров.',
       github: 'GitHub',
       feedback: 'Обратная связь',
-      support: 'Поддержать'
+      support: 'Поддержать',
+      floatingPlayer: 'Плавающий плеер',
+      floatingPlayerDesc: 'Настройка плавающего плеера',
+      configure: 'Настроить'
     },
 
     stats: {
@@ -184,6 +187,8 @@ const translations = {
       sessionRemoved: 'Сессия удалена из статистики',
       statsCleared: 'Статистика очищена',
       statsExported: 'Статистика экспортирована',
+      genresLabel: 'Жанры',
+      andMore: 'и еще',
       months: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
       weekdays: ['Пн','Вт','Ср','Чт','Пт','Сб','Вс']
     },
@@ -196,6 +201,15 @@ const translations = {
       firstRelease: 'ПЕРВЫЙ РЕЛИЗ',
       majorRelease: 'МАЖОРНЫЙ РЕЛИЗ'
     },
+    display: {
+      viewPrefix: 'Вид',
+      viewModes: {
+        grid: 'Сетка',
+        list: 'Список',
+        compact: 'Компактный',
+        cover: 'Обложки'
+      }
+    },
     messages: {
       themeChanged: 'Тема изменена',
       reloadRequired: 'Требуется перезагрузка страницы',
@@ -205,6 +219,7 @@ const translations = {
       errorPlaying: 'Ошибка воспроизведения',
       notFound: 'Ничего не найдено',
       changeFilters: 'Попробуйте изменить фильтры',
+      changeFiltersOrSearch: 'Попробуйте изменить фильтры или поисковый запрос',
       noFavorites: 'Нет избранных станций',
       addToFavorites: 'Добавьте станции в избранное',
       noRecent: 'Нет недавних станций',
@@ -231,7 +246,9 @@ const translations = {
       accentColorChanged: 'Цветовая схема изменена',
       visualizationPrefix: 'Визуализация: ',
       lightningTypePrefix: 'Тип молний: ',
-      toastPositionChanged: 'Позиция уведомлений изменена'
+      toastPositionChanged: 'Позиция уведомлений изменена',
+      floatingPlayerUpdated: 'Настройки плавающего плеера обновлены',
+        appReady: '✨ DeepRadio готов к работе'
     }
   },
   en: {
@@ -374,10 +391,42 @@ const translations = {
       description: 'Modern internet radio with advanced visualization. Over 150 stations of various genres.',
       github: 'GitHub',
       feedback: 'Feedback',
-      support: 'Support'
-
+      support: 'Support',
+      floatingPlayer: 'Floating Player',
+      floatingPlayerDesc: 'Configure draggable floating player mode',
+      configure: 'Configure'
     },
-
+    floatingPlayer: {
+      title: 'Floating Player',
+      mainSettings: 'Main Settings',
+      enableFloating: 'Enable Floating Mode',
+      enableFloatingDesc: 'Make the player float above all content',
+      enableDragging: 'Enable Dragging',
+      enableDraggingDesc: 'Allow moving the player by dragging (may consume resources)',
+      enableMarquee: 'Scrolling Text',
+      enableMarqueeDesc: 'Auto-scroll long track names',
+      position: 'Position',
+      positionHint: 'Choose initial position for the floating player',
+      positions: {
+        topLeft: 'Top Left',
+        top: 'Top',
+        topRight: 'Top Right',
+        left: 'Left',
+        center: 'Center',
+        right: 'Right',
+        bottomLeft: 'Bottom Left',
+        bottom: 'Bottom',
+        bottomRight: 'Bottom Right'
+      },
+      visibility: 'Element Visibility',
+      showIcon: 'Station Icon',
+      showStationName: 'Station Name',
+      showTrackInfo: 'Track Info',
+      showVolume: 'Volume Control',
+      showPlayButton: 'Play Button',
+      showStepButtons: 'Previous/Next Buttons',
+      apply: 'Apply Settings'
+    },
     stats: {
       title: 'Listening Statistics',
       export: 'Export',
@@ -420,6 +469,8 @@ const translations = {
       sessionRemoved: 'Session removed from statistics',
       statsCleared: 'Statistics cleared',
       statsExported: 'Statistics exported',
+      genresLabel: 'Genres',
+      andMore: 'and',
       months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
       weekdays: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
     },
@@ -433,6 +484,15 @@ const translations = {
       firstRelease: 'FIRST RELEASE',
       majorRelease: 'MAJOR RELEASE'
     },
+      display: {
+      viewPrefix: 'View',
+      viewModes: {
+        grid: 'Grid',
+        list: 'List',
+        compact: 'Compact',
+        cover: 'Covers'
+      }
+    },
     messages: {
       themeChanged: 'Theme changed',
       reloadRequired: 'Page reload required',
@@ -442,6 +502,7 @@ const translations = {
       errorPlaying: 'Playback error',
       notFound: 'Nothing found',
       changeFilters: 'Try changing filters',
+      changeFiltersOrSearch: 'Try changing filters or search query',
       noFavorites: 'No favorite stations',
       addToFavorites: 'Add stations to favorites',
       noRecent: 'No recent stations',
@@ -468,7 +529,9 @@ const translations = {
       accentColorChanged: 'Color scheme changed',
       visualizationPrefix: 'Visualization: ',
       lightningTypePrefix: 'Lightning type: ',
-      toastPositionChanged: 'Toast position changed'
+      toastPositionChanged: 'Toast position changed',
+      floatingPlayerUpdated: 'Floating player settings updated',
+       appReady: '✨ DeepRadio is ready'
     }
   },
   uk: {
@@ -610,10 +673,42 @@ const translations = {
       description: 'Сучасне інтернет-радіо з просунутою візуалізацією. Понад 150 станцій різних жанрів.',
       github: 'GitHub',
       feedback: 'Зворотній зв\'язок',
-      support: 'Підтримати'
-
+      support: 'Підтримати',
+      floatingPlayer: 'Плаваючий плеєр',
+      floatingPlayerDesc: 'Налаштування плаваючого плеєра',
+      configure: 'Налаштувати'
     },
-
+ floatingPlayer: {
+      title: 'Плаваючий плеєр',
+      mainSettings: 'Основні налаштування',
+      enableFloating: 'Увімкнути плаваючий режим',
+      enableFloatingDesc: 'Зробити плеєр плаваючим над контентом',
+      enableDragging: 'Увімкнути перетягування',
+      enableDraggingDesc: 'Дозволити переміщення плеєра перетягуванням (може споживати ресурси)',
+      enableMarquee: 'Прокрутка тексту',
+      enableMarqueeDesc: 'Автоматична прокрутка довгих назв треків',
+      position: 'Позиція',
+      positionHint: 'Виберіть початкову позицію плаваючого плеєра',
+      positions: {
+        topLeft: 'Зверху зліва',
+        top: 'Зверху',
+        topRight: 'Зверху справа',
+        left: 'Зліва',
+        center: 'По центру',
+        right: 'Справа',
+        bottomLeft: 'Знизу зліва',
+        bottom: 'Знизу',
+        bottomRight: 'Знизу справа'
+      },
+      visibility: 'Видимість елементів',
+      showIcon: 'Іконка станції',
+      showStationName: 'Назва станції',
+      showTrackInfo: 'Інформація про трек',
+      showVolume: 'Гучність',
+      showPlayButton: 'Кнопка відтворення',
+      showStepButtons: 'Кнопки вперед/назад',
+      apply: 'Застосувати налаштування'
+    },
     stats: {
       title: 'Статистика прослуховування',
       export: 'Експорт',
@@ -656,6 +751,8 @@ const translations = {
       sessionRemoved: 'Сесію видалено зі статистики',
       statsCleared: 'Статистику очищено',
        statsExported: 'Статистику експортовано',
+      genresLabel: 'Жанри',
+       andMore: 'і ще',
       months: ['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'],
       weekdays: ['Пн','Вт','Ср','Чт','Пт','Сб','Нд']
     },
@@ -668,6 +765,15 @@ const translations = {
       firstRelease: 'ПЕРШИЙ РЕЛІЗ',
       majorRelease: 'МАЖОРНИЙ РЕЛІЗ'
     },
+    display: {
+      viewPrefix: 'Вигляд',
+      viewModes: {
+        grid: 'Сітка',
+        list: 'Список',
+        compact: 'Компактний',
+        cover: 'Обкладинки'
+      }
+    },
     messages: {
       themeChanged: 'Тему змінено',
       reloadRequired: 'Потрібне перезавантаження сторінки',
@@ -677,6 +783,7 @@ const translations = {
       errorPlaying: 'Помилка відтворення',
       notFound: 'Нічого не знайдено',
       changeFilters: 'Спробуйте змінити фільтри',
+      changeFiltersOrSearch: 'Спробуйте змінити фільтри або пошуковий запит',
       noFavorites: 'Немає обраних станцій',
       addToFavorites: 'Додайте станції до обраного',
       noRecent: 'Немає нещодавніх станцій',
@@ -703,7 +810,9 @@ const translations = {
       accentColorChanged: 'Колірну схему змінено',
       visualizationPrefix: 'Візуалізація: ',
       lightningTypePrefix: 'Тип блискавок: ',
-      toastPositionChanged: 'Позицію сповіщень змінено'
+      toastPositionChanged: 'Позицію сповіщень змінено',
+      floatingPlayerUpdated: 'Налаштування плаваючого плеєра оновлено',
+         appReady: '✨ DeepRadio готовий до роботи'
     }
   }
 };

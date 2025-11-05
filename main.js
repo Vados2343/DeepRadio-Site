@@ -4,17 +4,17 @@ import { store } from './core/store.js';
 import './components/station-grid.js';
 import './components/player-bar.js';
 import './components/settings-panel.js';
+import './components/floating-player-panel.js';
 import './components/stats-view.js';
 import './components/like-prompt.js';
 import './components/changelog-panel.js';
 import './components/capsule-search.js';
-import './components/header-manager.js';
 import { BurgerMenu } from './components/burger-menu.js';
 import { FloatingPlayerManager } from './components/floating-player-manager.js';
 import { GeometricVisualizer } from './components/GeometricVisualizer.js';
 import { OrganicVisualizer } from './components/OrganicVisualizer.js';
 import { showToast } from './utils/toast.js';
-import { initI18n } from './utils/i18n.js';
+import { initI18n, t } from './utils/i18n.js';
 import { throttle } from './utils/performance.js';
 import { Config } from './core/config.js';
 
@@ -129,9 +129,6 @@ class EnhancedApp {
     this.visualizerManager = null;
     this.floatingPlayerManager = null;
     this.burgerMenu = null;
-    this.headerSearch = null;
-    this.mobileSearch = null;
-    this.headerManager = null;
     this.displayMode = 'grid';
     this.displayModes = ['grid', 'list', 'compact', 'cover'];
     this.throttledResize = throttle(this.handleResize.bind(this), Config.ui.throttleResize || 250);
@@ -144,7 +141,6 @@ class EnhancedApp {
       await this.createManifest();
       await initI18n();
 
-      // Initialize components only once
       this.initializeComponents();
 
       this.setupEventListeners();
@@ -161,7 +157,7 @@ class EnhancedApp {
         this.loadFavoriteButton();
       });
 
-      showToast('✨ DeepRadio готов к работе', 'success', 2000);
+      showToast(t('messages.appReady'), 'success', 2000);
     } catch (error) {
       console.error('App initialization error:', error);
       showToast('Ошибка инициализации приложения', 'error');
@@ -169,11 +165,7 @@ class EnhancedApp {
   }
 
   initializeComponents() {
-    // Initialize components that were being initialized multiple times
-
-    // Floating Player Manager
     if (!this.floatingPlayerManager) {
-      // Import the class properly
       if (typeof FloatingPlayerManager !== 'undefined') {
         this.floatingPlayerManager = new FloatingPlayerManager();
       } else if (window.floatingPlayerManager) {
@@ -181,19 +173,8 @@ class EnhancedApp {
       }
     }
 
-    // Burger Menu - use the instance created in burger-menu.js
     if (window.burgerMenu) {
       this.burgerMenu = window.burgerMenu;
-    }
-
-    // Header Search - use the instance if it exists
-    if (window.headerSearch) {
-      this.headerSearch = window.headerSearch;
-    }
-
-    // Mobile Search - use the instance if it exists
-    if (window.mobileSearch) {
-      this.mobileSearch = window.mobileSearch;
     }
   }
 
@@ -202,13 +183,13 @@ class EnhancedApp {
 
     const settingsBtn = document.getElementById('settings-toggle');
     const changelogBtn = document.getElementById('changelog-toggle');
-   const viewToggle = document.getElementById('view-toggle');
+    const viewToggle = document.getElementById('view-toggle');
+
     if (isMobile) {
       if (settingsBtn) settingsBtn.style.display = 'none';
       if (changelogBtn) changelogBtn.style.display = 'none';
       if (viewToggle) viewToggle.style.display = 'flex';
     } else {
-
       if (settingsBtn) settingsBtn.style.display = '';
       if (changelogBtn) changelogBtn.style.display = '';
     }
@@ -223,7 +204,6 @@ class EnhancedApp {
 
   setupStoreEventListeners() {
     store.on('player-state-change', (e) => {
-      // Handle player state changes if needed
     });
 
     store.on('error', (e) => {
@@ -423,13 +403,12 @@ class EnhancedApp {
 
     document.dispatchEvent(new CustomEvent('display-mode-change', { detail: this.displayMode }));
     store.setStorage('displayMode', this.displayMode);
-    showToast(`Вид: ${this.getDisplayModeName()}`, 'info', 1000);
+    showToast(`${t('display.viewPrefix')}: ${this.getDisplayModeName()}`, 'info', 1000);
   }
 
   updateViewIcon() {
     const viewToggle = document.getElementById('view-toggle');
     const icon = viewToggle?.querySelector('svg');
-
     if (icon) {
       const icons = {
         grid: '<rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/>',
@@ -437,20 +416,13 @@ class EnhancedApp {
         compact: '<rect x="3" y="3" width="7" height="7"/><rect x="12" y="3" width="9" height="7"/><rect x="3" y="12" width="7" height="7"/><rect x="12" y="12" width="9" height="7"/>',
         cover: '<rect x="5" y="5" width="14" height="14" rx="2"/>'
       };
-
       icon.innerHTML = icons[this.displayMode] || icons.grid;
       icon.setAttribute('fill', 'currentColor');
     }
   }
 
   getDisplayModeName() {
-    const names = {
-      grid: 'Сетка',
-      list: 'Список',
-      compact: 'Компактный',
-      cover: 'Обложки'
-    };
-    return names[this.displayMode] || 'Сетка';
+    return t(`display.viewModes.${this.displayMode}`);
   }
 
   handleEditModeChange(enabled) {
@@ -588,16 +560,13 @@ class EnhancedApp {
     window.removeEventListener('resize', this.throttledResize);
   }
 
-  // Debug method
   getDebugInfo() {
     return {
       storeDebug: store.getDebugInfo ? store.getDebugInfo() : null,
       components: {
         visualizer: !!this.visualizerManager,
         floatingPlayer: !!this.floatingPlayerManager,
-        burgerMenu: !!this.burgerMenu,
-        headerSearch: !!this.headerSearch,
-        mobileSearch: !!this.mobileSearch
+        burgerMenu: !!this.burgerMenu
       },
       displayMode: this.displayMode,
       isMobile: window.innerWidth <= 768
@@ -605,24 +574,17 @@ class EnhancedApp {
   }
 }
 
-// Initialize app on DOM ready
 window.debugRadio = () => {
-
   if (!window.app) {
-
     console.warn('DeepRadio app is not initialized yet. Please wait for DOMContentLoaded.');
-
     return null;
-
   }
 
   const debugInfo = window.app.getDebugInfo();
-
   console.log('DeepRadio Debug Info:', debugInfo);
-
   return debugInfo;
-
 };
+
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     window.app = new EnhancedApp();
@@ -632,7 +594,7 @@ if (document.readyState === 'loading') {
     window.app = new EnhancedApp();
   }, 0);
 }
-// Smooth page transition
+
 window.addEventListener('load', () => {
   document.body.style.opacity = '0';
   document.body.style.transition = 'opacity 0.5s ease';

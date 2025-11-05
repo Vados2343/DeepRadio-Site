@@ -745,8 +745,7 @@ template.innerHTML = `
         </svg>
       </div>
       <div class="card-value" id="today-time">0 мин</div>
-      <div class="card-label">Сегодня</div>
-
+    <div class="card-label" data-i18n="stats.today">Сегодня</div>
     </div>
     <div class="summary-card">
       <div class="card-icon">
@@ -758,7 +757,7 @@ template.innerHTML = `
         </svg>
       </div>
       <div class="card-value" id="week-time">0 мин</div>
-      <div class="card-label">За неделю</div>
+      <div class="card-label" data-i18n="stats.week">За неделю</div>
     </div>
     <div class="summary-card">
       <div class="card-icon">
@@ -769,7 +768,7 @@ template.innerHTML = `
         </svg>
       </div>
       <div class="card-value" id="stations-count">0</div>
-      <div class="card-label">Станций</div>
+      <div class="card-label" data-i18n="stats.stations">Станций</div>
     </div>
     <div class="summary-card">
       <div class="card-icon">
@@ -787,15 +786,15 @@ template.innerHTML = `
           LIVE
         </span>
       </div>
-      <div class="card-label">Всего времени</div>
+      <div class="card-label" data-i18n="stats.totalTime">Всего времени</div>
     </div>
   </div>
 
   <div class="tabs">
-    <button class="tab active" data-tab="calendar">Календарь</button>
-    <button class="tab" data-tab="history">История</button>
-    <button class="tab" data-tab="genres">Жанры</button>
-    <button class="tab" data-tab="stations">Топ станций</button>
+  <button class="tab active" data-tab="calendar" data-i18n="stats.calendar">Календарь</button>
+    <button class="tab" data-tab="history" data-i18n="stats.history">История</button>
+    <button class="tab" data-tab="genres" data-i18n="stats.genres">Жанры</button>
+    <button class="tab" data-tab="stations" data-i18n="stats.topStations">Топ станций</button>
   </div>
 
   <div class="content-section active" id="calendar-section">
@@ -1180,7 +1179,7 @@ updateTexts() {
           <div class="history-info">
             <div class="history-track">
               ${this.escapeHtml(data.stationName)}
-              <span class="session-count">${data.sessions.length} ${this.pluralize(data.sessions.length,'сессия','сессии','сессий')}</span>
+          <span class="session-count">${data.sessions.length} ${this.pluralize(data.sessions.length, t('stats.session'), t('stats.sessions'), t('stats.sessionsMany'))}</span>
             </div>
             <div class="history-station">${this.formatTime(data.totalTime)}</div>
             ${tracks.length > 0 ? `
@@ -1191,7 +1190,7 @@ updateTexts() {
                     ${t.count > 1 ? `(×${t.count})` : ''}
                   </div>
                 `).join('')}
-                ${tracks.length > 3 ? `<div class="track-item">и еще ${tracks.length - 3}...</div>` : ''}
+                ${tracks.length > 3 ? `<div class="track-item">${t('stats.andMore')} ${tracks.length - 3}...</div>` : ''}
               </div>
             ` : ''}
           </div>
@@ -1248,13 +1247,13 @@ updateTexts() {
             ${this.escapeHtml(session.stationName)}${session.liked?' <svg class="like-indicator" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>':''}
           </div>
           ${trackInfo}
-          <div class="history-station">Жанры: ${session.genres.map(g => this.escapeHtml(g)).join(', ')}</div>
+         <div class="history-station">${t('stats.genresLabel')}: ${session.genres.map(g => this.escapeHtml(g)).join(', ')}</div>
         </div>
         <div class="history-time">
           ${new Date(session.timestamp).toLocaleString('ru-RU',{dateStyle:'short',timeStyle:'short'})}
           <span class="session-duration">${this.formatTime(session.time)}</span>
         </div>
-        <button class="remove-btn" data-session-id="${session.id}">Удалить</button>
+        <button class="remove-btn" data-session-id="${session.id}">${t('stats.remove')}</button>
       `;
 
       fragment.appendChild(item);
@@ -1403,7 +1402,7 @@ updateTexts() {
           <div class="history-info">
             <div class="history-track">${data.name}</div>
             <div class="history-station">
-              ${this.formatTime(data.time)} • <span class="station-sessions">${sessions}</span> ${this.pluralize(sessions,'сессия','сессии','сессий')}
+             ${this.formatTime(data.time)} • <span class="station-sessions">${sessions}</span> ${this.pluralize(sessions, t('stats.session'), t('stats.sessions'), t('stats.sessionsMany'))}
             </div>
           </div>
         </div>
