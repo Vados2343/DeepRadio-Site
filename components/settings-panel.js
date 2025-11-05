@@ -1342,13 +1342,14 @@ export class SettingsPanel extends HTMLElement {
 
         // Island mode - скрыть обычную панель и включить floating mode
         if (style === 'island') {
+          console.log('[Island Mode] Activating...', { playerBar });
           playerBar.style.display = 'none';
           const appMain = document.querySelector('.app-main');
           if (appMain) appMain.style.paddingBottom = '0';
           store.setStorage('floatingEnabled', true);
 
           // Dispatch floating player event
-          document.dispatchEvent(new CustomEvent('floating-player-change', {
+          const event = new CustomEvent('floating-player-change', {
             detail: {
               enabled: true,
               draggingEnabled: true,
@@ -1362,7 +1363,14 @@ export class SettingsPanel extends HTMLElement {
                 showStepButtons: true
               }
             }
-          }));
+          });
+          console.log('[Island Mode] Dispatching event:', event.detail);
+          document.dispatchEvent(event);
+
+          // Проверить FloatingPlayerManager
+          setTimeout(() => {
+            console.log('[Island Mode] FloatingPlayerManager:', window.floatingPlayerManager);
+          }, 100);
 
           showToast(t('messages.islandModeActivated'), 'success');
         } else {

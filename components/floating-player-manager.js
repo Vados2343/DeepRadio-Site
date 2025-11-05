@@ -40,18 +40,22 @@ export class FloatingPlayerManager {
 
   setupEventListeners() {
     document.addEventListener('floating-player-change', (e) => {
+      console.log('[FloatingPlayerManager] Received event:', e.detail);
       const { enabled, draggingEnabled, marqueeEnabled, visibility } = e.detail;
 
       if (enabled) {
+        console.log('[FloatingPlayerManager] Enabling floating mode...');
         this.enableFloating();
         this.draggingEnabled = draggingEnabled;
         this.applyVisibilitySettings();
       } else {
+        console.log('[FloatingPlayerManager] Disabling floating mode...');
         this.disableFloating();
       }
     });
 
     window.addEventListener('resize', this.handleResize);
+    console.log('[FloatingPlayerManager] Event listeners setup complete');
   }
 
   setupDragListeners() {

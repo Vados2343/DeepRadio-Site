@@ -1475,6 +1475,11 @@ changelog-panel[style*="display: block"] {
     display: flex !important;
   }
 
+  /* ФИКС: Показывать settings на мобилке */
+  #settings-toggle {
+    display: flex !important;
+  }
+
   #mobile-search {
     display: none !important;
   }

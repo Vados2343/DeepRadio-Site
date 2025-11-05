@@ -904,7 +904,9 @@ class Store extends EventTarget {
     }
 
     // Save daily statistics for calendar view
-    const dateStr = new Date(this.sessionStartTime).toISOString().split('T')[0];
+    // ФИКС: Использовать LOCAL date, а не UTC! (toISOString дает UTC и сдвигает дату)
+    const date = new Date(this.sessionStartTime);
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     if (!stats.dailyStats[dateStr]) {
       stats.dailyStats[dateStr] = {
         time: 0,
@@ -1204,7 +1206,12 @@ class Store extends EventTarget {
     if ((!stats.dailyStats || Object.keys(stats.dailyStats).length === 0) && stats.sessions && stats.sessions.length > 0) {
       stats.dailyStats = {};
       stats.sessions.forEach(session => {
-        const dateStr = session.date || new Date(session.timestamp).toISOString().split('T')[0];
+        // ФИКС: Использовать LOCAL date вместо UTC
+        let dateStr = session.date;
+        if (!dateStr && session.timestamp) {
+          const date = new Date(session.timestamp);
+          dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        }
         if (!stats.dailyStats[dateStr]) {
           stats.dailyStats[dateStr] = { time: 0, sessions: [] };
         }
