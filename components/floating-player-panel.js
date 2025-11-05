@@ -662,7 +662,11 @@ export class FloatingPlayerPanel extends HTMLElement {
   connectedCallback() {
     this.loadSettings();
     this.setupEventListeners();
-    this.updateTexts();
+
+    // Небольшая задержка чтобы убедиться что i18n загружен
+    setTimeout(() => {
+      this.updateTexts();
+    }, 100);
 
     document.addEventListener('language-change', () => {
       this.updateTexts();
@@ -799,6 +803,11 @@ export class FloatingPlayerPanel extends HTMLElement {
     this.setAttribute('open', '');
     this.isOpen = true;
     document.body.style.overflow = 'hidden';
+
+    // Обновить тексты при открытии панели
+    setTimeout(() => {
+      this.updateTexts();
+    }, 50);
   }
 
   close() {

@@ -130,7 +130,9 @@ export class FloatingPlayerManager {
 
     this.playerBar.classList.add(this.floatingClass);
 
-    // принудительно сбрасываем то, что мешает
+    // Скрыть обычное позиционирование нижней панели
+    // Убираем "подбородок" - фиксированное позиционирование снизу
+    this.playerBar.style.position = 'fixed';
     this.playerBar.style.right = 'auto';
     this.playerBar.style.left = '50%';
     this.playerBar.style.top = 'auto';
@@ -139,6 +141,13 @@ export class FloatingPlayerManager {
     this.playerBar.style.maxWidth = '460px';
     this.playerBar.style.width = 'auto';
     this.playerBar.style.zIndex = '500';
+
+    // Убрать отступ снизу у body/main элементов, чтобы не было "подбородка"
+    document.body.style.paddingBottom = '0';
+    const mainElement = document.querySelector('.app-main');
+    if (mainElement) {
+      mainElement.style.paddingBottom = '0';
+    }
 
     // Add animation class temporarily
     this.playerBar.classList.add('animating');
@@ -159,6 +168,13 @@ export class FloatingPlayerManager {
     this.playerBar.classList.remove('draggable', 'dragging', this.floatingClass);
 
     this.resetPosition();
+
+    // Восстановить обычные отступы для нижней панели
+    document.body.style.paddingBottom = '';
+    const mainElement = document.querySelector('.app-main');
+    if (mainElement) {
+      mainElement.style.paddingBottom = '';
+    }
 
     console.log('[FloatingPlayer] Floating mode disabled');
   }

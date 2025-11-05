@@ -557,6 +557,181 @@ const changelogData = {
   en: [
 
     {
+      version: 'v3.0.2',
+
+      badge: 'majorRelease',
+
+      date: '05.11.2025',
+
+      categories: [
+
+        {
+
+          title: '🏝️ Powerful Floating Player System',
+
+          changes: [
+
+            { type: 'new', text: 'Created dedicated floating-player-panel.js component with comprehensive customization options' },
+
+            { type: 'new', text: 'Added toggle to enable/disable floating mode independently from player styles' },
+
+            { type: 'new', text: 'Implemented opt-in dragging system to reduce resource consumption (no longer always active!)' },
+
+            { type: 'new', text: 'Added 9 position presets: top-left, top, top-right, left, center, right, bottom-left, bottom, bottom-right' },
+
+            { type: 'new', text: 'Element visibility controls: toggle icon, station name, track info, volume, play button, step buttons' },
+
+            { type: 'new', text: 'Marquee/scrolling text option for long track names' },
+
+            { type: 'fix', text: 'Fixed "chin" spacing issue - bottom padding now removed when floating mode is active' },
+
+            { type: 'improve', text: 'Removed "island" style from player styles dropdown - now accessed via dedicated panel' }
+
+          ]
+
+        },
+
+        {
+
+          title: '⚡ Performance Optimizations',
+
+          changes: [
+
+            { type: 'improve', text: 'Drag event listeners only attach when dragging is explicitly enabled' },
+
+            { type: 'new', text: 'Added setupDragListeners() and removeDragListeners() methods for proper cleanup' },
+
+            { type: 'improve', text: 'Settings applied on-demand rather than continuously checking' },
+
+            { type: 'improve', text: 'Optimized floating-player-manager.js to support conditional feature activation' }
+
+          ]
+
+        },
+
+        {
+
+          title: '🐛 Critical Bug Fixes',
+
+          changes: [
+
+            { type: 'fix', text: 'Bug #1: Fixed station-grid.js "Ничего не найдено" - now uses i18n translation' },
+
+            { type: 'fix', text: 'Bug #2: Fixed main.js display mode cycling - "Вид: Обложки" now translates correctly' },
+
+            { type: 'fix', text: 'Bug #3: Added missing changelog versions (v2.0.2, v2.0.1, v2.0.0, v1.0.0) with full translations' },
+
+            { type: 'fix', text: 'Bug #4: Fixed stats functionality - now properly records listening sessions, tracks, and genres' },
+
+            { type: 'fix', text: 'Bug #5: Verified player-bar.js translations - all messages already using i18n correctly' },
+
+            { type: 'fix', text: 'Bug #6: Fixed stats recording - added tracks[], genres[], time, and timestamp fields' }
+
+          ]
+
+        },
+
+        {
+
+          title: '🌍 i18n Enhancements',
+
+          changes: [
+
+            { type: 'new', text: 'Added complete translations for floating player in Russian, English, and Ukrainian' },
+
+            { type: 'new', text: 'Added display.viewPrefix and display.viewModes section to i18n.js' },
+
+            { type: 'new', text: 'Added messages.changeFiltersOrSearch translation key' },
+
+            { type: 'new', text: 'Added floatingPlayer.* translations for all settings panel elements' },
+
+            { type: 'fix', text: 'Fixed i18n loading timing in floating-player-panel.js with setTimeout' }
+
+          ]
+
+        },
+
+        {
+
+          title: '📊 Statistics System Improvements',
+
+          changes: [
+
+            { type: 'new', text: 'Added tracks array to session data - now records all played songs with timestamps' },
+
+            { type: 'new', text: 'Added genres recording to session data from station tags' },
+
+            { type: 'new', text: 'Added time and timestamp fields to session objects' },
+
+            { type: 'improve', text: 'Enhanced endListeningSession() to aggregate genre statistics' },
+
+            { type: 'improve', text: 'Stats now track both individual tracks and overall genre listening time' }
+
+          ]
+
+        },
+
+        {
+
+          title: '🗑️ Code Cleanup',
+
+          changes: [
+
+            { type: 'fix', text: 'Removed unused header-manager.js component' },
+
+            { type: 'fix', text: 'Cleaned up header-manager imports from main.js' },
+
+            { type: 'improve', text: 'Removed obsolete this.headerManager variable from constructor' }
+
+          ]
+
+        },
+
+        {
+
+          title: '🎨 UI/UX Improvements',
+
+          changes: [
+
+            { type: 'new', text: 'Added "Configure" button in settings panel for floating player' },
+
+            { type: 'new', text: 'Beautiful floating player panel with smooth animations and modern design' },
+
+            { type: 'improve', text: 'Settings panel now organized with dedicated floating player section' },
+
+            { type: 'improve', text: 'Real-time settings preview and application' },
+
+            { type: 'improve', text: 'All floating player settings persist in localStorage' }
+
+          ]
+
+        },
+
+        {
+
+          title: '🔧 Technical Architecture',
+
+          changes: [
+
+            { type: 'new', text: 'Created floating-player-panel.js with Shadow DOM architecture' },
+
+            { type: 'new', text: 'Added floating-player-change custom event for settings synchronization' },
+
+            { type: 'new', text: 'Implemented data-show-* attributes system for element visibility control' },
+
+            { type: 'improve', text: 'Enhanced floating-player-manager.js with settings-driven behavior' },
+
+            { type: 'improve', text: 'Added proper cleanup in disableFloating() method' }
+
+          ]
+
+        }
+
+      ]
+
+    },
+
+    {
        version: 'v3.0.1',
 
       badge: 'improve',
