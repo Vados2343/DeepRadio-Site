@@ -124,10 +124,82 @@ template.innerHTML = `
       text-shadow: 0 1px 2px rgba(0,0,0,.3); 
     }
 
-    .card-label { 
-      color: var(--text-secondary); 
-      font-size: .875rem; 
-      text-shadow: 0 1px 1px rgba(0,0,0,.2); 
+    .card-label {
+      color: var(--text-secondary);
+      font-size: .875rem;
+      text-shadow: 0 1px 1px rgba(0,0,0,.2);
+    }
+
+    .current-session {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .current-session-header {
+      margin-bottom: 1rem;
+    }
+
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .live-badge svg {
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .current-session-content {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .current-session-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: var(--radius);
+      object-fit: cover;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .current-session-info {
+      flex: 1;
+    }
+
+    .current-session-station {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      color: var(--text-primary);
+    }
+
+    .current-session-track {
+      font-size: 1rem;
+      color: var(--accent1);
+      margin-bottom: 0.5rem;
+    }
+
+    .current-session-time {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
     }
 
     .tabs { 
@@ -301,9 +373,24 @@ template.innerHTML = `
       transition: var(--transition); 
     }
 
-    .filter-select:hover { 
-      border-color: var(--accent1); 
-      background: var(--surface-hover); 
+    .filter-select:hover {
+      border-color: var(--accent1);
+      background: var(--surface-hover);
+    }
+
+    .filter-select option {
+      background: #1a1a1a !important;
+      background-color: #1a1a1a !important;
+      color: #ffffff !important;
+      padding: 0.75rem 1rem;
+    }
+
+    .filter-select option:hover,
+    .filter-select option:focus,
+    .filter-select option:checked {
+      background: #2a2a2a !important;
+      background-color: #2a2a2a !important;
+      color: #ffffff !important;
     }
 
     .search-filter {
@@ -791,6 +878,25 @@ template.innerHTML = `
     </div>
   </div>
 
+  <div class="current-session" id="current-session" style="display: none;">
+    <div class="current-session-header">
+      <div class="live-badge">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="12" cy="12" r="12"/>
+        </svg>
+        <span data-i18n="stats.nowPlaying">Сейчас играет</span>
+      </div>
+    </div>
+    <div class="current-session-content">
+      <img class="current-session-icon" id="current-session-icon" src="" alt="">
+      <div class="current-session-info">
+        <div class="current-session-station" id="current-session-station"></div>
+        <div class="current-session-track" id="current-session-track"></div>
+        <div class="current-session-time" id="current-session-time"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="tabs">
     <button class="tab active" data-tab="calendar" data-i18n="stats.calendar">Календарь</button>
     <button class="tab" data-tab="history" data-i18n="stats.history">История</button>
@@ -1054,6 +1160,47 @@ updateTexts() {
     } else {
       indicator.style.display = 'none';
     }
+
+    // Обновить блок текущей сессии
+    this.updateCurrentSession();
+  }
+
+  updateCurrentSession() {
+    const currentSession = store.getCurrentSession();
+    const container = this.shadowRoot.getElementById('current-session');
+
+    if (!currentSession || !store.current) {
+      container.style.display = 'none';
+      return;
+    }
+
+    container.style.display = 'block';
+
+    const station = store.stations.find(s => s.id === currentSession.stationId);
+    const iconUrl = station ? `/Icons/icon${station.id + 1}.png` : '/Icons/default.png';
+
+    const icon = this.shadowRoot.getElementById('current-session-icon');
+    icon.src = iconUrl;
+    icon.alt = currentSession.stationName;
+
+    const stationEl = this.shadowRoot.getElementById('current-session-station');
+    stationEl.textContent = currentSession.stationName;
+
+    const trackEl = this.shadowRoot.getElementById('current-session-track');
+    if (currentSession.track && currentSession.track.artist && currentSession.track.song) {
+      trackEl.textContent = `${currentSession.track.artist} - ${currentSession.track.song}`;
+      trackEl.style.display = 'block';
+    } else {
+      trackEl.textContent = '';
+      trackEl.style.display = 'none';
+    }
+
+    const timeEl = this.shadowRoot.getElementById('current-session-time');
+    const duration = this.formatTime(currentSession.duration || 0);
+    const genres = currentSession.genres && currentSession.genres.length > 0
+      ? currentSession.genres.join(', ')
+      : '';
+    timeEl.textContent = `${duration}${genres ? ` • ${genres}` : ''}`;
   }
 
   updateSummaryCards(stats) {

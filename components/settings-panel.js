@@ -305,9 +305,18 @@ template.innerHTML = `
 }
 
 .select option {
- background: var(--surface);
- color: var(--text-primary);
- padding: 0.75rem 1rem;
+  background: #1a1a1a !important;
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+  padding: 0.75rem 1rem;
+}
+
+.select option:hover,
+.select option:focus,
+.select option:checked {
+  background: #2a2a2a !important;
+  background-color: #2a2a2a !important;
+  color: #ffffff !important;
 }
 
 .toggle-container {
@@ -1341,15 +1350,14 @@ export class SettingsPanel extends HTMLElement {
       if (playerBar) {
         playerBar.setAttribute('player-style', style);
 
-        // Island mode - скрыть обычную панель и включить floating mode
+        // Island mode - включить floating mode автоматически
         if (style === 'island') {
           console.log('[Island Mode] Activating...', { playerBar });
-          playerBar.style.display = 'none';
-          const appMain = document.querySelector('.app-main');
-          if (appMain) appMain.style.paddingBottom = '0';
+
+          // Сохранить что floating включен
           store.setStorage('floatingEnabled', true);
 
-          // Dispatch floating player event
+          // Dispatch floating player event для активации
           const event = new CustomEvent('floating-player-change', {
             detail: {
               enabled: true,
@@ -1368,21 +1376,18 @@ export class SettingsPanel extends HTMLElement {
           console.log('[Island Mode] Dispatching event:', event.detail);
           document.dispatchEvent(event);
 
-          // Проверить FloatingPlayerManager
+          // Проверить FloatingPlayerManager через небольшую задержку
           setTimeout(() => {
             console.log('[Island Mode] FloatingPlayerManager:', window.floatingPlayerManager);
-          }, 100);
+            console.log('[Island Mode] PlayerBar classes:', playerBar.className);
+            console.log('[Island Mode] PlayerBar styles:', playerBar.style.cssText);
+          }, 200);
 
           showToast(t('messages.islandModeActivated'), 'success');
         } else {
-          // Вернуть обычную панель
-          playerBar.style.display = '';
-          const appMain = document.querySelector('.app-main');
-          if (appMain) appMain.style.paddingBottom = '';
-
           // Отключить floating если был включен для island
-          const oldStyle = store.getStorage('playerStyle');
-          if (oldStyle === 'island') {
+          const wasIsland = store.getStorage('playerStyle') === 'island';
+          if (wasIsland) {
             store.setStorage('floatingEnabled', false);
             document.dispatchEvent(new CustomEvent('floating-player-change', {
               detail: { enabled: false }

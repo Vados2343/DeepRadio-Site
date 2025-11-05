@@ -179,6 +179,7 @@ const translations = {
 
     stats: {
       title: 'Статистика прослушивания',
+      nowPlaying: 'Сейчас играет',
       export: 'Экспорт',
       today: 'Сегодня',
       week: 'За неделю',
@@ -463,6 +464,7 @@ const translations = {
 
     stats: {
       title: 'Listening Statistics',
+      nowPlaying: 'Now Playing',
       export: 'Export',
       today: 'Today',
       week: 'This Week',
@@ -747,6 +749,7 @@ const translations = {
 
     stats: {
       title: 'Статистика прослуховування',
+      nowPlaying: 'Зараз грає',
       export: 'Експорт',
       today: 'Сьогодні',
       week: 'За тиждень',

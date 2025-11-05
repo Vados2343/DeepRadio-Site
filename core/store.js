@@ -934,6 +934,27 @@ class Store extends EventTarget {
     this.currentSessionData = null;
   }
 
+  getCurrentSession() {
+    if (!this.currentSessionData || !this.sessionStartTime) {
+      return null;
+    }
+
+    // Вернуть текущую сессию с актуальным временем
+    const currentTime = Date.now();
+    const pausedTime = this.sessionPauseTime
+      ? this.totalPausedTime + (currentTime - this.sessionPauseTime)
+      : this.totalPausedTime;
+    const duration = Math.floor((currentTime - this.sessionStartTime - pausedTime) / 1000);
+
+    return {
+      ...this.currentSessionData,
+      duration,
+      time: duration,
+      pausedTime,
+      isActive: true
+    };
+  }
+
   startTrackUpdates() {
     this.stopTrackUpdates();
 
