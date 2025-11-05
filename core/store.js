@@ -1141,8 +1141,7 @@ class Store extends EventTarget {
    // Методы для статистики
 
   getStats() {
-
-    return this.getStorage('listeningStats', {
+    const stats = this.getStorage('listeningStats', {
       sessions: [],
       genres: {},
       stations: {},
@@ -1150,6 +1149,52 @@ class Store extends EventTarget {
       lastUpdated: Date.now(),
       dailyStats: {}
     });
+
+    // Migrate old stats format to new format
+    let needsMigration = false;
+
+    // Check if stations have old format (totalTime instead of time)
+    if (stats.stations && typeof stats.stations === 'object') {
+      for (const [id, data] of Object.entries(stats.stations)) {
+        if (data && data.totalTime !== undefined && data.time === undefined) {
+          stats.stations[id].time = data.totalTime;
+          delete stats.stations[id].totalTime;
+          delete stats.stations[id].id; // Remove redundant id field
+          needsMigration = true;
+        }
+      }
+    }
+
+    // Check if genres have old format (object instead of number)
+    if (stats.genres && typeof stats.genres === 'object') {
+      for (const [genre, value] of Object.entries(stats.genres)) {
+        if (value && typeof value === 'object' && value.time !== undefined) {
+          stats.genres[genre] = value.time;
+          needsMigration = true;
+        }
+      }
+    }
+
+    // Rebuild dailyStats from sessions if missing
+    if ((!stats.dailyStats || Object.keys(stats.dailyStats).length === 0) && stats.sessions && stats.sessions.length > 0) {
+      stats.dailyStats = {};
+      stats.sessions.forEach(session => {
+        const dateStr = session.date || new Date(session.timestamp).toISOString().split('T')[0];
+        if (!stats.dailyStats[dateStr]) {
+          stats.dailyStats[dateStr] = { time: 0, sessions: [] };
+        }
+        stats.dailyStats[dateStr].time += session.time || 0;
+        stats.dailyStats[dateStr].sessions.push({ ...session, date: dateStr });
+      });
+      needsMigration = true;
+    }
+
+    // Save migrated stats
+    if (needsMigration) {
+      this.setStorage('listeningStats', stats);
+    }
+
+    return stats;
   }
    resetStats() {
     const emptyStats = {
