@@ -52,8 +52,8 @@ template.innerHTML = `
         <svg class="fav-indicator" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
       </div>
       <div class="station-details">
-        <div class="station-name">Выберите станцию</div>
-        <div class="track-info"><span class="track-text-wrapper"><span class="track-text">Нажмите на станцию для воспроизведения</span></span></div>
+        <div class="station-name"></div>
+        <div class="track-info"><span class="track-text-wrapper"><span class="track-text"></span></span></div>
       </div>
     </div>
     <div class="player-controls">
@@ -360,7 +360,7 @@ export class PlayerBar extends HTMLElement {
   showLoading() {
     this.clearStates();
     this.elements.trackInfo.classList.add('loading');
-    this.elements.trackText.textContent = 'Загрузка...';
+    this.elements.trackText.textContent = t('messages.buffering');
   }
 
   showBuffering() {
@@ -374,7 +374,7 @@ export class PlayerBar extends HTMLElement {
     if (this.realPlayingState) return;
     this.clearStates();
     this.elements.trackInfo.classList.add('buffering');
-    this.elements.trackText.textContent = 'Буферизация';
+    this.elements.trackText.textContent = t('messages.buffering');
   }
 
   showStalled() {
@@ -387,7 +387,7 @@ export class PlayerBar extends HTMLElement {
     }
     this.clearStates();
     this.elements.trackInfo.classList.add('buffering');
-    this.elements.trackText.textContent = 'Проверка соединения';
+    this.elements.trackText.textContent = t('messages.connectionProblem');
   }
 
   showRecovering() {
@@ -400,13 +400,13 @@ export class PlayerBar extends HTMLElement {
     }
     this.clearStates();
     this.elements.trackInfo.classList.add('buffering');
-    this.elements.trackText.textContent = 'Восстановление';
+    this.elements.trackText.textContent = t('messages.retrying');
   }
 
   showError(reason) {
     this.clearStates();
     this.elements.trackInfo.classList.add('error');
-    this.elements.trackText.textContent = reason || 'Ошибка подключения';
+    this.elements.trackText.textContent = reason || t('messages.errorPlaying');
   }
 
   clearStates() {
@@ -428,6 +428,10 @@ export class PlayerBar extends HTMLElement {
     const volume = Math.max(0, Math.min(1, store.volume));
     this.elements.volumeSlider.value = String(Math.round(volume * 100));
     this.updateVolumeIcon(volume, store.isMuted);
+
+    // Set initial text
+    this.elements.stationName.textContent = t('player.selectStation');
+    this.elements.trackText.textContent = t('messages.clickToPlay');
 
     const lastId = store.getStorage('last');
     const lastStation = store.stations.find(s => s.id === lastId);

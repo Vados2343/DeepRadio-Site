@@ -260,8 +260,8 @@ body.center-elements .genre-filter {
 /* CENTERED - Все по центру с минималистичным дизайном */
 .app-header[data-header-layout="centered"],
 .app-header.layout-centered {
-  justify-content: center;
-  gap: 2rem;
+  justify-content: space-between;
+  gap: 1rem;
   position: relative;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(30px) brightness(120%);
@@ -271,31 +271,41 @@ body.center-elements .genre-filter {
 
 .app-header[data-header-layout="centered"] .header-left,
 .app-header.layout-centered .header-left {
-  position: absolute;
-  left: max(1.5rem, var(--safe-area-left));
-  top: 50%;
-  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  z-index: 2;
 }
 
 .app-header[data-header-layout="centered"] .header-right,
 .app-header.layout-centered .header-right {
-  position: absolute;
-  right: max(1.5rem, var(--safe-area-right));
-  top: 50%;
-  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  z-index: 2;
 }
 
 .app-header[data-header-layout="centered"] .header-center,
 .app-header.layout-centered .header-center {
-  position: relative;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   z-index: 1;
+  pointer-events: none;
 }
 
 .app-header[data-header-layout="centered"] .app-title,
 .app-header.layout-centered .app-title {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   text-shadow: 0 0 20px rgba(8, 247, 254, 0.6),
                0 0 40px rgba(241, 91, 181, 0.4);
+  white-space: nowrap;
+}
+
+.app-header[data-header-layout="centered"] .capsule-wrapper,
+.app-header.layout-centered .capsule-wrapper {
+  pointer-events: auto;
 }
 
 /* COMPACT - Компактный с экономией пространства */
@@ -901,8 +911,8 @@ player-bar.animating {
 
 /* DEFAULT - Неоновый киберпанк стиль */
 player-bar[player-style="default"] {
-  --player-height: 90px;
-  --total-player-height: calc(90px + var(--safe-area-bottom));
+  --player-height: 100px;
+  --total-player-height: calc(100px + var(--safe-area-bottom));
   background: linear-gradient(135deg,
     rgba(8, 247, 254, 0.1) 0%,
     rgba(241, 91, 181, 0.08) 50%,
@@ -934,8 +944,8 @@ player-bar[player-style="default"]::before {
 
 /* MINIMAL - Ультра-минималистичный стиль */
 player-bar[player-style="minimal"] {
-  --player-height: 60px;
-  --total-player-height: calc(60px + var(--safe-area-bottom));
+  --player-height: 70px;
+  --total-player-height: calc(70px + var(--safe-area-bottom));
   background: rgba(0, 0, 0, 0.3) !important;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -991,8 +1001,8 @@ player-bar[player-style="extended"] .station-icon {
 
 /* COMPACT - Супер-компактный стиль */
 player-bar[player-style="compact"] {
-  --player-height: 50px;
-  --total-player-height: calc(50px + var(--safe-area-bottom));
+  --player-height: 60px;
+  --total-player-height: calc(60px + var(--safe-area-bottom));
   background: rgba(15, 15, 25, 0.98) !important;
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
@@ -1018,8 +1028,8 @@ player-bar[player-style="compact"] .track-info {
 
 /* MODERN - Современный стиль с анимациями */
 player-bar[player-style="modern"] {
-  --player-height: 95px;
-  --total-player-height: calc(95px + var(--safe-area-bottom));
+  --player-height: 105px;
+  --total-player-height: calc(105px + var(--safe-area-bottom));
   background: linear-gradient(135deg,
     rgba(8, 247, 254, 0.08) 0%,
     rgba(241, 91, 181, 0.08) 50%,
@@ -1068,8 +1078,8 @@ player-bar[player-style="modern"] .station-icon:hover {
 
 /* CLASSIC - Ретро стиль с винтажным дизайном */
 player-bar[player-style="classic"] {
-  --player-height: 85px;
-  --total-player-height: calc(85px + var(--safe-area-bottom));
+  --player-height: 95px;
+  --total-player-height: calc(95px + var(--safe-area-bottom));
   background: linear-gradient(180deg,
     #1a1a1a 0%,
     #0a0a0a 100%) !important;
