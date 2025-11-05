@@ -305,8 +305,8 @@ template.innerHTML = `
 }
 
 .select option {
- background: #1a1a1a;
- color: #ffffff;
+ background: var(--surface);
+ color: var(--text-primary);
  padding: 0.75rem 1rem;
 }
 
@@ -961,6 +961,7 @@ template.innerHTML = `
             <option value="compact" data-i18n="settings.playerStyles.compact">Compact</option>
             <option value="modern" data-i18n="settings.playerStyles.modern">Modern</option>
             <option value="classic" data-i18n="settings.playerStyles.classic">Classic</option>
+            <option value="island" data-i18n="settings.playerStyles.island">Island (Floating)</option>
           </select>
         </div>
       </div>

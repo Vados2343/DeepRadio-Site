@@ -865,6 +865,12 @@ class StatsView extends HTMLElement {
     this.activeTab = 'calendar';
   }
 
+  // ФИКС: Helper для форматирования дат в LOCAL timezone (не UTC!)
+  formatDateString(date) {
+    const d = date instanceof Date ? date : new Date(date);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
   connectedCallback() {
     this.setupEventListeners();
     this.loadStats();
@@ -1090,7 +1096,7 @@ updateTexts() {
 
       if (startDate.getMonth() !== month) dayElement.classList.add('other-month');
 
-      const dateStr = startDate.toISOString().split('T')[0];
+      const dateStr = this.formatDateString(startDate);
       const dayStats = stats.dailyStats && stats.dailyStats[dateStr];
 
       const numDiv = document.createElement('div');
@@ -1113,7 +1119,7 @@ updateTexts() {
       startDate.setDate(startDate.getDate() + 1);
     }
 
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = this.formatDateString(new Date());
     const todayCell = grid.querySelector(`[data-date="${todayStr}"]`);
     if (todayCell) todayCell.classList.add('today');
   }
@@ -1462,7 +1468,7 @@ select.innerHTML = `<option value="all">${t('stats.allStations')}</option>`;
       }
     });
 
-    const dayStr = session.date || new Date(session.timestamp).toISOString().split('T')[0];
+    const dayStr = session.date || this.formatDateString(new Date(session.timestamp));
     if (stats.dailyStats && stats.dailyStats[dayStr]) {
       stats.dailyStats[dayStr].time -= session.time;
       const di = stats.dailyStats[dayStr].sessions.findIndex(s => s.id === sessionId);
@@ -1519,7 +1525,7 @@ select.innerHTML = `<option value="all">${t('stats.allStations')}</option>`;
 
     const a = document.createElement('a');
     a.href = url;
-    a.download = `deepradio-stats-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `deepradio-stats-${this.formatDateString(new Date())}.json`;
     a.click();
 
     URL.revokeObjectURL(url);

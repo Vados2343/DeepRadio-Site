@@ -1542,10 +1542,6 @@ changelog-panel[style*="display: block"] {
     display: none !important;
   }
 
-  #settings-toggle {
-    display: none !important;
-  }
-
   #view-toggle {
     display: flex !important;
   }
