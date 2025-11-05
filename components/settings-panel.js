@@ -1315,7 +1315,17 @@ export class SettingsPanel extends HTMLElement {
     this.headerLayoutSelect.addEventListener('change', (e) => {
       const layout = e.target.value;
       store.setStorage('headerLayout', layout);
+
+      // Применить layout к header немедленно - без перезагрузки!
+      const header = document.querySelector('.app-header');
+      if (header) {
+        header.classList.remove('layout-default', 'layout-centered', 'layout-compact', 'layout-spacious');
+        header.classList.add(`layout-${layout}`);
+        header.setAttribute('data-header-layout', layout);
+      }
+
       document.documentElement.dataset.headerLayout = layout;
+
       document.dispatchEvent(new CustomEvent('settings-change', {
         detail: { key: 'headerLayout', value: layout }
       }));
@@ -1329,6 +1339,49 @@ export class SettingsPanel extends HTMLElement {
       const playerBar = document.querySelector('player-bar');
       if (playerBar) {
         playerBar.setAttribute('player-style', style);
+
+        // Island mode - скрыть обычную панель и включить floating mode
+        if (style === 'island') {
+          playerBar.style.display = 'none';
+          const appMain = document.querySelector('.app-main');
+          if (appMain) appMain.style.paddingBottom = '0';
+          store.setStorage('floatingEnabled', true);
+
+          // Dispatch floating player event
+          document.dispatchEvent(new CustomEvent('floating-player-change', {
+            detail: {
+              enabled: true,
+              draggingEnabled: true,
+              marqueeEnabled: true,
+              visibility: {
+                showIcon: true,
+                showStationName: true,
+                showTrackInfo: true,
+                showVolume: true,
+                showPlayButton: true,
+                showStepButtons: true
+              }
+            }
+          }));
+
+          showToast(t('messages.islandModeActivated'), 'success');
+        } else {
+          // Вернуть обычную панель
+          playerBar.style.display = '';
+          const appMain = document.querySelector('.app-main');
+          if (appMain) appMain.style.paddingBottom = '';
+
+          // Отключить floating если был включен для island
+          const oldStyle = store.getStorage('playerStyle');
+          if (oldStyle === 'island') {
+            store.setStorage('floatingEnabled', false);
+            document.dispatchEvent(new CustomEvent('floating-player-change', {
+              detail: { enabled: false }
+            }));
+          }
+
+          showToast(t('messages.playerStyleChanged'), 'success');
+        }
       }
 
       document.body.dataset.playerStyle = style;
@@ -1336,8 +1389,6 @@ export class SettingsPanel extends HTMLElement {
       document.dispatchEvent(new CustomEvent('settings-change', {
         detail: { key: 'playerStyle', value: style }
       }));
-
-      showToast('Player style changed', 'success');
     });
 
     this.floatingPlayerBtn.addEventListener('click', () => {

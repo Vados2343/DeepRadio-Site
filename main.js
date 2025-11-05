@@ -160,7 +160,7 @@ class EnhancedApp {
         this.loadFavoriteButton();
       });
 
-      showToast('✨ DeepRadio готов к работе', 'success', 2000);
+      showToast(t('messages.appReady'), 'success', 2000);
     } catch (error) {
       console.error('App initialization error:', error);
       showToast('Ошибка инициализации приложения', 'error');

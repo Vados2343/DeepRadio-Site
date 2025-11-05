@@ -279,7 +279,8 @@ const translations = {
       visualizationPrefix: 'Визуализация: ',
       lightningTypePrefix: 'Тип молний: ',
       toastPositionChanged: 'Позиция уведомлений изменена',
-      floatingPlayerUpdated: 'Настройки плавающего плеера обновлены'
+      floatingPlayerUpdated: 'Настройки плавающего плеера обновлены',
+      appReady: '✨ DeepRadio готов к работе'
     }
   },
   en: {
@@ -563,7 +564,8 @@ const translations = {
       visualizationPrefix: 'Visualization: ',
       lightningTypePrefix: 'Lightning type: ',
       toastPositionChanged: 'Toast position changed',
-      floatingPlayerUpdated: 'Floating player settings updated'
+      floatingPlayerUpdated: 'Floating player settings updated',
+      appReady: '✨ DeepRadio is ready'
     }
   },
   uk: {
@@ -845,7 +847,8 @@ const translations = {
       visualizationPrefix: 'Візуалізація: ',
       lightningTypePrefix: 'Тип блискавок: ',
       toastPositionChanged: 'Позицію сповіщень змінено',
-      floatingPlayerUpdated: 'Налаштування плаваючого плеєра оновлено'
+      floatingPlayerUpdated: 'Налаштування плаваючого плеєра оновлено',
+      appReady: '✨ DeepRadio готовий до роботи'
     }
   }
 };
