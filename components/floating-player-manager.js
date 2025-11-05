@@ -46,7 +46,22 @@ export class FloatingPlayerManager {
       if (enabled) {
         console.log('[FloatingPlayerManager] Enabling floating mode...');
         this.enableFloating();
-        this.draggingEnabled = draggingEnabled;
+
+        // ФИКС: Обновлять dragging settings даже если уже в floating mode
+        if (draggingEnabled !== undefined) {
+          this.draggingEnabled = draggingEnabled;
+          if (this.isFloating) {
+            if (draggingEnabled && !this.dragListenersSetup) {
+              this.playerBar.classList.add('draggable');
+              this.setupDragListeners();
+            } else if (!draggingEnabled && this.dragListenersSetup) {
+              this.playerBar.classList.remove('draggable');
+              this.removeDragListeners();
+            }
+          }
+        }
+
+        // ФИКС: ВСЕГДА применять visibility settings при изменении!
         this.applyVisibilitySettings();
       } else {
         console.log('[FloatingPlayerManager] Disabling floating mode...');

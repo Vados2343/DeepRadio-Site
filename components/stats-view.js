@@ -1182,38 +1182,52 @@ updateTexts() {
 
     // ФИКС: Брать данные из store.current (актуальная станция), а не из currentSession!
     const station = store.current;
+    if (!station) {
+      container.style.display = 'none';
+      return;
+    }
+
     const iconUrl = `/Icons/icon${station.id + 1}.png`;
 
     const icon = this.shadowRoot.getElementById('current-session-icon');
-    icon.src = iconUrl;
-    icon.alt = station.name;
+    if (icon) {
+      icon.src = iconUrl;
+      icon.alt = station.name || '';
+    }
 
     const stationEl = this.shadowRoot.getElementById('current-session-station');
-    stationEl.textContent = station.name;
+    if (stationEl) {
+      stationEl.textContent = station.name || '';
+    }
 
     // ФИКС: Брать текущий трек из store.currentTrack, а не из старой сессии!
     const trackEl = this.shadowRoot.getElementById('current-session-track');
-    if (store.currentTrack && store.currentTrack.artist && store.currentTrack.song) {
-      trackEl.textContent = `${store.currentTrack.artist} - ${store.currentTrack.song}`;
-      trackEl.style.display = 'block';
-    } else {
-      trackEl.textContent = '';
-      trackEl.style.display = 'none';
+    if (trackEl) {
+      if (store.currentTrack && store.currentTrack.artist && store.currentTrack.song) {
+        trackEl.textContent = `${store.currentTrack.artist} - ${store.currentTrack.song}`;
+        trackEl.style.display = 'block';
+      } else {
+        trackEl.textContent = '';
+        trackEl.style.display = 'none';
+      }
     }
 
     const timeEl = this.shadowRoot.getElementById('current-session-time');
-    const duration = this.formatTime(currentSession.duration || 0);
-    const genres = station.tags && station.tags.length > 0
-      ? station.tags.join(', ')
-      : '';
-    timeEl.textContent = `${duration}${genres ? ` • ${genres}` : ''}`;
+    if (timeEl) {
+      const duration = this.formatTime(currentSession.duration || 0);
+      const genres = station.tags && station.tags.length > 0
+        ? station.tags.join(', ')
+        : '';
+      timeEl.textContent = `${duration}${genres ? ` • ${genres}` : ''}`;
+    }
   }
 
   updateSummaryCards(stats) {
     this.shadowRoot.getElementById('today-time').textContent = this.formatTime(stats.times.today);
     this.shadowRoot.getElementById('week-time').textContent = this.formatTime(stats.times.week);
     this.shadowRoot.getElementById('total-time-value').textContent = this.formatTime(stats.times.total);
-    this.shadowRoot.getElementById('stations-count').textContent = Object.keys(stats.stations).length;
+    // ФИКС: Показывать количество ИЗБРАННЫХ станций, а не прослушанных!
+    this.shadowRoot.getElementById('stations-count').textContent = store.favorites ? store.favorites.length : 0;
   }
 
   initCalendar() {
