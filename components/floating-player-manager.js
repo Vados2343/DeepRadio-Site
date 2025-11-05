@@ -15,10 +15,18 @@ export class FloatingPlayerManager {
     this.isFloating = false;
     this.dragThreshold = 5;
     this.hasMovedPastThreshold = false;
+    this.draggingEnabled = true;
+    this.dragListenersSetup = false;
 
     this.floatingClass = 'floating-player-host';
 
     this.handleResize = this.handleResize.bind(this);
+    this.handleDragStart = this.handleDragStart.bind(this);
+    this.handleDrag = this.handleDrag.bind(this);
+    this.handleDragEnd = this.handleDragEnd.bind(this);
+    this.handleTouchStart = this.handleTouchStart.bind(this);
+    this.handleTouchMove = this.handleTouchMove.bind(this);
+    this.handleTouchEnd = this.handleTouchEnd.bind(this);
 
     this.init();
   }
@@ -26,17 +34,36 @@ export class FloatingPlayerManager {
   init() {
     if (!this.playerBar) return;
 
+    // Load dragging enabled setting
+    this.draggingEnabled = store.getStorage('floatingDraggingEnabled', true);
+
     const savedStyle = store.getStorage('playerStyle', 'default');
     if (savedStyle === 'island') {
       this.enableFloating();
       this.restorePosition();
+
+      // Apply visibility settings if they exist
+      const showIcon = store.getStorage('floatingShowIcon', true);
+      const showStationName = store.getStorage('floatingShowStationName', true);
+      const showTrackInfo = store.getStorage('floatingShowTrackInfo', true);
+      const showVolume = store.getStorage('floatingShowVolume', true);
+      const showPlayButton = store.getStorage('floatingShowPlayButton', true);
+      const showStepButtons = store.getStorage('floatingShowStepButtons', false);
+
+      this.applyVisibilitySettings({
+        icon: showIcon,
+        stationName: showStationName,
+        trackInfo: showTrackInfo,
+        volume: showVolume,
+        playButton: showPlayButton,
+        stepButtons: showStepButtons
+      });
     }
 
     this.setupEventListeners();
   }
 
   setupEventListeners() {
-
     document.addEventListener('settings-change', (e) => {
       if (e.detail.key === 'playerStyle') {
         const style = e.detail.value;
@@ -48,15 +75,17 @@ export class FloatingPlayerManager {
         }
       }
     });
-    document.addEventListener('floating-settings-change', (e) => {
-  console.log('[FloatingPlayerManager] Received event:', e.detail);
 
-  const { enabled, draggingEnabled, marqueeEnabled, visibility } = e.detail;
+    document.addEventListener('floating-player-change', (e) => {
+      console.log('[FloatingPlayerManager] Received event:', e.detail);
 
-  if (enabled) {
-    console.log('[FloatingPlayerManager] Enabling floating mode...');
-    this.enableFloating();
-     if (draggingEnabled !== undefined) {
+      const { enabled, draggingEnabled, marqueeEnabled, visibility } = e.detail;
+
+      if (enabled) {
+        console.log('[FloatingPlayerManager] Enabling floating mode...');
+        this.enableFloating();
+
+        if (draggingEnabled !== undefined) {
           this.draggingEnabled = draggingEnabled;
           if (this.isFloating) {
             if (draggingEnabled && !this.dragListenersSetup) {
@@ -68,25 +97,15 @@ export class FloatingPlayerManager {
             }
           }
         }
-    this.applyVisibilitySettings();
-  } else {
-    console.log('[FloatingPlayerManager] Disabling floating mode...');
-    this.disableFloating();
-  }
-});
 
-
-    if (this.playerBar) {
-      // Mouse events
-      this.playerBar.addEventListener('mousedown', this.handleDragStart.bind(this));
-      document.addEventListener('mousemove', this.handleDrag.bind(this));
-      document.addEventListener('mouseup', this.handleDragEnd.bind(this));
-
-      // Touch events
-      this.playerBar.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
-      document.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
-      document.addEventListener('touchend', this.handleTouchEnd.bind(this));
-    }
+        if (visibility) {
+          this.applyVisibilitySettings(visibility);
+        }
+      } else {
+        console.log('[FloatingPlayerManager] Disabling floating mode...');
+        this.disableFloating();
+      }
+    });
 
     window.addEventListener('resize', this.handleResize);
   }
@@ -95,36 +114,31 @@ export class FloatingPlayerManager {
     if (this.isFloating || !this.playerBar) return;
 
     this.isFloating = true;
-    this.playerBar.classList.add('draggable');
     this.playerBar.classList.add(this.floatingClass);
 
+    // Add draggable class and setup listeners only if dragging is enabled
+    if (this.draggingEnabled && !this.dragListenersSetup) {
+      this.playerBar.classList.add('draggable');
+      this.setupDragListeners();
+    }
+
     // принудительно сбрасываем то, что мешает
- this.playerBar.style.position = 'fixed';
-
+    this.playerBar.style.position = 'fixed';
     this.playerBar.style.right = 'auto';
-
     this.playerBar.style.left = '50%';
-
     this.playerBar.style.top = 'auto';
-
     this.playerBar.style.bottom = '20px';
-
     this.playerBar.style.transform = 'translateX(-50%)';
-
     this.playerBar.style.maxWidth = '460px';
-
     this.playerBar.style.width = 'auto';
-
     this.playerBar.style.zIndex = '500';
     document.body.style.paddingBottom = '0';
 
     const mainElement = document.querySelector('.app-main');
-
     if (mainElement) {
-
       mainElement.style.paddingBottom = '0';
-
     }
+
     this.playerBar.classList.add('animating');
     setTimeout(() => {
       if (this.playerBar) {
@@ -467,8 +481,57 @@ export class FloatingPlayerManager {
     this.savePosition();
   }
 
+  setupDragListeners() {
+    if (!this.playerBar || this.dragListenersSetup) return;
+
+    // Mouse events
+    this.playerBar.addEventListener('mousedown', this.handleDragStart);
+    document.addEventListener('mousemove', this.handleDrag);
+    document.addEventListener('mouseup', this.handleDragEnd);
+
+    // Touch events
+    this.playerBar.addEventListener('touchstart', this.handleTouchStart, { passive: false });
+    document.addEventListener('touchmove', this.handleTouchMove, { passive: false });
+    document.addEventListener('touchend', this.handleTouchEnd);
+
+    this.dragListenersSetup = true;
+    console.log('[FloatingPlayer] Drag listeners enabled');
+  }
+
+  removeDragListeners() {
+    if (!this.playerBar || !this.dragListenersSetup) return;
+
+    // Remove mouse events
+    this.playerBar.removeEventListener('mousedown', this.handleDragStart);
+    document.removeEventListener('mousemove', this.handleDrag);
+    document.removeEventListener('mouseup', this.handleDragEnd);
+
+    // Remove touch events
+    this.playerBar.removeEventListener('touchstart', this.handleTouchStart);
+    document.removeEventListener('touchmove', this.handleTouchMove);
+    document.removeEventListener('touchend', this.handleTouchEnd);
+
+    this.dragListenersSetup = false;
+    console.log('[FloatingPlayer] Drag listeners disabled');
+  }
+
+  applyVisibilitySettings(visibility) {
+    if (!this.playerBar || !visibility) return;
+
+    console.log('[FloatingPlayer] Applying visibility settings:', visibility);
+
+    // Apply visibility settings as data attributes
+    this.playerBar.setAttribute('data-show-icon', visibility.icon !== false);
+    this.playerBar.setAttribute('data-show-station-name', visibility.stationName !== false);
+    this.playerBar.setAttribute('data-show-track-info', visibility.trackInfo !== false);
+    this.playerBar.setAttribute('data-show-volume', visibility.volume !== false);
+    this.playerBar.setAttribute('data-show-play-button', visibility.playButton !== false);
+    this.playerBar.setAttribute('data-show-step-buttons', visibility.stepButtons === true);
+  }
+
   destroy() {
     this.disableFloating();
+    this.removeDragListeners();
     window.removeEventListener('resize', this.handleResize);
   }
 }

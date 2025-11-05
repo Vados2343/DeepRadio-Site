@@ -912,6 +912,9 @@ class Store extends EventTarget {
     });
     this.setStorage('listeningStats', stats);
 
+    // Emit stats update event so UI can refresh
+    this.emit('stats-update');
+
     logger.log('Session', 'Ended', {
       sessionId: this.currentSessionId,
       totalTime,
