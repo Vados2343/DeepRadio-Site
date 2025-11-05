@@ -196,6 +196,15 @@ const translations = {
       firstRelease: 'ПЕРВЫЙ РЕЛИЗ',
       majorRelease: 'МАЖОРНЫЙ РЕЛИЗ'
     },
+    display: {
+      viewPrefix: 'Вид',
+      viewModes: {
+        grid: 'Сетка',
+        list: 'Список',
+        compact: 'Компактный',
+        cover: 'Обложки'
+      }
+    },
     messages: {
       themeChanged: 'Тема изменена',
       reloadRequired: 'Требуется перезагрузка страницы',
@@ -205,6 +214,7 @@ const translations = {
       errorPlaying: 'Ошибка воспроизведения',
       notFound: 'Ничего не найдено',
       changeFilters: 'Попробуйте изменить фильтры',
+      changeFiltersOrSearch: 'Попробуйте изменить фильтры или поисковый запрос',
       noFavorites: 'Нет избранных станций',
       addToFavorites: 'Добавьте станции в избранное',
       noRecent: 'Нет недавних станций',
@@ -433,6 +443,15 @@ const translations = {
       firstRelease: 'FIRST RELEASE',
       majorRelease: 'MAJOR RELEASE'
     },
+    display: {
+      viewPrefix: 'View',
+      viewModes: {
+        grid: 'Grid',
+        list: 'List',
+        compact: 'Compact',
+        cover: 'Covers'
+      }
+    },
     messages: {
       themeChanged: 'Theme changed',
       reloadRequired: 'Page reload required',
@@ -442,6 +461,7 @@ const translations = {
       errorPlaying: 'Playback error',
       notFound: 'Nothing found',
       changeFilters: 'Try changing filters',
+      changeFiltersOrSearch: 'Try changing filters or search query',
       noFavorites: 'No favorite stations',
       addToFavorites: 'Add stations to favorites',
       noRecent: 'No recent stations',
@@ -668,6 +688,15 @@ const translations = {
       firstRelease: 'ПЕРШИЙ РЕЛІЗ',
       majorRelease: 'МАЖОРНИЙ РЕЛІЗ'
     },
+    display: {
+      viewPrefix: 'Вигляд',
+      viewModes: {
+        grid: 'Сітка',
+        list: 'Список',
+        compact: 'Компактний',
+        cover: 'Обкладинки'
+      }
+    },
     messages: {
       themeChanged: 'Тему змінено',
       reloadRequired: 'Потрібне перезавантаження сторінки',
@@ -677,6 +706,7 @@ const translations = {
       errorPlaying: 'Помилка відтворення',
       notFound: 'Нічого не знайдено',
       changeFilters: 'Спробуйте змінити фільтри',
+      changeFiltersOrSearch: 'Спробуйте змінити фільтри або пошуковий запит',
       noFavorites: 'Немає обраних станцій',
       addToFavorites: 'Додайте станції до обраного',
       noRecent: 'Немає нещодавніх станцій',

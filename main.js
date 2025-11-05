@@ -8,13 +8,12 @@ import './components/stats-view.js';
 import './components/like-prompt.js';
 import './components/changelog-panel.js';
 import './components/capsule-search.js';
-import './components/header-manager.js';
 import { BurgerMenu } from './components/burger-menu.js';
 import { FloatingPlayerManager } from './components/floating-player-manager.js';
 import { GeometricVisualizer } from './components/GeometricVisualizer.js';
 import { OrganicVisualizer } from './components/OrganicVisualizer.js';
 import { showToast } from './utils/toast.js';
-import { initI18n } from './utils/i18n.js';
+import { initI18n, t } from './utils/i18n.js';
 import { throttle } from './utils/performance.js';
 import { Config } from './core/config.js';
 
@@ -131,7 +130,6 @@ class EnhancedApp {
     this.burgerMenu = null;
     this.headerSearch = null;
     this.mobileSearch = null;
-    this.headerManager = null;
     this.displayMode = 'grid';
     this.displayModes = ['grid', 'list', 'compact', 'cover'];
     this.throttledResize = throttle(this.handleResize.bind(this), Config.ui.throttleResize || 250);
@@ -423,7 +421,7 @@ class EnhancedApp {
 
     document.dispatchEvent(new CustomEvent('display-mode-change', { detail: this.displayMode }));
     store.setStorage('displayMode', this.displayMode);
-    showToast(`Вид: ${this.getDisplayModeName()}`, 'info', 1000);
+    showToast(`${t('display.viewPrefix')}: ${this.getDisplayModeName()}`, 'info', 1000);
   }
 
   updateViewIcon() {
@@ -444,13 +442,7 @@ class EnhancedApp {
   }
 
   getDisplayModeName() {
-    const names = {
-      grid: 'Сетка',
-      list: 'Список',
-      compact: 'Компактный',
-      cover: 'Обложки'
-    };
-    return names[this.displayMode] || 'Сетка';
+    return t(`display.viewModes.${this.displayMode}`);
   }
 
   handleEditModeChange(enabled) {

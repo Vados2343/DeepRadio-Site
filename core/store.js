@@ -797,7 +797,9 @@ class Store extends EventTarget {
       startTime: this.sessionStartTime,
       endTime: null,
       duration: 0,
-      pausedTime: 0
+      pausedTime: 0,
+      tracks: [],
+      genres: this.current.tags || []
     };
 
     logger.log('Session', 'Started', {
@@ -844,6 +846,8 @@ class Store extends EventTarget {
     this.currentSessionData.endTime = endTime;
     this.currentSessionData.duration = totalTime;
     this.currentSessionData.pausedTime = this.totalPausedTime;
+    this.currentSessionData.time = totalTime;
+    this.currentSessionData.timestamp = this.sessionStartTime;
 
     const stats = this.getStorage('listeningStats', {
       sessions: [],
@@ -868,6 +872,17 @@ class Store extends EventTarget {
     }
     stats.stations[this.current.id].totalTime += totalTime;
     stats.stations[this.current.id].sessions += 1;
+
+    // Save genre statistics
+    if (this.current.tags && Array.isArray(this.current.tags)) {
+      this.current.tags.forEach(genre => {
+        if (!stats.genres[genre]) {
+          stats.genres[genre] = { time: 0, sessions: 0 };
+        }
+        stats.genres[genre].time += totalTime;
+        stats.genres[genre].sessions += 1;
+      });
+    }
 
     this.setStorage('listeningStats', stats);
 
@@ -939,6 +954,15 @@ class Store extends EventTarget {
 
         this.emit('track-update', trackData);
         this.emit('track-change', this.current);
+
+        // Save track to current session
+        if (this.currentSessionData && trackData.artist && trackData.song) {
+          this.currentSessionData.tracks.push({
+            artist: trackData.artist,
+            song: trackData.song,
+            timestamp: Date.now()
+          });
+        }
 
         logger.log('Track', 'Updated', {
           station: this.current.name,

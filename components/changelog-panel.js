@@ -731,6 +731,100 @@ const changelogData = {
 
       ]
 
+    },
+    {
+      version: 'v2.0.2',
+      badge: 'critical',
+      date: '02.11.2025',
+      categories: [
+        {
+          title: '🚨 Critical Mobile Fixes',
+          changes: [
+            { type: 'fix', text: 'Fixed critical issue with sidebar overlapping content on mobile devices' },
+            { type: 'fix', text: 'Properly configured content padding from fixed header and player on mobile' },
+            { type: 'improve', text: 'Optimized z-index layers for correct UI element stacking' },
+            { type: 'fix', text: 'Fixed syntax in header-manager.js (template literal)' },
+            { type: 'improve', text: 'Unified sidebar styles for mobile and desktop versions' }
+          ]
+        },
+        {
+          title: '📱 Mobile Improvements',
+          changes: [
+            { type: 'new', text: 'Content now properly positioned under header and above player' },
+            { type: 'new', text: 'Sidebar no longer overlaps main content' },
+            { type: 'improve', text: 'Improved content scrolling on mobile devices' }
+          ]
+        },
+        {
+          title: '🎨 CSS Optimization',
+          changes: [
+            { type: 'improve', text: 'Removed duplicate CSS selectors for sidebar' },
+            { type: 'improve', text: 'Properly configured media queries for different resolutions' },
+            { type: 'new', text: 'Added CSS variables for correct height calculations on mobile' }
+          ]
+        }
+      ]
+    },
+    {
+      version: 'v2.0.1',
+      badge: 'fix',
+      date: '02.11.2025',
+      categories: [
+        {
+          title: '🔧 Architecture Fixes',
+          changes: [
+            { type: 'fix', text: 'Eliminated duplicate mobile search functionality between header-search.js and mobile-search.js' },
+            { type: 'improve', text: 'header-search.js now handles desktop search only' },
+            { type: 'improve', text: 'mobile-search.js fully responsible for mobile search and animation' }
+          ]
+        },
+        {
+          title: '✨ Code Improvements',
+          changes: [
+            { type: 'improve', text: 'Improved animation state handling in mobile-search.js' },
+            { type: 'improve', text: 'Added protection against double animation calls' },
+            { type: 'improve', text: 'Optimized core.css, removed duplicate rules' }
+          ]
+        },
+        {
+          title: '📦 Component Structure',
+          changes: [
+            { type: 'new', text: 'Complete component analysis performed, no unnecessary files found' },
+            { type: 'new', text: 'All 14 components working within their responsibilities' }
+          ]
+        }
+      ]
+    },
+    {
+      version: 'v2.0.0',
+      badge: 'critical',
+      date: '02.11.2025',
+      categories: [
+        {
+          title: '✅ Metadata and Track Display',
+          changes: [
+            { type: 'fix', text: 'Fixed display of song names and artists' },
+            { type: 'improve', text: 'Improved metadata synchronization between store and player-bar' },
+            { type: 'new', text: 'Added forced track-update emission on state changes' }
+          ]
+        }
+      ]
+    },
+    {
+      version: 'v1.0.0',
+      badge: 'firstRelease',
+      date: '18.07.2025',
+      categories: [
+        {
+          title: '🎉 First Stable Release',
+          changes: [
+            { type: 'new', text: 'Updated station grid' },
+            { type: 'new', text: 'Favorites, Recent, and Playlists' },
+            { type: 'new', text: 'Player Bar with controls and visualization' },
+            { type: 'new', text: 'Episodes modal window' }
+          ]
+        }
+      ]
     }
 
   ],
@@ -913,6 +1007,100 @@ const changelogData = {
 
       ]
 
+    },
+    {
+      version: 'v2.0.2',
+      badge: 'critical',
+      date: '02.11.2025',
+      categories: [
+        {
+          title: '🚨 Критические Исправления для Мобильных',
+          changes: [
+            { type: 'fix', text: 'Исправлена критическая проблема с перекрытием контента боковой панелью на мобильных устройствах' },
+            { type: 'fix', text: 'Правильно настроены отступы контента от фиксированного заголовка и плеера на мобильных' },
+            { type: 'improve', text: 'Оптимизированы слои z-index для корректного наложения элементов UI' },
+            { type: 'fix', text: 'Исправлен синтаксис в header-manager.js (шаблонная строка)' },
+            { type: 'improve', text: 'Унифицированы стили боковой панели для мобильной и десктопной версий' }
+          ]
+        },
+        {
+          title: '📱 Улучшения Мобильной Версии',
+          changes: [
+            { type: 'new', text: 'Контент теперь правильно позиционируется под заголовком и над плеером' },
+            { type: 'new', text: 'Боковая панель больше не перекрывает основной контент' },
+            { type: 'improve', text: 'Улучшена прокрутка контента на мобильных устройствах' }
+          ]
+        },
+        {
+          title: '🎨 Оптимизация CSS',
+          changes: [
+            { type: 'improve', text: 'Удалены дублирующиеся CSS селекторы для боковой панели' },
+            { type: 'improve', text: 'Правильно настроены медиа-запросы для разных разрешений' },
+            { type: 'new', text: 'Добавлены CSS переменные для корректных расчетов высоты на мобильных' }
+          ]
+        }
+      ]
+    },
+    {
+      version: 'v2.0.1',
+      badge: 'fix',
+      date: '02.11.2025',
+      categories: [
+        {
+          title: '🔧 Архитектурные Исправления',
+          changes: [
+            { type: 'fix', text: 'Устранено дублирование функциональности мобильного поиска между header-search.js и mobile-search.js' },
+            { type: 'improve', text: 'header-search.js теперь обрабатывает только десктопный поиск' },
+            { type: 'improve', text: 'mobile-search.js полностью отвечает за мобильный поиск и анимацию' }
+          ]
+        },
+        {
+          title: '✨ Улучшения Кода',
+          changes: [
+            { type: 'improve', text: 'Улучшена обработка состояния анимации в mobile-search.js' },
+            { type: 'improve', text: 'Добавлена защита от двойных вызовов анимации' },
+            { type: 'improve', text: 'Оптимизирован core.css, удалены дублирующиеся правила' }
+          ]
+        },
+        {
+          title: '📦 Структура Компонентов',
+          changes: [
+            { type: 'new', text: 'Проведен полный анализ компонентов, ненужных файлов не найдено' },
+            { type: 'new', text: 'Все 14 компонентов работают в рамках своих обязанностей' }
+          ]
+        }
+      ]
+    },
+    {
+      version: 'v2.0.0',
+      badge: 'critical',
+      date: '02.11.2025',
+      categories: [
+        {
+          title: '✅ Метаданные и Отображение Треков',
+          changes: [
+            { type: 'fix', text: 'Исправлено отображение названий песен и исполнителей' },
+            { type: 'improve', text: 'Улучшена синхронизация метаданных между store и player-bar' },
+            { type: 'new', text: 'Добавлено принудительное испускание track-update при изменении состояния' }
+          ]
+        }
+      ]
+    },
+    {
+      version: 'v1.0.0',
+      badge: 'firstRelease',
+      date: '18.07.2025',
+      categories: [
+        {
+          title: '🎉 Первый Стабильный Релиз',
+          changes: [
+            { type: 'new', text: 'Обновленная сетка станций' },
+            { type: 'new', text: 'Избранное, Недавние и Плейлисты' },
+            { type: 'new', text: 'Панель плеера с элементами управления и визуализацией' },
+            { type: 'new', text: 'Модальное окно эпизодов' }
+          ]
+        }
+      ]
     }
 
   ],
@@ -1092,6 +1280,100 @@ const changelogData = {
 
       ]
 
+    },
+    {
+      version: 'v2.0.2',
+      badge: 'critical',
+      date: '02.11.2025',
+      categories: [
+        {
+          title: '🚨 Критичні Виправлення для Мобільних',
+          changes: [
+            { type: 'fix', text: 'Виправлено критичну проблему з перекриттям контенту бічною панеллю на мобільних пристроях' },
+            { type: 'fix', text: 'Правильно налаштовано відступи контенту від фіксованого заголовка та плеєра на мобільних' },
+            { type: 'improve', text: 'Оптимізовано шари z-index для коректного накладення елементів UI' },
+            { type: 'fix', text: 'Виправлено синтаксис в header-manager.js (шаблонний рядок)' },
+            { type: 'improve', text: 'Уніфіковано стилі бічної панелі для мобільної та десктопної версій' }
+          ]
+        },
+        {
+          title: '📱 Покращення Мобільної Версії',
+          changes: [
+            { type: 'new', text: 'Контент тепер правильно позиціонується під заголовком і над плеєром' },
+            { type: 'new', text: 'Бічна панель більше не перекриває основний контент' },
+            { type: 'improve', text: 'Покращено прокручування контенту на мобільних пристроях' }
+          ]
+        },
+        {
+          title: '🎨 Оптимізація CSS',
+          changes: [
+            { type: 'improve', text: 'Видалено дубльовані CSS селектори для бічної панелі' },
+            { type: 'improve', text: 'Правильно налаштовано медіа-запити для різних роздільностей' },
+            { type: 'new', text: 'Додано CSS змінні для коректних розрахунків висоти на мобільних' }
+          ]
+        }
+      ]
+    },
+    {
+      version: 'v2.0.1',
+      badge: 'fix',
+      date: '02.11.2025',
+      categories: [
+        {
+          title: '🔧 Архітектурні Виправлення',
+          changes: [
+            { type: 'fix', text: 'Усунуто дублювання функціональності мобільного пошуку між header-search.js та mobile-search.js' },
+            { type: 'improve', text: 'header-search.js тепер обробляє тільки десктопний пошук' },
+            { type: 'improve', text: 'mobile-search.js повністю відповідає за мобільний пошук та анімацію' }
+          ]
+        },
+        {
+          title: '✨ Покращення Коду',
+          changes: [
+            { type: 'improve', text: 'Покращено обробку стану анімації в mobile-search.js' },
+            { type: 'improve', text: 'Додано захист від подвійних викликів анімації' },
+            { type: 'improve', text: 'Оптимізовано core.css, видалено дубльовані правила' }
+          ]
+        },
+        {
+          title: '📦 Структура Компонентів',
+          changes: [
+            { type: 'new', text: 'Проведено повний аналіз компонентів, непотрібних файлів не знайдено' },
+            { type: 'new', text: 'Усі 14 компонентів працюють в рамках своїх обов\'язків' }
+          ]
+        }
+      ]
+    },
+    {
+      version: 'v2.0.0',
+      badge: 'critical',
+      date: '02.11.2025',
+      categories: [
+        {
+          title: '✅ Метадані та Відображення Треків',
+          changes: [
+            { type: 'fix', text: 'Виправлено відображення назв пісень та виконавців' },
+            { type: 'improve', text: 'Покращено синхронізацію метаданих між store та player-bar' },
+            { type: 'new', text: 'Додано примусове випромінювання track-update при зміні стану' }
+          ]
+        }
+      ]
+    },
+    {
+      version: 'v1.0.0',
+      badge: 'firstRelease',
+      date: '18.07.2025',
+      categories: [
+        {
+          title: '🎉 Перший Стабільний Реліз',
+          changes: [
+            { type: 'new', text: 'Оновлена сітка станцій' },
+            { type: 'new', text: 'Обране, Нещодавні та Плейлисти' },
+            { type: 'new', text: 'Панель плеєра з елементами керування та візуалізацією' },
+            { type: 'new', text: 'Модальне вікно епізодів' }
+          ]
+        }
+      ]
     }
 
   ]
