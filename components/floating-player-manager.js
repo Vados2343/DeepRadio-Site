@@ -58,6 +58,14 @@ export class FloatingPlayerManager {
         playButton: showPlayButton,
         stepButtons: showStepButtons
       });
+
+      // Apply marquee setting
+      const marqueeEnabled = store.getStorage('floatingMarqueeEnabled', true);
+      this.playerBar.setAttribute('data-marquee-enabled', marqueeEnabled);
+
+      // Apply width setting
+      const playerWidth = store.getStorage('floatingPlayerWidth', 50);
+      this.setPlayerWidth(playerWidth);
     }
 
     this.setupEventListeners();
@@ -79,7 +87,7 @@ export class FloatingPlayerManager {
     document.addEventListener('floating-player-change', (e) => {
       console.log('[FloatingPlayerManager] Received event:', e.detail);
 
-      const { enabled, draggingEnabled, marqueeEnabled, visibility } = e.detail;
+      const { enabled, draggingEnabled, marqueeEnabled, visibility, width } = e.detail;
 
       if (enabled) {
         console.log('[FloatingPlayerManager] Enabling floating mode...');
@@ -96,6 +104,14 @@ export class FloatingPlayerManager {
               this.removeDragListeners();
             }
           }
+        }
+
+        if (marqueeEnabled !== undefined) {
+          this.playerBar.setAttribute('data-marquee-enabled', marqueeEnabled);
+        }
+
+        if (width !== undefined) {
+          this.setPlayerWidth(width);
         }
 
         if (visibility) {
@@ -153,17 +169,17 @@ export class FloatingPlayerManager {
     if (!this.isFloating || !this.playerBar) return;
 
     this.isFloating = false;
+    this.removeDragListeners();
     this.playerBar.classList.remove('draggable', 'dragging', this.floatingClass);
 
     this.resetPosition();
     document.body.style.paddingBottom = '';
 
     const mainElement = document.querySelector('.app-main');
-
     if (mainElement) {
-
       mainElement.style.paddingBottom = '';
     }
+
     console.log('[FloatingPlayer] Floating mode disabled');
   }
 
@@ -527,6 +543,16 @@ export class FloatingPlayerManager {
     this.playerBar.setAttribute('data-show-volume', visibility.volume !== false);
     this.playerBar.setAttribute('data-show-play-button', visibility.playButton !== false);
     this.playerBar.setAttribute('data-show-step-buttons', visibility.stepButtons === true);
+  }
+
+  setPlayerWidth(widthPercent) {
+    if (!this.playerBar || !this.isFloating) return;
+
+    // Convert percent to pixels based on viewport width
+    const maxWidth = Math.min(window.innerWidth * (widthPercent / 100), window.innerWidth - 40);
+    this.playerBar.style.maxWidth = `${maxWidth}px`;
+
+    console.log('[FloatingPlayer] Width set to', widthPercent + '%', `(${maxWidth}px)`);
   }
 
   destroy() {

@@ -1143,13 +1143,17 @@ updateTexts() {
   updateRealtimeStats() {
     const stats = this.getAllStats();
     this.updateSummaryCards(stats);
+    this.renderCalendar();
+    if (this.selectedDate) {
+      this.showDayHistory(this.selectedDate);
+    }
     const indicator = this.shadowRoot.getElementById('realtime-indicator');
     if (store.current && store.audio && !store.audio.paused) {
       indicator.style.display = 'inline-flex';
     } else {
       indicator.style.display = 'none';
     }
-      this.updateCurrentSession();
+    this.updateCurrentSession();
   }
  updateCurrentSession() {
     const currentSession = store.getCurrentSession();

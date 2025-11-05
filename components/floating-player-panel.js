@@ -974,7 +974,16 @@ template.innerHTML = `
 
         </div>
 
- 
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label" data-i18n="floatingPlayer.playerWidth">Player Width</div>
+            <div class="setting-description" data-i18n="floatingPlayer.playerWidthDesc">Adjust the width of floating player panel</div>
+          </div>
+          <div class="slider-container">
+            <input type="range" class="width-slider" id="player-width-slider" min="30" max="90" value="50" step="5">
+            <span class="width-value" id="player-width-value">50%</span>
+          </div>
+        </div>
 
         <div class="setting-row">
 
@@ -1287,7 +1296,8 @@ export class FloatingPlayerPanel extends HTMLElement {
     this.floatingEnabled = this.shadowRoot.getElementById('floating-enabled');
 
     this.draggingEnabled = this.shadowRoot.getElementById('dragging-enabled');
-
+    this.playerWidthSlider = this.shadowRoot.getElementById('player-width-slider');
+    this.playerWidthValue = this.shadowRoot.getElementById('player-width-value');
     this.marqueeEnabled = this.shadowRoot.getElementById('marquee-enabled');
 
     this.floatingOptions = this.shadowRoot.getElementById('floating-options');
@@ -1345,8 +1355,7 @@ export class FloatingPlayerPanel extends HTMLElement {
     const marqueeEnabled = store.getStorage('floatingMarqueeEnabled', true);
 
     const position = store.getStorage('floatingPosition', 'center');
-
-
+    const playerWidth = store.getStorage('floatingPlayerWidth', 50);
 
     const showIcon = store.getStorage('floatingShowIcon', true);
 
@@ -1367,6 +1376,8 @@ export class FloatingPlayerPanel extends HTMLElement {
     this.draggingEnabled.checked = draggingEnabled;
 
     this.marqueeEnabled.checked = marqueeEnabled;
+    this.playerWidthSlider.value = playerWidth;
+    this.playerWidthValue.textContent = `${playerWidth}%`;
 
 
 
@@ -1440,7 +1451,19 @@ export class FloatingPlayerPanel extends HTMLElement {
 
     });
 
+    this.playerWidthSlider.addEventListener('input', (e) => {
+      const value = e.target.value;
+      this.playerWidthValue.textContent = `${value}%`;
+      store.setStorage('floatingPlayerWidth', parseInt(value));
 
+      // Apply width change immediately
+      document.dispatchEvent(new CustomEvent('floating-player-change', {
+        detail: {
+          enabled: true,
+          width: parseInt(value)
+        }
+      }));
+    });
 
     this.applyBtn.addEventListener('click', () => {
 
@@ -1487,8 +1510,7 @@ export class FloatingPlayerPanel extends HTMLElement {
     const draggingEnabled = this.draggingEnabled.checked;
 
     const marqueeEnabled = this.marqueeEnabled.checked;
-
-
+    const playerWidth = parseInt(this.playerWidthSlider.value);
 
     const showIcon = this.showIcon.checked;
 
@@ -1511,8 +1533,7 @@ export class FloatingPlayerPanel extends HTMLElement {
     store.setStorage('floatingDraggingEnabled', draggingEnabled);
 
     store.setStorage('floatingMarqueeEnabled', marqueeEnabled);
-
-
+    store.setStorage('floatingPlayerWidth', playerWidth);
 
     store.setStorage('floatingShowIcon', showIcon);
 
@@ -1539,6 +1560,7 @@ export class FloatingPlayerPanel extends HTMLElement {
         draggingEnabled: draggingEnabled,
 
         marqueeEnabled: marqueeEnabled,
+        width: playerWidth,
 
         visibility: {
 
