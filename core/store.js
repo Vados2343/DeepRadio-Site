@@ -862,27 +862,40 @@ class Store extends EventTarget {
     stats.totalTime += totalTime;
     stats.lastUpdated = Date.now();
 
+    // Save station statistics (use 'time' not 'totalTime' for consistency)
     if (!stats.stations[this.current.id]) {
       stats.stations[this.current.id] = {
-        id: this.current.id,
         name: this.current.name,
-        totalTime: 0,
+        time: 0,
         sessions: 0
       };
     }
-    stats.stations[this.current.id].totalTime += totalTime;
+    stats.stations[this.current.id].time += totalTime;
     stats.stations[this.current.id].sessions += 1;
 
     // Save genre statistics
     if (this.current.tags && Array.isArray(this.current.tags)) {
       this.current.tags.forEach(genre => {
         if (!stats.genres[genre]) {
-          stats.genres[genre] = { time: 0, sessions: 0 };
+          stats.genres[genre] = 0;
         }
-        stats.genres[genre].time += totalTime;
-        stats.genres[genre].sessions += 1;
+        stats.genres[genre] += totalTime;
       });
     }
+
+    // Save daily statistics for calendar view
+    const dateStr = new Date(this.sessionStartTime).toISOString().split('T')[0];
+    if (!stats.dailyStats[dateStr]) {
+      stats.dailyStats[dateStr] = {
+        time: 0,
+        sessions: []
+      };
+    }
+    stats.dailyStats[dateStr].time += totalTime;
+    stats.dailyStats[dateStr].sessions.push({
+      ...this.currentSessionData,
+      date: dateStr
+    });
 
     this.setStorage('listeningStats', stats);
 
