@@ -124,10 +124,71 @@ template.innerHTML = `
       text-shadow: 0 1px 2px rgba(0,0,0,.3); 
     }
 
-    .card-label { 
-      color: var(--text-secondary); 
-      font-size: .875rem; 
-      text-shadow: 0 1px 1px rgba(0,0,0,.2); 
+   .card-label {
+      color: var(--text-secondary);
+      font-size: .875rem;
+      text-shadow: 0 1px 1px rgba(0,0,0,.2);
+    }
+    .current-session {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-card);
+    }
+    .current-session-header {
+      margin-bottom: 1rem;
+    }
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .live-badge svg {
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .current-session-content {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .current-session-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: var(--radius);
+      object-fit: cover;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .current-session-info {
+      flex: 1;
+    }
+    .current-session-station {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      color: var(--text-primary);
+    }
+    .current-session-track {
+      font-size: 1rem;
+      color: var(--accent1);
+      margin-bottom: 0.5rem;
+    }
+    .current-session-time {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
     }
 
     .tabs { 
@@ -301,11 +362,23 @@ template.innerHTML = `
       transition: var(--transition); 
     }
 
-    .filter-select:hover { 
-      border-color: var(--accent1); 
-      background: var(--surface-hover); 
+    .filter-select:hover {
+      border-color: var(--accent1);
+      background: var(--surface-hover);
     }
-
+   .filter-select option {
+      background: #1a1a1a !important;
+      background-color: #1a1a1a !important;
+      color: #ffffff !important;
+      padding: 0.75rem 1rem;
+    }
+    .filter-select option:hover,
+    .filter-select option:focus,
+    .filter-select option:checked {
+      background: #2a2a2a !important;
+      background-color: #2a2a2a !important;
+      color: #ffffff !important;
+    }
     .search-filter {
       flex: 1;
       min-width: 200px;
@@ -789,7 +862,28 @@ template.innerHTML = `
       <div class="card-label" data-i18n="stats.totalTime">Всего времени</div>
     </div>
   </div>
+  <div class="current-session" id="current-session" style="display: none;">
 
+    <div class="current-session-header">
+
+      <div class="live-badge">
+
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+
+          <circle cx="12" cy="12" r="12"/>
+        </svg>
+        <span data-i18n="stats.nowPlaying">Сейчас играет</span>
+      </div>
+    </div>
+    <div class="current-session-content">
+      <img class="current-session-icon" id="current-session-icon" src="" alt="">
+      <div class="current-session-info">
+        <div class="current-session-station" id="current-session-station"></div>
+        <div class="current-session-track" id="current-session-track"></div>
+        <div class="current-session-time" id="current-session-time"></div>
+      </div>
+    </div>
+  </div>
   <div class="tabs">
   <button class="tab active" data-tab="calendar" data-i18n="stats.calendar">Календарь</button>
     <button class="tab" data-tab="history" data-i18n="stats.history">История</button>
@@ -864,27 +958,35 @@ class StatsView extends HTMLElement {
     this.activeTab = 'calendar';
   }
 
-  connectedCallback() {
+    connectedCallback() {
     this.setupEventListeners();
     this.loadStats();
     this.initCalendar();
     this.updateTexts();
+
     store.on('stats-update', () => this.updateRealtimeStats());
+    store.on('track-update', () => this.updateCurrentSession());
+
+    store.on('station-change', () => this.updateCurrentSession());
+
     this.updateTimer = setInterval(() => this.updateRealtimeStats(), 5000);
+
     document.addEventListener('language-change', () => {
       this.updateTexts();
       this.renderCalendar();
       this.filterHistory();
        });
   }
-
   disconnectedCallback() {
     if (this.updateTimer) {
       clearInterval(this.updateTimer);
       this.updateTimer = null;
     }
     store.off('stats-update', this.updateRealtimeStats);
+    store.off('track-update', this.updateCurrentSession);
+    store.off('station-change', this.updateCurrentSession);
   }
+
 
   setupEventListeners() {
     this.shadowRoot.querySelectorAll('.tab').forEach(tab => {
@@ -1047,13 +1149,55 @@ updateTexts() {
     } else {
       indicator.style.display = 'none';
     }
+      this.updateCurrentSession();
   }
-
+ updateCurrentSession() {
+    const currentSession = store.getCurrentSession();
+    const container = this.shadowRoot.getElementById('current-session');
+    if (!currentSession || !store.current) {
+      container.style.display = 'none';
+      return;
+    }
+    container.style.display = 'block';
+ const station = store.current;
+ if (!station) {
+      container.style.display = 'none';
+      return;
+    }
+    const iconUrl = `/Icons/icon${station.id + 1}.png`;
+    const icon = this.shadowRoot.getElementById('current-session-icon');
+    if (icon) {
+      icon.src = iconUrl;
+      icon.alt = station.name || '';
+    }
+    const stationEl = this.shadowRoot.getElementById('current-session-station');
+    if (stationEl) {
+      stationEl.textContent = station.name || '';
+    }
+    const trackEl = this.shadowRoot.getElementById('current-session-track');
+    if (trackEl) {
+      if (store.currentTrack && store.currentTrack.artist && store.currentTrack.song) {
+        trackEl.textContent = `${store.currentTrack.artist} - ${store.currentTrack.song}`;
+        trackEl.style.display = 'block';
+      } else {
+        trackEl.textContent = '';
+        trackEl.style.display = 'none';
+      }
+    }
+    const timeEl = this.shadowRoot.getElementById('current-session-time');
+    if (timeEl) {
+      const duration = this.formatTime(currentSession.duration || 0);
+      const genres = station.tags && station.tags.length > 0
+        ? station.tags.join(', ')
+        : '';
+      timeEl.textContent = `${duration}${genres ? ` • ${genres}` : ''}`;
+    }
+  }
   updateSummaryCards(stats) {
     this.shadowRoot.getElementById('today-time').textContent = this.formatTime(stats.times.today);
     this.shadowRoot.getElementById('week-time').textContent = this.formatTime(stats.times.week);
     this.shadowRoot.getElementById('total-time-value').textContent = this.formatTime(stats.times.total);
-    this.shadowRoot.getElementById('stations-count').textContent = Object.keys(stats.stations).length;
+    this.shadowRoot.getElementById('stations-count').textContent = store.favorites ? store.favorites.length : 0;
   }
 
   initCalendar() {
@@ -1089,7 +1233,8 @@ updateTexts() {
 
       if (startDate.getMonth() !== month) dayElement.classList.add('other-month');
 
-      const dateStr = startDate.toISOString().split('T')[0];
+   const dateStr = this.formatDateString(startDate);
+
       const dayStats = stats.dailyStats && stats.dailyStats[dateStr];
 
       const numDiv = document.createElement('div');
@@ -1112,7 +1257,7 @@ updateTexts() {
       startDate.setDate(startDate.getDate() + 1);
     }
 
-    const todayStr = new Date().toISOString().split('T')[0];
+      const todayStr = this.formatDateString(new Date());
     const todayCell = grid.querySelector(`[data-date="${todayStr}"]`);
     if (todayCell) todayCell.classList.add('today');
   }
@@ -1461,7 +1606,7 @@ select.innerHTML = `<option value="all">${t('stats.allStations')}</option>`;
       }
     });
 
-    const dayStr = session.date || new Date(session.timestamp).toISOString().split('T')[0];
+   const dayStr = session.date || this.formatDateString(new Date(session.timestamp));
     if (stats.dailyStats && stats.dailyStats[dayStr]) {
       stats.dailyStats[dayStr].time -= session.time;
       const di = stats.dailyStats[dayStr].sessions.findIndex(s => s.id === sessionId);
@@ -1518,7 +1663,7 @@ select.innerHTML = `<option value="all">${t('stats.allStations')}</option>`;
 
     const a = document.createElement('a');
     a.href = url;
-    a.download = `deepradio-stats-${new Date().toISOString().split('T')[0]}.json`;
+   a.download = `deepradio-stats-${this.formatDateString(new Date())}.json`;
     a.click();
 
     URL.revokeObjectURL(url);

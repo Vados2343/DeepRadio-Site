@@ -56,7 +56,18 @@ export class FloatingPlayerManager {
   if (enabled) {
     console.log('[FloatingPlayerManager] Enabling floating mode...');
     this.enableFloating();
-    this.draggingEnabled = draggingEnabled;
+     if (draggingEnabled !== undefined) {
+          this.draggingEnabled = draggingEnabled;
+          if (this.isFloating) {
+            if (draggingEnabled && !this.dragListenersSetup) {
+              this.playerBar.classList.add('draggable');
+              this.setupDragListeners();
+            } else if (!draggingEnabled && this.dragListenersSetup) {
+              this.playerBar.classList.remove('draggable');
+              this.removeDragListeners();
+            }
+          }
+        }
     this.applyVisibilitySettings();
   } else {
     console.log('[FloatingPlayerManager] Disabling floating mode...');

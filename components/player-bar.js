@@ -43,6 +43,12 @@ template.innerHTML = `
     .volume-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
     .volume-slider::-moz-range-thumb { width: 16px; height: 16px; background: var(--accent1); border-radius: 50%; cursor: pointer; border: none; transition: transform 0.2s; }
     .volume-slider::-moz-range-thumb:hover { transform: scale(1.2); }
+    :host([data-show-icon="false"]) .station-icon-wrapper { display: none !important; }
+    :host([data-show-station-name="false"]) .station-name { display: none !important; }
+    :host([data-show-track-info="false"]) .track-info { display: none !important; }
+    :host([data-show-volume="false"]) .volume-control { display: none !important; }
+    :host([data-show-play-button="false"]) .play-btn { display: none !important; }
+    :host([data-show-step-buttons="false"]) .step-btn { display: none !important; }
     @media (max-width: 768px) { :host { height: var(--total-player-height-mobile); } .player-container { height: var(--player-height-mobile); padding: 0 1rem; gap: 0.75rem; } .station-icon { width: 50px; height: 50px; } .station-name { font-size: 14px; } .track-info { font-size: 12px; } .volume-control { display: none; } .step-btn { display: none !important; } .play-btn { width: 42px; height: 42px; } }
   </style>
   <div class="player-container">

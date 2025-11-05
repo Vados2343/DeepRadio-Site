@@ -862,6 +862,12 @@ class Store extends EventTarget {
     this.currentSessionData.pausedTime = this.totalPausedTime;
      this.currentSessionData.time = totalTime;
     this.currentSessionData.timestamp = this.sessionStartTime;
+     console.log('[Session] Ending session with data:', {
+      station: this.currentSessionData.stationName,
+      track: this.currentSessionData.track,
+      tracksCount: this.currentSessionData.tracks?.length || 0,
+      tracks: this.currentSessionData.tracks
+    });
 
     const stats = this.getStorage('listeningStats', {
       sessions: [],
@@ -918,7 +924,23 @@ class Store extends EventTarget {
     this.sessionPauseTime = null;
     this.currentSessionData = null;
   }
-
+ getCurrentSession() {
+    if (!this.currentSessionData || !this.sessionStartTime) {
+      return null;
+    }
+    const currentTime = Date.now();
+    const pausedTime = this.sessionPauseTime
+      ? this.totalPausedTime + (currentTime - this.sessionPauseTime)
+      : this.totalPausedTime;
+    const duration = Math.floor((currentTime - this.sessionStartTime - pausedTime) / 1000);
+    return {
+      ...this.currentSessionData,
+      duration,
+      time: duration,
+      pausedTime,
+      isActive: true
+    };
+  }
   startTrackUpdates() {
     this.stopTrackUpdates();
 

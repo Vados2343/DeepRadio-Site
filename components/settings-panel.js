@@ -305,9 +305,10 @@ template.innerHTML = `
 }
 
 .select option {
- background: #1a1a1a;
- color: #ffffff;
- padding: 0.75rem 1rem;
+ background: #1a1a1a !important;
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+  padding: 0.75rem 1rem;
 }
 
 .toggle-container {
@@ -957,6 +958,7 @@ template.innerHTML = `
             <option value="compact" data-i18n="settings.playerStyles.compact">Compact</option>
             <option value="modern" data-i18n="settings.playerStyles.modern">Modern</option>
             <option value="classic" data-i18n="settings.playerStyles.classic">Classic</option>
+             <option value="island" data-i18n="settings.playerStyles.island">Island (Floating)</option>
          </select>
 
         </div>
@@ -1335,37 +1337,49 @@ export class SettingsPanel extends HTMLElement {
         playerBar.setAttribute('player-style', style);
       if (style === 'island') {
           console.log('[Island Mode] Activating...', { playerBar });
-          playerBar.style.display = 'none';
-          const appMain = document.querySelector('.app-main');
-          if (appMain) appMain.style.paddingBottom = '0';
           store.setStorage('floatingEnabled', true);
+          const draggingEnabled = store.getStorage('floatingDraggingEnabled', true);
+          const marqueeEnabled = store.getStorage('floatingMarqueeEnabled', true);
+          const showIcon = store.getStorage('floatingShowIcon', true);
+          const showStationName = store.getStorage('floatingShowStationName', true);
+          const showTrackInfo = store.getStorage('floatingShowTrackInfo', true);
+          const showVolume = store.getStorage('floatingShowVolume', true);
+          const showPlayButton = store.getStorage('floatingShowPlayButton', true);
+          const showStepButtons = store.getStorage('floatingShowStepButtons', false);
           const event = new CustomEvent('floating-player-change', {
             detail: {
               enabled: true,
-              draggingEnabled: true,
-              marqueeEnabled: true,
+              draggingEnabled,
+              marqueeEnabled,
               visibility: {
-                showIcon: true,
-                showStationName: true,
-                showTrackInfo: true,
-                showVolume: true,
-                showPlayButton: true,
-                showStepButtons: true
+                showIcon,
+                showStationName,
+                showTrackInfo,
+                showVolume,
+                showPlayButton,
+                showStepButtons
               }
             }
           });
-          console.log('[Island Mode] Dispatching event:', event.detail);
+          console.log('[Island Mode] Dispatching event with settings:', event.detail);
           document.dispatchEvent(event);
           setTimeout(() => {
             console.log('[Island Mode] FloatingPlayerManager:', window.floatingPlayerManager);
-          }, 100);
+            console.log('[Island Mode] PlayerBar classes:', playerBar.className);
+            console.log('[Island Mode] PlayerBar styles:', playerBar.style.cssText);
+            console.log('[Island Mode] PlayerBar attributes:', {
+              'data-show-icon': playerBar.getAttribute('data-show-icon'),
+              'data-show-station-name': playerBar.getAttribute('data-show-station-name'),
+              'data-show-track-info': playerBar.getAttribute('data-show-track-info'),
+              'data-show-volume': playerBar.getAttribute('data-show-volume'),
+              'data-show-play-button': playerBar.getAttribute('data-show-play-button'),
+              'data-show-step-buttons': playerBar.getAttribute('data-show-step-buttons')
+            });
+          }, 200);
           showToast(t('messages.islandModeActivated'), 'success');
         } else {
-          playerBar.style.display = '';
-          const appMain = document.querySelector('.app-main');
-          if (appMain) appMain.style.paddingBottom = '';
-          const oldStyle = store.getStorage('playerStyle');
-          if (oldStyle === 'island') {
+          const wasIsland = store.getStorage('playerStyle') === 'island';
+          if (wasIsland) {
             store.setStorage('floatingEnabled', false);
             document.dispatchEvent(new CustomEvent('floating-player-change', {
               detail: { enabled: false }
