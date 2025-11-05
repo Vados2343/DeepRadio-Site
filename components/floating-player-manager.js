@@ -136,6 +136,8 @@ export class FloatingPlayerManager {
     if (this.draggingEnabled && !this.dragListenersSetup) {
       this.playerBar.classList.add('draggable');
       this.setupDragListeners();
+    } else if (!this.draggingEnabled) {
+      this.playerBar.classList.remove('draggable');
     }
 
     // принудительно сбрасываем то, что мешает

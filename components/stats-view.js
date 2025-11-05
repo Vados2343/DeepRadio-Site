@@ -964,27 +964,31 @@ class StatsView extends HTMLElement {
     this.initCalendar();
     this.updateTexts();
 
-    store.on('stats-update', () => this.updateRealtimeStats());
-    store.on('track-update', () => this.updateCurrentSession());
-
-    store.on('station-change', () => this.updateCurrentSession());
-
-    this.updateTimer = setInterval(() => this.updateRealtimeStats(), 5000);
-
-    document.addEventListener('language-change', () => {
+    this.boundUpdateRealtimeStats = this.updateRealtimeStats.bind(this);
+    this.boundUpdateCurrentSession = this.updateCurrentSession.bind(this);
+    this.boundLanguageChange = () => {
       this.updateTexts();
       this.renderCalendar();
       this.filterHistory();
-       });
+    };
+
+    store.on('stats-update', this.boundUpdateRealtimeStats);
+    store.on('track-update', this.boundUpdateCurrentSession);
+    store.on('station-change', this.boundUpdateCurrentSession);
+
+    this.updateTimer = setInterval(() => this.updateRealtimeStats(), 5000);
+
+    document.addEventListener('language-change', this.boundLanguageChange);
   }
   disconnectedCallback() {
     if (this.updateTimer) {
       clearInterval(this.updateTimer);
       this.updateTimer = null;
     }
-    store.off('stats-update', this.updateRealtimeStats);
-    store.off('track-update', this.updateCurrentSession);
-    store.off('station-change', this.updateCurrentSession);
+    store.off('stats-update', this.boundUpdateRealtimeStats);
+    store.off('track-update', this.boundUpdateCurrentSession);
+    store.off('station-change', this.boundUpdateCurrentSession);
+    document.removeEventListener('language-change', this.boundLanguageChange);
   }
 
 
