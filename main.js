@@ -4,6 +4,7 @@ import { store } from './core/store.js';
 import './components/station-grid.js';
 import './components/player-bar.js';
 import './components/settings-panel.js';
+import './components/floating-player-panel.js';
 import './components/stats-view.js';
 import './components/like-prompt.js';
 import './components/changelog-panel.js';

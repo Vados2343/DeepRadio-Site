@@ -15,6 +15,8 @@ export class FloatingPlayerManager {
     this.isFloating = false;
     this.dragThreshold = 5;
     this.hasMovedPastThreshold = false;
+    this.draggingEnabled = false;
+    this.dragListenersSetup = false;
 
     this.floatingClass = 'floating-player-host';
 
@@ -26,48 +28,106 @@ export class FloatingPlayerManager {
   init() {
     if (!this.playerBar) return;
 
-    const savedStyle = store.getStorage('playerStyle', 'default');
-    if (savedStyle === 'island') {
+    const floatingEnabled = store.getStorage('floatingEnabled', false);
+    if (floatingEnabled) {
       this.enableFloating();
       this.restorePosition();
+      this.applyVisibilitySettings();
     }
 
     this.setupEventListeners();
   }
 
   setupEventListeners() {
-    document.addEventListener('settings-change', (e) => {
-      if (e.detail.key === 'playerStyle') {
-        const style = e.detail.value;
+    document.addEventListener('floating-player-change', (e) => {
+      const { enabled, draggingEnabled, marqueeEnabled, visibility } = e.detail;
 
-        if (style === 'island') {
-          this.enableFloating();
-        } else {
-          this.disableFloating();
-        }
+      if (enabled) {
+        this.enableFloating();
+        this.draggingEnabled = draggingEnabled;
+        this.applyVisibilitySettings();
+      } else {
+        this.disableFloating();
       }
     });
 
+    window.addEventListener('resize', this.handleResize);
+  }
+
+  setupDragListeners() {
+    if (this.dragListenersSetup) return;
+
     if (this.playerBar) {
       // Mouse events
-      this.playerBar.addEventListener('mousedown', this.handleDragStart.bind(this));
-      document.addEventListener('mousemove', this.handleDrag.bind(this));
-      document.addEventListener('mouseup', this.handleDragEnd.bind(this));
+      this.mouseDownHandler = this.handleDragStart.bind(this);
+      this.mouseMoveHandler = this.handleDrag.bind(this);
+      this.mouseUpHandler = this.handleDragEnd.bind(this);
+
+      this.playerBar.addEventListener('mousedown', this.mouseDownHandler);
+      document.addEventListener('mousemove', this.mouseMoveHandler);
+      document.addEventListener('mouseup', this.mouseUpHandler);
 
       // Touch events
-      this.playerBar.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
-      document.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
-      document.addEventListener('touchend', this.handleTouchEnd.bind(this));
-    }
+      this.touchStartHandler = this.handleTouchStart.bind(this);
+      this.touchMoveHandler = this.handleTouchMove.bind(this);
+      this.touchEndHandler = this.handleTouchEnd.bind(this);
 
-    window.addEventListener('resize', this.handleResize);
+      this.playerBar.addEventListener('touchstart', this.touchStartHandler, { passive: false });
+      document.addEventListener('touchmove', this.touchMoveHandler, { passive: false });
+      document.addEventListener('touchend', this.touchEndHandler);
+
+      this.dragListenersSetup = true;
+    }
+  }
+
+  removeDragListeners() {
+    if (!this.dragListenersSetup) return;
+
+    if (this.playerBar) {
+      this.playerBar.removeEventListener('mousedown', this.mouseDownHandler);
+      document.removeEventListener('mousemove', this.mouseMoveHandler);
+      document.removeEventListener('mouseup', this.mouseUpHandler);
+
+      this.playerBar.removeEventListener('touchstart', this.touchStartHandler);
+      document.removeEventListener('touchmove', this.touchMoveHandler);
+      document.removeEventListener('touchend', this.touchEndHandler);
+
+      this.dragListenersSetup = false;
+    }
+  }
+
+  applyVisibilitySettings() {
+    if (!this.playerBar) return;
+
+    const showIcon = store.getStorage('floatingShowIcon', true);
+    const showStationName = store.getStorage('floatingShowStationName', true);
+    const showTrackInfo = store.getStorage('floatingShowTrackInfo', true);
+    const showVolume = store.getStorage('floatingShowVolume', true);
+    const showPlayButton = store.getStorage('floatingShowPlayButton', true);
+    const showStepButtons = store.getStorage('floatingShowStepButtons', false);
+
+    this.playerBar.setAttribute('data-show-icon', showIcon);
+    this.playerBar.setAttribute('data-show-station-name', showStationName);
+    this.playerBar.setAttribute('data-show-track-info', showTrackInfo);
+    this.playerBar.setAttribute('data-show-volume', showVolume);
+    this.playerBar.setAttribute('data-show-play-button', showPlayButton);
+    this.playerBar.setAttribute('data-show-step-buttons', showStepButtons);
   }
 
   enableFloating() {
     if (this.isFloating || !this.playerBar) return;
 
     this.isFloating = true;
-    this.playerBar.classList.add('draggable');
+    this.draggingEnabled = store.getStorage('floatingDraggingEnabled', true);
+
+    if (this.draggingEnabled) {
+      this.playerBar.classList.add('draggable');
+      this.setupDragListeners();
+    } else {
+      this.playerBar.classList.remove('draggable');
+      this.removeDragListeners();
+    }
+
     this.playerBar.classList.add(this.floatingClass);
 
     // принудительно сбрасываем то, что мешает
@@ -95,6 +155,7 @@ export class FloatingPlayerManager {
     if (!this.isFloating || !this.playerBar) return;
 
     this.isFloating = false;
+    this.removeDragListeners();
     this.playerBar.classList.remove('draggable', 'dragging', this.floatingClass);
 
     this.resetPosition();
@@ -116,7 +177,7 @@ export class FloatingPlayerManager {
   }
 
   handleDragStart(e) {
-    if (!this.isFloating || !this.playerBar) return;
+    if (!this.isFloating || !this.playerBar || !this.draggingEnabled) return;
 
     // Don't start drag if clicking on interactive elements
     if (e.target.closest('button') || e.target.closest('input') || e.target.closest('a')) {
@@ -176,7 +237,7 @@ export class FloatingPlayerManager {
   }
 
   handleTouchStart(e) {
-    if (!this.isFloating || !this.playerBar) return;
+    if (!this.isFloating || !this.playerBar || !this.draggingEnabled) return;
 
     if (e.target.closest('button') || e.target.closest('input') || e.target.closest('a')) {
       return;
@@ -418,6 +479,7 @@ export class FloatingPlayerManager {
 
   destroy() {
     this.disableFloating();
+    this.removeDragListeners();
     window.removeEventListener('resize', this.handleResize);
   }
 }

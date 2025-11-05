@@ -429,6 +429,32 @@ template.innerHTML = `
   background: conic-gradient(from 0deg, #08f7fe, #f15bb5, #ffea00, #08f7fe);
 }
 
+.floating-player-btn {
+  background: var(--accent1);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 1rem;
+  color: black;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.floating-player-btn:hover {
+  background: var(--accent2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent1) 40%, transparent);
+}
+
+.floating-player-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
 .visualizer-tabs {
   display: flex;
   gap: 0.5rem;
@@ -935,9 +961,21 @@ template.innerHTML = `
             <option value="compact" data-i18n="settings.playerStyles.compact">Compact</option>
             <option value="modern" data-i18n="settings.playerStyles.modern">Modern</option>
             <option value="classic" data-i18n="settings.playerStyles.classic">Classic</option>
-            <option value="island" data-i18n="settings.playerStyles.island">Island (draggable)</option>
           </select>
         </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-label" data-i18n="settings.floatingPlayer">Floating Player</div>
+          <div class="setting-description" data-i18n="settings.floatingPlayerDesc">Configure draggable floating player mode</div>
+        </div>
+        <button class="floating-player-btn" id="floating-player-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+          <span data-i18n="settings.configure">Configure</span>
+        </button>
       </div>
 
       <div class="setting-row">
@@ -1150,6 +1188,7 @@ export class SettingsPanel extends HTMLElement {
     this.headerLayoutSelect = this.shadowRoot.getElementById('header-layout-select');
     this.playerStyleSelect = this.shadowRoot.getElementById('player-style-select');
     this.centerElementsToggle = this.shadowRoot.getElementById('center-elements-toggle');
+    this.floatingPlayerBtn = this.shadowRoot.getElementById('floating-player-btn');
     this.lightningSettings = this.shadowRoot.getElementById('lightning-settings');
     this.lightningIntensity = this.shadowRoot.getElementById('lightning-intensity');
     this.lightningIntensityValue = this.shadowRoot.getElementById('lightning-intensity-value');
@@ -1298,10 +1337,13 @@ export class SettingsPanel extends HTMLElement {
         detail: { key: 'playerStyle', value: style }
       }));
 
-      if (style === 'island') {
-        showToast('🏝️ Island activated! Drag the player', 'success');
-      } else {
-        showToast('Player style changed', 'success');
+      showToast('Player style changed', 'success');
+    });
+
+    this.floatingPlayerBtn.addEventListener('click', () => {
+      const floatingPanel = document.querySelector('floating-player-panel');
+      if (floatingPanel) {
+        floatingPanel.open();
       }
     });
 
