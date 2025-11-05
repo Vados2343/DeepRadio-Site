@@ -983,6 +983,8 @@ class StatsView extends HTMLElement {
     this.initCalendar();
     this.updateTexts();
     store.on('stats-update', () => this.updateRealtimeStats());
+    store.on('track-update', () => this.updateCurrentSession());
+    store.on('station-change', () => this.updateCurrentSession());
     this.updateTimer = setInterval(() => this.updateRealtimeStats(), 5000);
     document.addEventListener('language-change', () => {
       this.updateTexts();
@@ -997,6 +999,8 @@ class StatsView extends HTMLElement {
       this.updateTimer = null;
     }
     store.off('stats-update', this.updateRealtimeStats);
+    store.off('track-update', this.updateCurrentSession);
+    store.off('station-change', this.updateCurrentSession);
   }
 
   setupEventListeners() {

@@ -869,6 +869,14 @@ class Store extends EventTarget {
     this.currentSessionData.time = totalTime;
     this.currentSessionData.timestamp = this.sessionStartTime;
 
+    // Логирование для дебага
+    console.log('[Session] Ending session with data:', {
+      station: this.currentSessionData.stationName,
+      track: this.currentSessionData.track,
+      tracksCount: this.currentSessionData.tracks?.length || 0,
+      tracks: this.currentSessionData.tracks
+    });
+
     const stats = this.getStorage('listeningStats', {
       sessions: [],
       genres: {},
