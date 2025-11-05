@@ -457,7 +457,12 @@ class Store extends EventTarget {
         logger.log('Visibility', 'Hidden');
       } else {
         logger.log('Visibility', 'Visible');
-        if (this.current && this.isActuallyPlaying) {
+        // КРИТИЧЕСКИЙ ФИКС: НЕ возобновлять автоматически если пользователь поставил на паузу!
+        const currentState = this.playerFSM.getState();
+        const pausedStates = ['PAUSED', 'PAUSED_WAITING', 'ERROR', 'IDLE'];
+        const isManuallyPaused = pausedStates.includes(currentState);
+
+        if (this.current && this.isActuallyPlaying && !isManuallyPaused) {
           this.syncAudioState();
         }
       }
@@ -745,8 +750,14 @@ class Store extends EventTarget {
       if (!store.isFavorite(stationId)) {
         this.likePromptShown.add(stationId);
 
+        // Показывать название трека если известно, иначе название станции
+        let displayName = this.current.name;
+        if (this.currentTrack && this.currentTrack.artist && this.currentTrack.song) {
+          displayName = `${this.currentTrack.artist} - ${this.currentTrack.song}`;
+        }
+
         const notification = showToast(
-           `${t('messages.likePrompt')} "${this.current.name}"? 💖`,
+           `${t('messages.likePrompt')} "${displayName}"? 💖`,
           'info',
           0,
           {
@@ -790,6 +801,13 @@ class Store extends EventTarget {
     this.totalPausedTime = 0;
     this.sessionPauseTime = null;
 
+    // Добавить текущий трек если известен
+    const currentTrack = this.currentTrack && this.currentTrack.artist && this.currentTrack.song ? {
+      id: `${this.currentTrack.artist}_${this.currentTrack.song}`,
+      artist: this.currentTrack.artist,
+      song: this.currentTrack.song
+    } : null;
+
     this.currentSessionData = {
       id: this.currentSessionId,
       stationId: this.current.id,
@@ -798,13 +816,15 @@ class Store extends EventTarget {
       endTime: null,
       duration: 0,
       pausedTime: 0,
+      track: currentTrack,
       tracks: [],
       genres: this.current.tags || []
     };
 
     logger.log('Session', 'Started', {
       sessionId: this.currentSessionId,
-      station: this.current.name
+      station: this.current.name,
+      track: currentTrack
     });
   }
 
@@ -968,8 +988,13 @@ class Store extends EventTarget {
         this.emit('track-update', trackData);
         this.emit('track-change', this.current);
 
-        // Save track to current session
+        // Update current track in session (for stats view)
         if (this.currentSessionData && trackData.artist && trackData.song) {
+          this.currentSessionData.track = {
+            id: trackId,
+            artist: trackData.artist,
+            song: trackData.song
+          };
           this.currentSessionData.tracks.push({
             artist: trackData.artist,
             song: trackData.song,
