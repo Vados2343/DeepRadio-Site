@@ -81,6 +81,54 @@
   --accent3: #ffea00;
 }
 
+[data-accent="purple"] {
+  --accent1: #a855f7;
+  --accent2: #ec4899;
+  --accent3: #8b5cf6;
+}
+
+[data-accent="orange"] {
+  --accent1: #f97316;
+  --accent2: #fb923c;
+  --accent3: #fdba74;
+}
+
+[data-accent="teal"] {
+  --accent1: #14b8a6;
+  --accent2: #06b6d4;
+  --accent3: #22d3ee;
+}
+
+[data-accent="pink"] {
+  --accent1: #ec4899;
+  --accent2: #f472b6;
+  --accent3: #f9a8d4;
+}
+
+[data-accent="sunset"] {
+  --accent1: #f97316;
+  --accent2: #ec4899;
+  --accent3: #fbbf24;
+}
+
+[data-accent="ocean"] {
+  --accent1: #06b6d4;
+  --accent2: #3b82f6;
+  --accent3: #0ea5e9;
+}
+
+[data-accent="forest"] {
+  --accent1: #059669;
+  --accent2: #10b981;
+  --accent3: #34d399;
+}
+
+[data-accent="neon"] {
+  --accent1: #00ff88;
+  --accent2: #ff00ff;
+  --accent3: #00ffff;
+}
+
 @media (min-width: 769px) {
   :root {
     --safe-area-top: 0;
