@@ -15,7 +15,9 @@ template.innerHTML = `
     .player-container { height: var(--player-height); display: flex; align-items: center; padding: 0 max(1.5rem, var(--safe-area-left)) 0 max(1.5rem, var(--safe-area-right)); gap: 1.5rem; }
     .station-info { display: flex; align-items: center; gap: 1rem; min-width: 0; flex: 1; }
     .station-icon-wrapper { position: relative; flex-shrink: 0; cursor: pointer; border-radius: var(--radius); }
-    .station-icon { width: 60px; height: 60px; border-radius: var(--radius); object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,.3); transition: var(--transition); display: block; }
+    .station-icon { width: 60px; height: 60px; border-radius: var(--radius); object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,.3); transition: box-shadow 0.1s ease, transform 0.1s ease; display: block; }
+    .station-icon.playing { animation: iconPulse 0.8s ease-in-out infinite; }
+    @keyframes iconPulse { 0%, 100% { box-shadow: 0 4px 12px rgba(0,0,0,.3), 0 0 0 0 var(--accent1); } 50% { box-shadow: 0 4px 20px rgba(0,0,0,.4), 0 0 15px 3px var(--accent1); transform: scale(1.02); } }
     .fav-indicator { position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; color: var(--accent3); background: rgba(0,0,0,0.5); border-radius: 50%; padding: 2px; display: none; pointer-events: none; transition: transform 0.2s, opacity 0.2s; opacity: 0; transform: scale(0.8); }
     .fav-indicator.is-favorite { display: block; transform: scale(1); opacity: 1; }
     .station-details { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: .25rem; overflow: hidden; }
@@ -192,6 +194,7 @@ export class PlayerBar extends HTMLElement {
         this.clearStates();
         this.applyPendingTrackData();
         this.updatePlayButton();
+        this.updateIconVisualization(true);
         break;
 
       case 'PAUSED':
@@ -200,6 +203,7 @@ export class PlayerBar extends HTMLElement {
         this.realPlayingState = false;
         this.clearStates();
         this.updatePlayButton();
+        this.updateIconVisualization(false);
         break;
 
       case 'LOADING':
@@ -234,6 +238,7 @@ export class PlayerBar extends HTMLElement {
         this.isPlaying = false;
         this.realPlayingState = false;
         this.updatePlayButton();
+        this.updateIconVisualization(false);
         break;
 
       case 'IDLE':
@@ -241,6 +246,7 @@ export class PlayerBar extends HTMLElement {
         this.realPlayingState = false;
         this.clearStates();
         this.updatePlayButton();
+        this.updateIconVisualization(false);
         break;
 
       case 'READY':
@@ -377,6 +383,14 @@ export class PlayerBar extends HTMLElement {
   updateFavoriteStatus() {
     const isFav = this.currentStation && store.isFavorite(this.currentStation.id);
     this.elements.favIndicator.classList.toggle('is-favorite', !!isFav);
+  }
+
+  updateIconVisualization(isPlaying) {
+    if (isPlaying) {
+      this.elements.stationIcon.classList.add('playing');
+    } else {
+      this.elements.stationIcon.classList.remove('playing');
+    }
   }
 
   showLoading() {
