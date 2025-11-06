@@ -444,13 +444,27 @@ export class StationGrid extends HTMLElement {
     if (this.state.isRendering) return;
     this.state.isRendering = true;
     requestAnimationFrame(() => {
+      const statsView = document.querySelector('stats-view');
+
       if (this.state.viewMode === 'stats') {
-        this.elements.container.innerHTML = `<stats-view></stats-view>`;
+        this.elements.container.style.display = 'none';
         this.elements.genreFilter.style.display = 'none';
         this.elements.editBanner.classList.remove('show');
+
+        if (statsView) {
+          statsView.style.display = 'block';
+        }
+
         this.state.isRendering = false;
         return;
       }
+
+      // Hide stats view when not in stats mode
+      if (statsView) {
+        statsView.style.display = 'none';
+      }
+
+      this.elements.container.style.display = 'block';
       this.elements.genreFilter.style.display = 'flex';
       const shouldShowBanner = this.state.isEditMode && this.state.viewMode === 'favorites';
       this.elements.editBanner.classList.toggle('show', shouldShowBanner);
