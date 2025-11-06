@@ -1,6 +1,7 @@
 import { store } from '../core/store.js';
 import { showToast } from '../utils/toast.js';
 import { t } from '../utils/i18n.js';
+import { logger } from '../core/Logger.js';
 
 const template = document.createElement('template');
 
@@ -14,8 +15,8 @@ template.innerHTML = `
       font-family: var(--font-main);
     }
 
-    .stats-header { 
-      margin-bottom: 2rem; 
+    .stats-header {
+      margin-bottom: 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -23,15 +24,15 @@ template.innerHTML = `
       gap: 1rem;
     }
 
-    .page-title { 
-      font-size: 2rem; 
-      font-weight: 700; 
-      margin-bottom: 0.5rem; 
-      background: linear-gradient(135deg, var(--accent1), var(--accent2)); 
-      -webkit-background-clip: text; 
-      -webkit-text-fill-color: transparent; 
-      background-clip: text; 
-      color: transparent; 
+    .page-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
     }
 
     .export-btn {
@@ -59,20 +60,20 @@ template.innerHTML = `
       height: 16px;
     }
 
-    .summary-cards { 
-      display: grid; 
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
-      gap: 1.5rem; 
-      margin-bottom: 3rem; 
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
     }
 
-    .summary-card { 
-      background: var(--surface); 
-      backdrop-filter: blur(10px); 
-      border: 1px solid var(--border); 
-      border-radius: var(--radius-lg); 
-      padding: 1.5rem; 
-      transition: var(--transition); 
+    .summary-card {
+      background: var(--surface);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      transition: var(--transition);
       box-shadow: var(--shadow-card);
       position: relative;
       overflow: hidden;
@@ -91,8 +92,8 @@ template.innerHTML = `
     }
 
     .summary-card:hover {
-      transform: translateY(-2px); 
-      box-shadow: 0 8px 24px rgba(0,0,0,.2); 
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,.2);
       border-color: var(--accent1);
     }
 
@@ -100,28 +101,28 @@ template.innerHTML = `
       transform: scaleX(1);
     }
 
-    .card-icon { 
-      width: 48px; 
-      height: 48px; 
-      background: linear-gradient(135deg, var(--accent1), var(--accent2)); 
-      border-radius: var(--radius); 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      margin-bottom: 1rem; 
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
     }
 
-    .card-icon svg { 
-      width: 24px; 
-      height: 24px; 
-      color: #fff; 
+    .card-icon svg {
+      width: 24px;
+      height: 24px;
+      color: #fff;
     }
 
-    .card-value { 
-      font-size: 2rem; 
-      font-weight: 700; 
-      margin-bottom: 0.25rem; 
-      text-shadow: 0 1px 2px rgba(0,0,0,.3); 
+    .card-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      text-shadow: 0 1px 2px rgba(0,0,0,.3);
     }
 
    .card-label {
@@ -191,175 +192,175 @@ template.innerHTML = `
       color: var(--text-secondary);
     }
 
-    .tabs { 
-      display: flex; 
-      gap: .5rem; 
-      margin-bottom: 2rem; 
-      border-bottom: 1px solid var(--border); 
-      background: var(--surface); 
-      backdrop-filter: blur(10px); 
-      padding: .5rem; 
+    .tabs {
+      display: flex;
+      gap: .5rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      backdrop-filter: blur(10px);
+      padding: .5rem;
       border-radius: var(--radius-sm);
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
     }
 
-    .tab { 
-      padding: 1rem 1.5rem; 
-      background: none; 
-      border: none; 
-      color: var(--text-secondary); 
-      font-size: 1rem; 
-      font-weight: 500; 
-      cursor: pointer; 
-      transition: var(--transition); 
+    .tab {
+      padding: 1rem 1.5rem;
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
       position: relative;
       white-space: nowrap;
     }
 
-    .tab:hover { 
-      color: var(--text-primary); 
+    .tab:hover {
+      color: var(--text-primary);
     }
 
-    .tab.active { 
-      color: var(--accent1); 
+    .tab.active {
+      color: var(--accent1);
     }
 
-    .tab.active::after { 
-      content: ''; 
-      position: absolute; 
-      bottom: -1px; 
-      left: 0; 
-      right: 0; 
-      height: 3px; 
-      background: var(--accent1); 
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--accent1);
     }
 
-    .content-section { 
-      display: none; 
+    .content-section {
+      display: none;
     }
 
-    .content-section.active { 
-      display: block; 
-      background: var(--surface); 
-      backdrop-filter: blur(10px); 
-      border-radius: var(--radius-lg); 
-      padding: 1rem; 
+    .content-section.active {
+      display: block;
+      background: var(--surface);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
       animation: fadeIn 0.3s ease;
     }
 
-    .calendar-container { 
-      margin-bottom: 2rem; 
+    .calendar-container {
+      margin-bottom: 2rem;
     }
 
-    .calendar-nav { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      margin-bottom: 1rem; 
-      padding: .5rem; 
+    .calendar-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding: .5rem;
     }
 
-    .calendar-nav button { 
-      background: var(--surface); 
-      border: 1px solid var(--border); 
-      border-radius: var(--radius-sm); 
-      padding: .5rem 1rem; 
-      color: var(--text-primary); 
-      cursor: pointer; 
-      transition: var(--transition); 
+    .calendar-nav button {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: .5rem 1rem;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: var(--transition);
     }
 
-    .calendar-nav button:hover { 
-      background: var(--surface-hover); 
-      border-color: var(--accent1); 
+    .calendar-nav button:hover {
+      background: var(--surface-hover);
+      border-color: var(--accent1);
     }
 
-    .calendar-current { 
-      font-size: 1.1rem; 
-      font-weight: 600; 
-      color: var(--text-primary); 
+    .calendar-current {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-primary);
     }
 
-    .calendar-grid { 
-      display: grid; 
-      grid-template-columns: repeat(7,1fr); 
-      gap: .5rem; 
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7,1fr);
+      gap: .5rem;
     }
 
-    .calendar-weekday { 
-      text-align: center; 
-      font-size: .875rem; 
-      font-weight: 600; 
-      color: var(--text-muted); 
-      padding: .5rem; 
+    .calendar-weekday {
+      text-align: center;
+      font-size: .875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: .5rem;
     }
 
-    .calendar-day { 
-      aspect-ratio: 1; 
-      background: var(--surface); 
-      border: 1px solid var(--border); 
-      border-radius: var(--radius-sm); 
-      display: flex; 
-      flex-direction: column; 
-      align-items: center; 
-      justify-content: center; 
-      cursor: pointer; 
-      transition: var(--transition); 
-      position: relative; 
+    .calendar-day {
+      aspect-ratio: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
     }
 
-    .calendar-day.other-month { 
-      opacity: .3; 
+    .calendar-day.other-month {
+      opacity: .3;
     }
 
-    .calendar-day.selected, .calendar-day.today { 
-      background: var(--accent1); 
-      color: #000; 
-      font-weight: 600; 
+    .calendar-day.selected, .calendar-day.today {
+      background: var(--accent1);
+      color: #000;
+      font-weight: 600;
     }
 
-    .calendar-day.today .calendar-day-time, 
-    .calendar-day.selected .calendar-day-time { 
-      color: rgba(0,0,0,.7); 
+    .calendar-day.today .calendar-day-time,
+    .calendar-day.selected .calendar-day-time {
+      color: rgba(0,0,0,.7);
     }
 
-    .calendar-day.has-data::after { 
-      content: ''; 
-      position: absolute; 
-      bottom: 4px; 
-      width: 4px; 
-      height: 4px; 
-      background: var(--accent2); 
-      border-radius: 50%; 
+    .calendar-day.has-data::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      width: 4px;
+      height: 4px;
+      background: var(--accent2);
+      border-radius: 50%;
     }
 
-    .calendar-day-number { 
-      font-size: .875rem; 
+    .calendar-day-number {
+      font-size: .875rem;
     }
 
-    .calendar-day-time { 
-      font-size: .7rem; 
-      color: var(--text-muted); 
-      margin-top: 2px; 
+    .calendar-day-time {
+      font-size: .7rem;
+      color: var(--text-muted);
+      margin-top: 2px;
     }
 
-    .history-filters { 
-      display: flex; 
-      gap: 1rem; 
-      margin-bottom: 1.5rem; 
-      flex-wrap: wrap; 
+    .history-filters {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
     }
 
-    .filter-select { 
-      background: var(--surface); 
-      border: 1px solid var(--border); 
-      border-radius: var(--radius-sm); 
-      padding: .75rem 1.25rem; 
-      color: var(--text-primary); 
-      font-size: .875rem; 
-      cursor: pointer; 
-      transition: var(--transition); 
+    .filter-select {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: .75rem 1.25rem;
+      color: var(--text-primary);
+      font-size: .875rem;
+      cursor: pointer;
+      transition: var(--transition);
     }
 
     .filter-select:hover {
@@ -412,92 +413,92 @@ template.innerHTML = `
       color: var(--text-muted);
     }
 
-    .history-list { 
-      display: flex; 
-      flex-direction: column; 
-      gap: 1.25rem; 
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
       padding: .5rem;
       max-height: 600px;
       overflow-y: auto;
     }
 
-    .history-item { 
-      background: var(--surface); 
-      backdrop-filter: blur(10px); 
-      border: 1px solid var(--border); 
-      border-radius: var(--radius); 
-      padding: 1.25rem 1.5rem; 
-      display: flex; 
-      align-items: center; 
-      gap: 1.5rem; 
-      transition: var(--transition); 
-      box-shadow: var(--shadow-card); 
+    .history-item {
+      background: var(--surface);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      transition: var(--transition);
+      box-shadow: var(--shadow-card);
       animation: fadeIn .5s ease forwards;
       position: relative;
     }
 
-    .history-item:nth-child(even) { 
-      background: rgba(255,255,255,.05); 
+    .history-item:nth-child(even) {
+      background: rgba(255,255,255,.05);
     }
 
-    .history-item.recent { 
-      border-left: 3px solid var(--accent1); 
+    .history-item.recent {
+      border-left: 3px solid var(--accent1);
     }
 
-    .history-item.liked { 
-      border-left: 3px solid var(--accent3); 
+    .history-item.liked {
+      border-left: 3px solid var(--accent3);
     }
 
-    .history-item:hover { 
-      background: var(--surface-hover); 
-      border-color: var(--border-hover); 
-      transform: translateY(-2px); 
+    .history-item:hover {
+      background: var(--surface-hover);
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
     }
 
-    .history-icon { 
-      width: 40px; 
-      height: 40px; 
-      border-radius: var(--radius-sm); 
-      object-fit: cover; 
-      flex-shrink: 0; 
-      border: 1px solid var(--border); 
-      margin-right: .5rem; 
+    .history-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+      margin-right: .5rem;
     }
 
-    .history-info { 
-      flex: 1; 
-      min-width: 0; 
-      display: flex; 
-      flex-direction: column; 
-      gap: .25rem; 
+    .history-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: .25rem;
     }
 
-    .history-track { 
-      font-weight: 600; 
-      font-size: 1rem; 
-      margin-bottom: .25rem; 
-      overflow: hidden; 
-      text-overflow: ellipsis; 
-      white-space: normal; 
-      color: var(--text-primary); 
-      display: flex; 
-      align-items: center; 
-      gap: .5rem; 
+    .history-track {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: .25rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: normal;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: .5rem;
     }
 
-    .like-indicator { 
-      width: 16px; 
-      height: 16px; 
-      color: var(--accent3); 
-      flex-shrink: 0; 
+    .like-indicator {
+      width: 16px;
+      height: 16px;
+      color: var(--accent3);
+      flex-shrink: 0;
     }
 
-    .history-station { 
-      font-size: .875rem; 
-      color: var(--text-secondary); 
-      overflow: hidden; 
-      text-overflow: ellipsis; 
-      white-space: normal; 
+    .history-station {
+      font-size: .875rem;
+      color: var(--text-secondary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: normal;
     }
 
     .track-details {
@@ -516,93 +517,93 @@ template.innerHTML = `
       border: 1px solid var(--border);
     }
 
-    .history-time { 
-      font-size: .875rem; 
-      color: var(--text-secondary); 
-      text-align: right; 
-      flex-shrink: 0; 
-      width: 120px; 
-      display: flex; 
-      flex-direction: column; 
-      gap: .25rem; 
+    .history-time {
+      font-size: .875rem;
+      color: var(--text-secondary);
+      text-align: right;
+      flex-shrink: 0;
+      width: 120px;
+      display: flex;
+      flex-direction: column;
+      gap: .25rem;
     }
 
-    .session-duration { 
-      font-size: .75rem; 
-      color: var(--text-muted); 
+    .session-duration {
+      font-size: .75rem;
+      color: var(--text-muted);
     }
 
-    .session-count { 
-      font-size: .7rem; 
-      color: var(--accent1); 
-      background: var(--surface-hover); 
-      padding: 2px 6px; 
-      border-radius: var(--radius-sm); 
-      margin-left: .5rem; 
+    .session-count {
+      font-size: .7rem;
+      color: var(--accent1);
+      background: var(--surface-hover);
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      margin-left: .5rem;
     }
 
-    .remove-btn { 
-      background: rgba(255,68,68,.2); 
-      border: 1px solid #ff4444; 
-      border-radius: var(--radius-sm); 
-      padding: .5rem 1rem; 
-      color: var(--text-primary); 
-      font-size: .75rem; 
-      cursor: pointer; 
-      transition: var(--transition); 
-      flex-shrink: 0; 
+    .remove-btn {
+      background: rgba(255,68,68,.2);
+      border: 1px solid #ff4444;
+      border-radius: var(--radius-sm);
+      padding: .5rem 1rem;
+      color: var(--text-primary);
+      font-size: .75rem;
+      cursor: pointer;
+      transition: var(--transition);
+      flex-shrink: 0;
     }
 
-    .remove-btn:hover { 
-      background: #ff4444; 
-      color: #fff; 
-      transform: translateY(-1px); 
-      box-shadow: 0 0 10px rgba(255,68,68,.5); 
+    .remove-btn:hover {
+      background: #ff4444;
+      color: #fff;
+      transform: translateY(-1px);
+      box-shadow: 0 0 10px rgba(255,68,68,.5);
     }
 
-    .genre-chart { 
-      display: flex; 
-      flex-direction: column; 
-      gap: 1rem; 
+    .genre-chart {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
 
-    .genre-item { 
-      display: flex; 
-      align-items: center; 
-      gap: 1rem; 
+    .genre-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
     }
 
-    .genre-name { 
-      width: 100px; 
-      font-size: .875rem; 
-      color: var(--text-secondary); 
+    .genre-name {
+      width: 100px;
+      font-size: .875rem;
+      color: var(--text-secondary);
     }
 
-    .genre-bar-container { 
-      flex: 1; 
-      height: 24px; 
-      background: var(--surface); 
-      border-radius: var(--radius-sm); 
-      position: relative; 
-      overflow: hidden; 
+    .genre-bar-container {
+      flex: 1;
+      height: 24px;
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      position: relative;
+      overflow: hidden;
     }
 
-    .genre-bar { 
-      height: 100%; 
-      background: linear-gradient(90deg, var(--accent1), var(--accent2)); 
-      border-radius: var(--radius-sm); 
-      transition: width .5s ease; 
+    .genre-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      border-radius: var(--radius-sm);
+      transition: width .5s ease;
     }
 
-    .genre-percentage { 
-      position: absolute; 
-      right: .5rem; 
-      top: 50%; 
-      transform: translateY(-50%); 
-      font-size: .75rem; 
-      font-weight: 600; 
-      color: var(--text-primary); 
-      z-index: 1; 
+    .genre-percentage {
+      position: absolute;
+      right: .5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      z-index: 1;
     }
 
     .stats-footer {
@@ -614,56 +615,56 @@ template.innerHTML = `
       border-top: 1px solid var(--border);
     }
 
-    .clear-stats-btn { 
-      background: var(--accent2); 
-      border: none; 
-      border-radius: var(--radius-sm); 
-      padding: .75rem 1.5rem; 
-      color: #fff; 
-      font-size: .875rem; 
-      font-weight: 600; 
-      cursor: pointer; 
-      transition: var(--transition); 
+    .clear-stats-btn {
+      background: var(--accent2);
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: .75rem 1.5rem;
+      color: #fff;
+      font-size: .875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
     }
 
-    .clear-stats-btn:hover { 
-      transform: translateY(-1px); 
-      box-shadow: 0 4px 12px rgba(241,91,181,.4); 
+    .clear-stats-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(241,91,181,.4);
     }
 
-    .empty-state { 
-      text-align: center; 
-      padding: 4rem 2rem; 
-      color: var(--text-muted); 
-      background: var(--surface); 
-      border-radius: var(--radius); 
-      backdrop-filter: blur(10px); 
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-muted);
+      background: var(--surface);
+      border-radius: var(--radius);
+      backdrop-filter: blur(10px);
     }
 
-    .empty-icon { 
-      width: 80px; 
-      height: 80px; 
-      margin: 0 auto 1.5rem; 
-      opacity: .5; 
+    .empty-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1.5rem;
+      opacity: .5;
     }
 
-    .empty-title { 
-      font-size: 1.25rem; 
-      font-weight: 500; 
-      margin-bottom: .5rem; 
-      color: var(--text-secondary); 
+    .empty-title {
+      font-size: 1.25rem;
+      font-weight: 500;
+      margin-bottom: .5rem;
+      color: var(--text-secondary);
     }
 
-    .realtime-indicator { 
-      display: inline-flex; 
-      align-items: center; 
-      gap: .5rem; 
-      padding: .25rem .75rem; 
-      background: var(--accent1); 
-      color: #000; 
-      border-radius: var(--radius-sm); 
-      font-size: .75rem; 
-      font-weight: 600; 
+    .realtime-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .25rem .75rem;
+      background: var(--accent1);
+      color: #000;
+      border-radius: var(--radius-sm);
+      font-size: .75rem;
+      font-weight: 600;
       animation: pulse 2s ease-in-out infinite;
       margin-left: 0.5rem;
     }
@@ -770,14 +771,9 @@ template.innerHTML = `
       box-shadow: 0 4px 12px rgba(241, 91, 181, 0.4);
     }
 
-    @keyframes pulse { 
-      0%,100%{opacity:1;} 
-      50%{opacity:.7;} 
-    }
-
-    @keyframes fadeIn { 
-      from{opacity:0;transform:translateY(10px);} 
-      to{opacity:1;transform:translateY(0);} 
+    @keyframes fadeIn {
+      from{opacity:0;transform:translateY(10px);}
+      to{opacity:1;transform:translateY(0);}
     }
 
     @media (max-width: 768px) {
@@ -798,7 +794,7 @@ template.innerHTML = `
       .export-btn { width: 100%; justify-content: center; }
     }
   </style>
-  
+
   <div class="stats-header">
  <h1 class="page-title" data-i18n="stats.title">Статистика прослушивания</h1>
     <button class="export-btn" id="export-btn">
@@ -949,6 +945,8 @@ class StatsView extends HTMLElement {
     super();
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
+
+    // Основные параметры
     this.currentDate = new Date();
     this.selectedDate = null;
     this.updateTimer = null;
@@ -956,36 +954,538 @@ class StatsView extends HTMLElement {
     this.itemsPerPage = 20;
     this.searchQuery = '';
     this.activeTab = 'calendar';
+
+    // Состояние текущей сессии
+    this.activeSession = null;
+    this.sessionStartTime = null;
+    this.sessionPauseTime = null;
+    this.lastState = null;
+    this.stallCount = 0;
+    this.recoveryCount = 0;
+
+    logger.log('[StatsView]', 'Component initialized');
   }
-    connectedCallback() {
+
+  connectedCallback() {
+    logger.log('[StatsView]', 'Component connected to DOM');
+
     this.setupEventListeners();
     this.loadStats();
     this.initCalendar();
     this.updateTexts();
-   this.boundUpdateRealtimeStats = this.updateRealtimeStats.bind(this);
+
+    // Привязка методов для обработки событий
+    this.boundUpdateRealtimeStats = this.updateRealtimeStats.bind(this);
     this.boundUpdateCurrentSession = this.updateCurrentSession.bind(this);
+    this.boundHandlePlayerStateChange = this.handlePlayerStateChange.bind(this);
+    this.boundHandleStationChange = this.handleStationChange.bind(this);
+    this.boundHandleTrackUpdate = this.handleTrackUpdate.bind(this);
+    this.boundHandlePoolStateChange = this.handlePoolStateChange.bind(this);
     this.boundLanguageChange = () => {
       this.updateTexts();
       this.renderCalendar();
       this.filterHistory();
     };
+
+    // Подписка на события store (FSM и AudioPool)
+    store.on('player-state-change', this.boundHandlePlayerStateChange);
+    store.on('station-change', this.boundHandleStationChange);
+    store.on('track-update', this.boundHandleTrackUpdate);
     store.on('stats-update', this.boundUpdateRealtimeStats);
-    store.on('track-update', this.boundUpdateCurrentSession);
-    store.on('station-change', this.boundUpdateCurrentSession);
-    this.updateTimer = setInterval(() => this.updateRealtimeStats(), 5000);
+    store.on('pool-state-change', this.boundHandlePoolStateChange);
+
+    // Таймер обновления в реальном времени
+    this.updateTimer = setInterval(() => this.updateRealtimeStats(), 1000);
+
     document.addEventListener('language-change', this.boundLanguageChange);
+
+    logger.log('[StatsView]', 'Event listeners attached');
   }
+
   disconnectedCallback() {
+    logger.log('[StatsView]', 'Component disconnected');
+
+    // Завершаем текущую сессию если она была активна
+    if (this.activeSession) {
+      this.endSession();
+    }
+
     if (this.updateTimer) {
       clearInterval(this.updateTimer);
       this.updateTimer = null;
     }
+
+    // Отписка от событий
+    store.off('player-state-change', this.boundHandlePlayerStateChange);
+    store.off('station-change', this.boundHandleStationChange);
+    store.off('track-update', this.boundHandleTrackUpdate);
     store.off('stats-update', this.boundUpdateRealtimeStats);
-    store.off('track-update', this.boundUpdateCurrentSession);
-    store.off('station-change', this.boundUpdateCurrentSession);
+    store.off('pool-state-change', this.boundHandlePoolStateChange);
+
     document.removeEventListener('language-change', this.boundLanguageChange);
   }
 
+  /**
+   * Обработка изменений состояния FSM
+   */
+  handlePlayerStateChange(event) {
+    const { state, previousState } = event.detail || event;
+
+    logger.log('[StatsView]', 'FSM state change', {
+      from: previousState,
+      to: state,
+      station: store.current?.name
+    });
+
+    switch (state) {
+      case 'PLAYING':
+        this.handlePlayingState();
+        break;
+
+      case 'PAUSED':
+        this.handlePausedState();
+        break;
+
+      case 'IDLE':
+        this.handleIdleState();
+        break;
+
+      case 'SWITCHING':
+        this.handleSwitchingState();
+        break;
+
+      case 'WAITING':
+      case 'STALLED':
+        this.handleBufferingState(state);
+        break;
+
+      case 'RECOVERING':
+        this.handleRecoveringState();
+        break;
+
+      case 'ERROR':
+        this.handleErrorState();
+        break;
+    }
+
+    this.lastState = state;
+    this.updateLiveIndicator(state);
+  }
+
+  /**
+   * Начало воспроизведения
+   */
+  handlePlayingState() {
+    if (!store.current) {
+      logger.warn('[StatsView]', 'PLAYING state but no current station');
+      return;
+    }
+
+    // Если сессия на паузе - возобновляем
+    if (this.sessionPauseTime) {
+      logger.log('[StatsView]', 'Resuming paused session', {
+        station: store.current.name,
+        pauseDuration: Date.now() - this.sessionPauseTime
+      });
+      this.sessionPauseTime = null;
+    }
+    // Если нет активной сессии - начинаем новую
+    else if (!this.activeSession || this.activeSession.stationId !== store.current.id) {
+      this.startSession();
+    }
+  }
+
+  /**
+   * Пауза воспроизведения
+   */
+  handlePausedState() {
+    if (this.activeSession && !this.sessionPauseTime) {
+      logger.log('[StatsView]', 'Session paused', {
+        station: store.current?.name,
+        duration: Date.now() - this.sessionStartTime
+      });
+      this.sessionPauseTime = Date.now();
+    }
+  }
+
+  /**
+   * Остановка воспроизведения
+   */
+  handleIdleState() {
+    if (this.activeSession) {
+      logger.log('[StatsView]', 'Playback stopped, ending session');
+      this.endSession();
+    }
+  }
+
+  /**
+   * Переключение станции
+   */
+  handleSwitchingState() {
+    logger.log('[StatsView]', 'Station switching detected');
+
+    // Завершаем текущую сессию
+    if (this.activeSession) {
+      this.endSession();
+    }
+
+    // Новая сессия начнётся при переходе в PLAYING
+  }
+
+  /**
+   * Обработка зависания (WAITING/STALLED)
+   */
+  handleBufferingState(state) {
+    if (!this.activeSession) return;
+
+    this.stallCount++;
+
+    logger.log('[StatsView]', `Buffering detected: ${state}`, {
+      station: store.current?.name,
+      stallCount: this.stallCount,
+      duration: Date.now() - this.sessionStartTime
+    });
+
+    // Если зависание длится долго - пауза сессии
+    if (this.stallCount > 3 && !this.sessionPauseTime) {
+      logger.warn('[StatsView]', 'Extended buffering, pausing session');
+      this.sessionPauseTime = Date.now();
+    }
+  }
+
+  /**
+   * Восстановление соединения
+   */
+  handleRecoveringState() {
+    if (!this.activeSession) return;
+
+    this.recoveryCount++;
+
+    logger.log('[StatsView]', 'Connection recovery in progress', {
+      station: store.current?.name,
+      recoveryAttempt: this.recoveryCount
+    });
+  }
+
+  /**
+   * Ошибка воспроизведения
+   */
+  handleErrorState() {
+    logger.error('[StatsView]', 'Playback error occurred', {
+      station: store.current?.name,
+      sessionActive: !!this.activeSession
+    });
+
+    // При ошибке не завершаем сессию сразу, ждём восстановления или IDLE
+  }
+
+  /**
+   * Обработка смены станции
+   */
+  handleStationChange(event) {
+    const { station } = event.detail || event;
+
+    logger.log('[StatsView]', 'Station changed', {
+      newStation: station?.name,
+      hasActiveSession: !!this.activeSession
+    });
+
+    // Если была активная сессия на другой станции - завершаем
+    if (this.activeSession && this.activeSession.stationId !== station?.id) {
+      this.endSession();
+    }
+  }
+
+  /**
+   * Обработка обновления трека
+   */
+  handleTrackUpdate(event) {
+    if (!this.activeSession) return;
+
+    const track = event.detail;
+
+    if (track && track.artist && track.song) {
+      logger.log('[StatsView]', 'Track updated', {
+        artist: track.artist,
+        song: track.song,
+        station: store.current?.name
+      });
+
+      // Обновляем трек в текущей сессии
+      this.activeSession.track = {
+        id: `${track.artist}-${track.song}`,
+        artist: track.artist,
+        song: track.song
+      };
+    }
+
+    this.updateCurrentSession();
+  }
+
+  /**
+   * Обработка событий AudioPoolManager
+   */
+  handlePoolStateChange(event) {
+    const { type, state, index } = event.detail || event;
+
+    // Логируем критичные события пула
+    if (['error', 'stalled', 'recovery-started', 'recovery-success', 'recovery-failed'].includes(state)) {
+      logger.log('[StatsView]', `AudioPool event: ${state}`, {
+        type,
+        index,
+        station: store.current?.name
+      });
+    }
+  }
+
+  /**
+   * Начало новой сессии
+   */
+  startSession() {
+    if (!store.current) return;
+
+    const now = Date.now();
+    const station = store.current;
+
+    this.activeSession = {
+      id: `session-${now}-${station.id}`,
+      stationId: station.id,
+      stationName: station.name,
+      startTime: now,
+      genres: station.tags || [],
+      track: null,
+      liked: store.favorites?.includes(station.id) || false
+    };
+
+    this.sessionStartTime = now;
+    this.sessionPauseTime = null;
+    this.stallCount = 0;
+    this.recoveryCount = 0;
+
+    logger.log('[StatsView]', 'Session started', {
+      sessionId: this.activeSession.id,
+      station: station.name,
+      genres: this.activeSession.genres
+    });
+
+    this.updateCurrentSession();
+  }
+
+  /**
+   * Завершение сессии
+   */
+  endSession() {
+    if (!this.activeSession) return;
+
+    const now = Date.now();
+    const startTime = this.sessionStartTime;
+    const pauseTime = this.sessionPauseTime;
+
+    // Вычисляем длительность сессии (исключая паузу)
+    let duration;
+    if (pauseTime) {
+      duration = pauseTime - startTime;
+    } else {
+      duration = now - startTime;
+    }
+
+    // Минимальная длительность сессии 5 секунд
+    if (duration < 5000) {
+      logger.log('[StatsView]', 'Session too short, not saving', {
+        duration,
+        station: this.activeSession.stationName
+      });
+      this.activeSession = null;
+      this.sessionStartTime = null;
+      this.sessionPauseTime = null;
+      return;
+    }
+
+    logger.log('[StatsView]', 'Session ended', {
+      sessionId: this.activeSession.id,
+      station: this.activeSession.stationName,
+      duration,
+      stallCount: this.stallCount,
+      recoveryCount: this.recoveryCount
+    });
+
+    // Сохраняем сессию
+    this.saveSession({
+      ...this.activeSession,
+      time: duration,
+      timestamp: startTime,
+      endTime: pauseTime || now,
+      date: this.formatDateString(new Date(startTime))
+    });
+
+    // Очищаем состояние
+    this.activeSession = null;
+    this.sessionStartTime = null;
+    this.sessionPauseTime = null;
+    this.stallCount = 0;
+    this.recoveryCount = 0;
+
+    // Обновляем UI
+    this.loadStats();
+    this.renderCalendar();
+    this.updateCurrentSession();
+  }
+
+  /**
+   * Сохранение сессии в статистику
+   */
+  saveSession(session) {
+    try {
+      const stats = store.getStats();
+
+      // Добавляем сессию
+      stats.sessions.push(session);
+
+      // Обновляем общее время
+      stats.totalTime = (stats.totalTime || 0) + session.time;
+
+      // Обновляем статистику по станциям
+      if (!stats.stations[session.stationId]) {
+        stats.stations[session.stationId] = {
+          name: session.stationName,
+          time: 0,
+          sessions: 0
+        };
+      }
+      stats.stations[session.stationId].time += session.time;
+      stats.stations[session.stationId].sessions += 1;
+
+      // Обновляем статистику по жанрам
+      session.genres.forEach(genre => {
+        stats.genres[genre] = (stats.genres[genre] || 0) + session.time;
+      });
+
+      // Обновляем дневную статистику
+      const dateStr = session.date;
+      if (!stats.dailyStats) stats.dailyStats = {};
+      if (!stats.dailyStats[dateStr]) {
+        stats.dailyStats[dateStr] = {
+          time: 0,
+          sessions: []
+        };
+      }
+      stats.dailyStats[dateStr].time += session.time;
+      stats.dailyStats[dateStr].sessions.push(session);
+
+      // Сохраняем в localStorage
+      store.setStorage('listeningStats', stats);
+
+      logger.log('[StatsView]', 'Session saved to storage', {
+        sessionId: session.id,
+        duration: session.time
+      });
+
+    } catch (error) {
+      logger.error('[StatsView]', 'Failed to save session', error);
+    }
+  }
+
+  /**
+   * Обновление индикатора LIVE
+   */
+  updateLiveIndicator(state) {
+    const indicator = this.shadowRoot.getElementById('realtime-indicator');
+
+    if (state === 'PLAYING' && this.activeSession && !this.sessionPauseTime) {
+      indicator.style.display = 'inline-flex';
+    } else {
+      indicator.style.display = 'none';
+    }
+  }
+
+  /**
+   * Обновление статистики в реальном времени
+   */
+  updateRealtimeStats() {
+    // Если есть активная сессия не на паузе - обновляем время
+    if (this.activeSession && !this.sessionPauseTime) {
+      const currentDuration = Date.now() - this.sessionStartTime;
+
+      // Каждые 10 секунд логируем прогресс
+      if (Math.floor(currentDuration / 10000) > Math.floor((currentDuration - 1000) / 10000)) {
+        logger.log('[StatsView]', 'Session progress', {
+          station: this.activeSession.stationName,
+          duration: currentDuration,
+          state: this.lastState
+        });
+      }
+    }
+
+    const stats = this.getAllStats();
+    this.updateSummaryCards(stats);
+
+    if (this.selectedDate) {
+      this.showDayHistory(this.selectedDate);
+    }
+
+    this.updateCurrentSession();
+  }
+
+  updateCurrentSession() {
+    const container = this.shadowRoot.getElementById('current-session');
+
+    // Показываем только если есть активная сессия не на паузе
+    if (!this.activeSession || this.sessionPauseTime) {
+      container.style.display = 'none';
+      return;
+    }
+
+    const station = store.current;
+    if (!station) {
+      container.style.display = 'none';
+      return;
+    }
+
+    container.style.display = 'block';
+
+    const iconUrl = `/Icons/icon${station.id + 1}.png`;
+    const icon = this.shadowRoot.getElementById('current-session-icon');
+    if (icon) {
+      icon.src = iconUrl;
+      icon.alt = station.name || '';
+    }
+
+    const stationEl = this.shadowRoot.getElementById('current-session-station');
+    if (stationEl) {
+      stationEl.textContent = station.name || '';
+    }
+
+    const trackEl = this.shadowRoot.getElementById('current-session-track');
+    if (trackEl) {
+      const track = this.activeSession.track;
+      if (track && track.artist && track.song) {
+        trackEl.textContent = `${track.artist} - ${track.song}`;
+        trackEl.style.display = 'block';
+      } else {
+        trackEl.textContent = '';
+        trackEl.style.display = 'none';
+      }
+    }
+
+    const timeEl = this.shadowRoot.getElementById('current-session-time');
+    if (timeEl) {
+      const duration = Date.now() - this.sessionStartTime;
+      const durationStr = this.formatTime(duration);
+      const genres = station.tags && station.tags.length > 0
+        ? station.tags.join(', ')
+        : '';
+
+      let statusInfo = '';
+      if (this.stallCount > 0) {
+        statusInfo = ` • Зависаний: ${this.stallCount}`;
+      }
+      if (this.recoveryCount > 0) {
+        statusInfo += ` • Переподключений: ${this.recoveryCount}`;
+      }
+
+      timeEl.textContent = `${durationStr}${genres ? ` • ${genres}` : ''}${statusInfo}`;
+    }
+  }
 
   setupEventListeners() {
     this.shadowRoot.querySelectorAll('.tab').forEach(tab => {
@@ -1036,6 +1536,7 @@ class StatsView extends HTMLElement {
   }
 
   loadStats() {
+    logger.log('[StatsView]', 'Loading stats from storage');
     const stats = this.getAllStats();
     this.updateSummaryCards(stats);
     this.updateHistoryList(stats.sessions);
@@ -1059,8 +1560,9 @@ class StatsView extends HTMLElement {
       if (session.timestamp >= weekAgo) times.week += session.time;
     });
 
-    if (store.sessionStartTime && store.current) {
-      const currentSessionTime = now - store.sessionStartTime;
+    // Добавляем время текущей сессии
+    if (this.activeSession && !this.sessionPauseTime) {
+      const currentSessionTime = Date.now() - this.sessionStartTime;
       times.today += currentSessionTime;
       times.week += currentSessionTime;
       times.total += currentSessionTime;
@@ -1139,63 +1641,6 @@ updateTexts() {
     return div.innerHTML;
   }
 
-  updateRealtimeStats() {
-    const stats = this.getAllStats();
-    this.updateSummaryCards(stats);
-  this.renderCalendar();
-    if (this.selectedDate) {
-      this.showDayHistory(this.selectedDate);
-    }
-    const indicator = this.shadowRoot.getElementById('realtime-indicator');
-    if (store.current && store.audio && !store.audio.paused) {
-      indicator.style.display = 'inline-flex';
-    } else {
-      indicator.style.display = 'none';
-    }
-    this.updateCurrentSession();
-  }
- updateCurrentSession() {
-    const currentSession = store.getCurrentSession();
-    const container = this.shadowRoot.getElementById('current-session');
-    if (!currentSession || !store.current) {
-      container.style.display = 'none';
-      return;
-    }
-    container.style.display = 'block';
- const station = store.current;
- if (!station) {
-      container.style.display = 'none';
-      return;
-    }
-    const iconUrl = `/Icons/icon${station.id + 1}.png`;
-    const icon = this.shadowRoot.getElementById('current-session-icon');
-    if (icon) {
-      icon.src = iconUrl;
-      icon.alt = station.name || '';
-    }
-    const stationEl = this.shadowRoot.getElementById('current-session-station');
-    if (stationEl) {
-      stationEl.textContent = station.name || '';
-    }
-    const trackEl = this.shadowRoot.getElementById('current-session-track');
-    if (trackEl) {
-      if (store.currentTrack && store.currentTrack.artist && store.currentTrack.song) {
-        trackEl.textContent = `${store.currentTrack.artist} - ${store.currentTrack.song}`;
-        trackEl.style.display = 'block';
-      } else {
-        trackEl.textContent = '';
-        trackEl.style.display = 'none';
-      }
-    }
-    const timeEl = this.shadowRoot.getElementById('current-session-time');
-    if (timeEl) {
-      const duration = this.formatTime(currentSession.duration || 0);
-      const genres = station.tags && station.tags.length > 0
-        ? station.tags.join(', ')
-        : '';
-      timeEl.textContent = `${duration}${genres ? ` • ${genres}` : ''}`;
-    }
-  }
   updateSummaryCards(stats) {
     this.shadowRoot.getElementById('today-time').textContent = this.formatTime(stats.times.today);
     this.shadowRoot.getElementById('week-time').textContent = this.formatTime(stats.times.week);
@@ -1586,6 +2031,8 @@ select.innerHTML = `<option value="all">${t('stats.allStations')}</option>`;
   }
 
   removeSession(sessionId) {
+    logger.log('[StatsView]', 'Removing session', { sessionId });
+
     const stats = store.getStats();
     const idx = stats.sessions.findIndex(s => s.id === sessionId);
     if (idx === -1) return;
@@ -1630,6 +2077,13 @@ select.innerHTML = `<option value="all">${t('stats.allStations')}</option>`;
     this.shadowRoot.getElementById('confirm-dialog').classList.remove('show');
   }
   clearAllStats() {
+    logger.log('[StatsView]', 'Clearing all stats');
+
+    // Завершаем текущую сессию если есть
+    if (this.activeSession) {
+      this.endSession();
+    }
+
     store.resetStats();
     this.currentPage = 1;
     this.loadStats();
@@ -1638,6 +2092,8 @@ select.innerHTML = `<option value="all">${t('stats.allStations')}</option>`;
   }
 
   exportStats() {
+    logger.log('[StatsView]', 'Exporting stats');
+
     const stats = this.getAllStats();
 
     const data = {
