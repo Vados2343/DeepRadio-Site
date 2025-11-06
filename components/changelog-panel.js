@@ -303,6 +303,40 @@ const styles = `
 const changelogData = {
   en: [
     {
+      version: 'v3.1.2',
+      badge: 'fix',
+      date: '06.11.2025',
+      categories: [
+        {
+          title: '🐛 Bug Fixes',
+          changes: [
+            { type: 'fix', text: 'Fixed i18n translations for floating player appearance settings' },
+            { type: 'fix', text: 'Fixed floating player position reset - now always appears at bottom-center on page reload' },
+            { type: 'fix', text: 'Fixed equalizer bars toggle - now properly shows/hides animated bars during playback' },
+            { type: 'fix', text: 'Fixed cover visualization toggle - station icon pulsing effect now respects toggle setting' },
+            { type: 'fix', text: 'Fixed accent color switching bug - can now switch colors after applying custom gradient' },
+            { type: 'fix', text: 'Fixed favorites display order - favorites now display in correct order (newest first)' }
+          ]
+        },
+        {
+          title: '✨ New Features',
+          changes: [
+            { type: 'new', text: 'Added settings button visibility toggle - can now hide/show settings button in floating player' },
+            { type: 'new', text: 'Custom gradient now saved as selectable accent color option with ✨ icon' },
+            { type: 'new', text: 'Equalizer bars visualization - 4 animated bars that pulse during playback' }
+          ]
+        },
+        {
+          title: '🎨 UI Improvements',
+          changes: [
+            { type: 'improve', text: 'Moved volume slider style setting from bottom to Behavior section for better organization' },
+            { type: 'improve', text: 'Custom gradient button now properly integrates with accent color picker' },
+            { type: 'improve', text: 'Floating player settings now include separate toggle for settings button visibility' }
+          ]
+        }
+      ]
+    },
+    {
       version: 'v3.1.1',
       badge: 'update',
       date: '06.11.2025',
