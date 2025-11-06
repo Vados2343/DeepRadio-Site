@@ -252,6 +252,24 @@ class EnhancedApp {
       }
     });
 
+    const addPlaylistBtn = document.getElementById('add-playlist');
+    addPlaylistBtn?.addEventListener('click', () => {
+      const playlistName = prompt('Введите название плейлиста:', '');
+      if (playlistName && playlistName.trim()) {
+        const playlistId = `playlist_${Date.now()}`;
+        const newPlaylist = {
+          id: playlistId,
+          name: playlistName.trim(),
+          stations: [],
+          createdAt: Date.now()
+        };
+        store.playlists[playlistId] = newPlaylist;
+        store.setStorage('playlists', store.playlists);
+        this.updatePlaylistsNav();
+        showToast(t('messages.playlistCreated'), 'success');
+      }
+    });
+
     viewToggle?.addEventListener('click', () => {
       if (store.isEditMode()) {
         showToast('Сначала завершите редактирование', 'warning');
