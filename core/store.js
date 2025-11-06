@@ -821,6 +821,7 @@ class Store extends EventTarget {
       station: this.current.name,
       track: currentTrack
     });
+    this.emit('stats-update');
   }
 
   pauseSession() {
@@ -924,6 +925,7 @@ class Store extends EventTarget {
     this.totalPausedTime = 0;
     this.sessionPauseTime = null;
     this.currentSessionData = null;
+    this.emit('stats-update');
   }
  getCurrentSession() {
     if (!this.currentSessionData || !this.sessionStartTime) {
