@@ -175,6 +175,11 @@ const translations = {
       showVolume: 'Громкость',
       showPlayButton: 'Кнопка воспроизведения',
       showStepButtons: 'Кнопки вперед/назад',
+      showSettingsButton: 'Кнопка настроек',
+      appearance: 'Внешний вид',
+      volumeSliderStyle: 'Стиль слайдера громкости',
+      volumeStyleAccent: 'Акцентный цвет',
+      volumeStyleTransparent: 'Прозрачный',
       apply: 'Применить настройки'
     },
     stats: {
@@ -461,6 +466,11 @@ const translations = {
       showVolume: 'Volume Control',
       showPlayButton: 'Play Button',
       showStepButtons: 'Previous/Next Buttons',
+      showSettingsButton: 'Settings Button',
+      appearance: 'Appearance',
+      volumeSliderStyle: 'Volume Slider Style',
+      volumeStyleAccent: 'Accent Color',
+      volumeStyleTransparent: 'Transparent',
       apply: 'Apply Settings'
     },
     stats: {
@@ -747,6 +757,11 @@ const translations = {
       showVolume: 'Гучність',
       showPlayButton: 'Кнопка відтворення',
       showStepButtons: 'Кнопки вперед/назад',
+      showSettingsButton: 'Кнопка налаштувань',
+      appearance: 'Зовнішній вигляд',
+      volumeSliderStyle: 'Стиль повзунка гучності',
+      volumeStyleAccent: 'Акцентний колір',
+      volumeStyleTransparent: 'Прозорий',
       apply: 'Застосувати налаштування'
     },
     stats: {
