@@ -9,6 +9,7 @@ import './components/stats-view.js';
 import './components/like-prompt.js';
 import './components/changelog-panel.js';
 import './components/capsule-search.js';
+import './components/gradient-creator-panel.js';
 import { BurgerMenu } from './components/burger-menu.js';
 import { FloatingPlayerManager } from './components/floating-player-manager.js';
 import { GeometricVisualizer } from './components/GeometricVisualizer.js';

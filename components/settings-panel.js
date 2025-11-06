@@ -897,9 +897,12 @@ template.innerHTML = `
             <button class="accent-btn" data-accent="red" title="Red"></button>
             <button class="accent-btn" data-accent="gradient" title="Gradient"></button>
           </div>
+          <button class="floating-player-btn" id="gradient-creator-btn" style="margin-top: 1rem;">
+            🎨 Create Custom Gradient
+          </button>
         </div>
       </div>
-      
+
       <div class="setting-row">
         <div class="setting-info">
           <div class="setting-label" data-i18n="settings.animations">Animations</div>
@@ -1472,6 +1475,16 @@ export class SettingsPanel extends HTMLElement {
         showToast(t('messages.accentColorChanged'), 'success');
       });
     });
+
+    const gradientCreatorBtn = this.shadowRoot.getElementById('gradient-creator-btn');
+    if (gradientCreatorBtn) {
+      gradientCreatorBtn.addEventListener('click', () => {
+        const panel = document.querySelector('gradient-creator-panel');
+        if (panel) {
+          panel.open();
+        }
+      });
+    }
 
     this.shadowRoot.querySelectorAll('.viz-tab').forEach(tab => {
       tab.addEventListener('click', () => {
