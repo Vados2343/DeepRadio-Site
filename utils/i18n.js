@@ -281,7 +281,8 @@ const translations = {
       lightningTypePrefix: 'Тип молний: ',
       toastPositionChanged: 'Позиция уведомлений изменена',
       floatingPlayerUpdated: 'Настройки плавающего плеера обновлены',
-        appReady: '✨ DeepRadio готов к работе'
+        appReady: '✨ DeepRadio готов к работе',
+      openingEmailClient: '📧 Открытие почтового клиента...'
     }
   },
   en: {
@@ -567,7 +568,8 @@ const translations = {
       lightningTypePrefix: 'Lightning type: ',
       toastPositionChanged: 'Toast position changed',
       floatingPlayerUpdated: 'Floating player settings updated',
-       appReady: '✨ DeepRadio is ready'
+       appReady: '✨ DeepRadio is ready',
+      openingEmailClient: '📧 Opening email client...'
     }
   },
   uk: {
@@ -851,7 +853,8 @@ const translations = {
       lightningTypePrefix: 'Тип блискавок: ',
       toastPositionChanged: 'Позицію сповіщень змінено',
       floatingPlayerUpdated: 'Налаштування плаваючого плеєра оновлено',
-         appReady: '✨ DeepRadio готовий до роботи'
+         appReady: '✨ DeepRadio готовий до роботи',
+      openingEmailClient: '📧 Відкриття поштового клієнта...'
     }
   }
 };

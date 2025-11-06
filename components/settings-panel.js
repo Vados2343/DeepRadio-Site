@@ -1157,8 +1157,8 @@ template.innerHTML = `
         <p data-i18n="settings.description">Modern internet radio with advanced visualization. Over 150 stations of various genres.</p>
         <div class="links">
           <a href="https://github.com/vados2343/deepradio" target="_blank" id="github-link" data-i18n="settings.github">GitHub</a>
-          <a href="mailto:feedback@deepradio.app" id="feedback-link" data-i18n="settings.feedback">Feedback</a>
-          <a href="#" id="donate-link" data-i18n="settings.support">Support</a>
+          <a href="mailto:support@deepradio.cloud" id="feedback-link" data-i18n="settings.feedback">Feedback</a>
+          <a href="mailto:support@deepradio.cloud" id="donate-link" data-i18n="settings.support">Support</a>
         </div>
       </div>
     </div>
@@ -1533,6 +1533,22 @@ export class SettingsPanel extends HTMLElement {
         showToast(t('messages.toastPositionChanged'), 'success');
       });
     });
+
+    // Add click handlers for feedback and support links with toast notifications
+    const feedbackLink = this.shadowRoot.getElementById('feedback-link');
+    const donateLink = this.shadowRoot.getElementById('donate-link');
+
+    if (feedbackLink) {
+      feedbackLink.addEventListener('click', (e) => {
+        showToast(t('messages.openingEmailClient'), 'info');
+      });
+    }
+
+    if (donateLink) {
+      donateLink.addEventListener('click', (e) => {
+        showToast(t('messages.openingEmailClient'), 'info');
+      });
+    }
   }
 
   updateOpacityDisplay() {
