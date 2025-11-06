@@ -177,6 +177,8 @@ export class PlayerBar extends HTMLElement {
     document.addEventListener('settings-change', (e) => {
       if (e.detail.key === 'visualizerBars') {
         this.toggleEqualizerBars(e.detail.value);
+      } else if (e.detail.key === 'iconVisualizer') {
+        this.updateIconVisualization(this.isPlaying);
       }
     });
 
@@ -412,7 +414,8 @@ export class PlayerBar extends HTMLElement {
   }
 
   updateIconVisualization(isPlaying) {
-    if (isPlaying) {
+    const iconVisualizerEnabled = store.getStorage('iconVisualizer', false);
+    if (isPlaying && iconVisualizerEnabled) {
       this.elements.stationIcon.classList.add('playing');
     } else {
       this.elements.stationIcon.classList.remove('playing');
