@@ -818,7 +818,115 @@ input[type="range"]::-moz-range-thumb:hover {
 
 }
 
- 
+
+
+.setting-item {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  padding: 0.75rem 1rem;
+
+  background: var(--surface);
+
+  border: 1px solid var(--border);
+
+  border-radius: var(--radius-sm);
+
+  transition: all 0.2s ease;
+
+}
+
+
+
+.setting-item:hover {
+
+  border-color: var(--border-hover);
+
+  background: var(--surface-hover);
+
+}
+
+
+
+.setting-label {
+
+  font-size: 0.9rem;
+
+  color: var(--text-primary);
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.5rem;
+
+}
+
+
+
+.setting-label svg {
+
+  width: 20px;
+
+  height: 20px;
+
+  color: var(--accent1);
+
+  flex-shrink: 0;
+
+}
+
+
+
+.style-select {
+
+  padding: 0.5rem 0.75rem;
+
+  background: var(--bg-gradient-start);
+
+  border: 1px solid var(--border);
+
+  border-radius: var(--radius-xs);
+
+  color: var(--text-primary);
+
+  font-size: 0.875rem;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+
+  min-width: 140px;
+
+}
+
+
+
+.style-select:hover {
+
+  border-color: var(--accent1);
+
+  background: var(--surface-hover);
+
+}
+
+
+
+.style-select:focus {
+
+  outline: none;
+
+  border-color: var(--accent1);
+
+  box-shadow: 0 0 0 3px rgba(8, 247, 254, 0.1);
+
+}
+
+
 
 .info-box {
 
@@ -1343,6 +1451,25 @@ input[type="range"]::-moz-range-thumb:hover {
       </div>
 
     </div>
+
+    <!-- Appearance Section -->
+    <div class="section" id="appearance-section">
+      <h3 class="section-title" data-i18n="floatingPlayer.appearance">Appearance</h3>
+
+      <div class="setting-item">
+        <div class="setting-label">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+            <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+          </svg>
+          <span data-i18n="floatingPlayer.volumeSliderStyle">Volume Slider Style</span>
+        </div>
+        <select id="volume-slider-style" class="style-select">
+          <option value="accent" data-i18n-option="floatingPlayer.volumeStyleAccent">Accent Color</option>
+          <option value="transparent" data-i18n-option="floatingPlayer.volumeStyleTransparent">Transparent</option>
+        </select>
+      </div>
+
+    </div>
 </div>
 
   </div>
@@ -1394,6 +1521,8 @@ export class FloatingPlayerPanel extends HTMLElement {
     this.showPlayButton = this.shadowRoot.getElementById('show-play-button');
 
     this.showStepButtons = this.shadowRoot.getElementById('show-step-buttons');
+
+    this.volumeSliderStyle = this.shadowRoot.getElementById('volume-slider-style');
 
 
 
@@ -1460,6 +1589,9 @@ const playerWidth = store.getStorage('floatingPlayerWidth', 50);
     this.showVolume.checked = showVolume;
     this.showPlayButton.checked = showPlayButton;
     this.showStepButtons.checked = showStepButtons;
+    const volumeSliderStyle = store.getStorage('floatingVolumeSliderStyle', 'accent');
+    this.volumeSliderStyle.value = volumeSliderStyle;
+    this.applyVolumeSliderStyle(volumeSliderStyle);
     this.updateFloatingOptionsState();
     this.shadowRoot.querySelectorAll('.position-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.position === position);
@@ -1525,6 +1657,14 @@ const playerWidth = store.getStorage('floatingPlayerWidth', 50);
           this.autoApplySettings();
         });
       }
+    });
+
+    // Auto-apply for volume slider style
+    this.volumeSliderStyle.addEventListener('change', () => {
+      const style = this.volumeSliderStyle.value;
+      store.setStorage('floatingVolumeSliderStyle', style);
+      this.applyVolumeSliderStyle(style);
+      showToast(t('messages.floatingPlayerUpdated'), 'success');
     });
 
     // Auto-apply for position buttons
@@ -1734,6 +1874,15 @@ const playerWidth = store.getStorage('floatingPlayerWidth', 50);
 
     }, 400);
 
+  }
+
+  applyVolumeSliderStyle(style) {
+    const playerBar = document.querySelector('player-bar');
+    if (!playerBar) return;
+
+    // Set attribute on player-bar to control volume slider style
+    playerBar.setAttribute('data-volume-slider-style', style);
+    console.log('[FloatingPlayerPanel] Applied volume slider style:', style);
   }
 
 }

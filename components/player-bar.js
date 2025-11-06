@@ -38,11 +38,14 @@ template.innerHTML = `
     .play-btn.loading svg { animation: rotate 1s linear infinite; }
     @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     .volume-control { display: flex; align-items: center; gap: .75rem; min-width: 150px; }
-    .volume-slider { -webkit-appearance: none; appearance: none; width: 100px; height: 4px; background: var(--surface-hover); border-radius: 2px; outline: none; cursor: pointer; }
+    .volume-slider { -webkit-appearance: none; appearance: none; width: 100px; height: 4px; background: var(--surface-hover); border-radius: 2px; outline: none; cursor: pointer; transition: all 0.2s ease; }
     .volume-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; background: var(--accent1); border-radius: 50%; cursor: pointer; transition: transform 0.2s; }
     .volume-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
     .volume-slider::-moz-range-thumb { width: 16px; height: 16px; background: var(--accent1); border-radius: 50%; cursor: pointer; border: none; transition: transform 0.2s; }
     .volume-slider::-moz-range-thumb:hover { transform: scale(1.2); }
+    :host([data-volume-slider-style="transparent"]) .volume-slider { background: rgba(255, 255, 255, 0.1); }
+    :host([data-volume-slider-style="transparent"]) .volume-slider::-webkit-slider-thumb { background: rgba(255, 255, 255, 0.8); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
+    :host([data-volume-slider-style="transparent"]) .volume-slider::-moz-range-thumb { background: rgba(255, 255, 255, 0.8); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
     :host([data-show-icon="false"]) .station-icon-wrapper { display: none !important; }
     :host([data-show-station-name="false"]) .station-name { display: none !important; }
     :host([data-show-track-info="false"]) .track-info { display: none !important; }
