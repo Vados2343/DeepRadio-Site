@@ -8,9 +8,10 @@ template.innerHTML = `
   <style>
     :host {
       display: block;
-      padding: 2rem;
+      width: 100%;
       max-width: 1200px;
       margin: 0 auto;
+      padding: 0;
       font-family: var(--font-main);
     }
 
