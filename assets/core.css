@@ -11,10 +11,14 @@
   --text-primary: #ffffff;
   --text-secondary: rgba(255, 255, 255, 0.7);
   --text-muted: rgba(255, 255, 255, 0.5);
+  --radius-xs: 4px;
   --radius-sm: 8px;
   --radius: 14px;
   --radius-lg: 20px;
   --radius-xl: 24px;
+  --preview-color1: #08f7fe;
+  --preview-color2: #f15bb5;
+  --preview-color3: #ffea00;
   --z-modals: 1000;
   --shadow-glow: 0 0 20px rgba(8, 247, 254, 0.3);
   --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
