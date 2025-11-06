@@ -126,6 +126,8 @@ export class FloatingPlayerManager {
     this.playerBar.style.bottom = '20px';
     this.playerBar.style.transform = 'translateX(-50%)';
     this.playerBar.style.zIndex = '500';
+    // Show settings button in floating mode
+    this.playerBar.setAttribute('data-show-settings-btn', 'true');
     const storedWidth = store.getStorage('floatingPlayerWidth', 50);
     this.setPlayerWidth(storedWidth);
     document.body.style.paddingBottom = '0';
@@ -148,6 +150,8 @@ export class FloatingPlayerManager {
     this.isFloating = false;
      this.removeDragListeners();
     this.playerBar.classList.remove('draggable', 'dragging', this.floatingClass);
+    // Hide settings button in normal mode
+    this.playerBar.setAttribute('data-show-settings-btn', 'false');
     this.resetPosition();
     this.currentWidthPercent = undefined;
     document.body.style.paddingBottom = '';

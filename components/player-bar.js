@@ -49,6 +49,8 @@ template.innerHTML = `
     :host([data-show-volume="false"]) .volume-control { display: none !important; }
     :host([data-show-play-button="false"]) .play-btn { display: none !important; }
     :host([data-show-step-buttons="false"]) .step-btn { display: none !important; }
+    .settings-btn { display: none; }
+    :host([data-show-settings-btn="true"]) .settings-btn { display: flex; margin-left: 0.5rem; }
     @media (max-width: 768px) { :host { height: var(--total-player-height-mobile); } .player-container { height: var(--player-height-mobile); padding: 0 1rem; gap: 0.75rem; } .station-icon { width: 50px; height: 50px; } .station-name { font-size: 14px; } .track-info { font-size: 12px; } .volume-control { display: none; } .step-btn { display: none !important; } .play-btn { width: 42px; height: 42px; } }
   </style>
   <div class="player-container">
@@ -71,7 +73,7 @@ template.innerHTML = `
       <button class="control-btn volume-btn" title="Громкость"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg></button>
       <input type="range" class="volume-slider" min="0" max="100" value="70">
     </div>
-    <button class="control-btn settings-btn" title="Настройки плеера" style="display: none;">
+    <button class="control-btn settings-btn" title="Настройки плеера">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
         <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94L14.4 2.81c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.47.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
       </svg>
