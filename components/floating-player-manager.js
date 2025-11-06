@@ -388,34 +388,22 @@ export class FloatingPlayerManager {
   restorePosition() {
     if (!this.playerBar) return;
 
-    const savedPosition = store.getStorage('floatingPlayerPosition');
-
-    // важно: включаем плавающий стиль перед восстановлением
+    // Always reset to bottom-center on page reload
     this.playerBar.classList.add(this.floatingClass);
     this.playerBar.style.right = 'auto';
     const storedWidth = store.getStorage('floatingPlayerWidth', 50);
     this.setPlayerWidth(storedWidth);
 
-    if (savedPosition) {
-      this.position = savedPosition.position || 'bottom-center';
-      this.playerBar.setAttribute('data-position', this.position);
+    // Set position to bottom-center
+    this.position = 'bottom';
+    this.playerBar.setAttribute('data-position', 'bottom');
 
-      const rect = this.playerBar.getBoundingClientRect();
-      const maxX = window.innerWidth - rect.width;
-      const maxY = window.innerHeight - rect.height;
+    const rect = this.playerBar.getBoundingClientRect();
+    const x = (window.innerWidth - rect.width) / 2;
+    const y = window.innerHeight - rect.height - 20;
+    this.updatePosition(x, y);
 
-      let x = Math.max(0, Math.min(savedPosition.x, maxX));
-      let y = Math.max(0, Math.min(savedPosition.y, maxY));
-
-      this.updatePosition(x, y);
-
-      console.log('[FloatingPlayer] Position restored:', savedPosition);
-    } else {
-      const rect = this.playerBar.getBoundingClientRect();
-      const x = (window.innerWidth - rect.width) / 2;
-      const y = window.innerHeight - rect.height - 20;
-      this.updatePosition(x, y);
-    }
+    console.log('[FloatingPlayer] Position reset to bottom-center');
   }
 
   resetPosition() {
