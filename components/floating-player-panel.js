@@ -880,6 +880,107 @@ template.innerHTML = `
 
 </style>
 
+.setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.setting-group .setting-row {
+  border-bottom: 1px solid var(--border);
+}
+
+.setting-group .setting-row:last-child {
+  border-bottom: none;
+}
+
+.sub-setting {
+  background: rgba(0, 0, 0, 0.2);
+  padding-left: 2.5rem !important;
+  position: relative;
+}
+
+.sub-setting::before {
+  content: '';
+  position: absolute;
+  left: 1.5rem;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--accent1);
+  opacity: 0.3;
+}
+
+.slider-control {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 120px;
+}
+
+.styled-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right, var(--accent1) 0%, var(--accent1) 40%, var(--border) 40%, var(--border) 100%);
+  outline: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.styled-slider:hover {
+  box-shadow: 0 0 8px rgba(8, 247, 254, 0.4);
+}
+
+.styled-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent1);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(8, 247, 254, 0.5);
+  transition: all 0.2s ease;
+}
+
+.styled-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 4px 12px rgba(8, 247, 254, 0.7);
+}
+
+.styled-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent1);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 8px rgba(8, 247, 254, 0.5);
+  transition: all 0.2s ease;
+}
+
+.styled-slider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 4px 12px rgba(8, 247, 254, 0.7);
+}
+
+.slider-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent1);
+  min-width: 45px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+
  
 
 <div class="overlay" id="overlay"></div>
@@ -974,39 +1075,41 @@ template.innerHTML = `
 
         </div>
 
-        <div class="setting-row">
-          <div class="setting-info">
-            <div class="setting-label" data-i18n="floatingPlayer.playerWidth">Player Width</div>
-            <div class="setting-description" data-i18n="floatingPlayer.playerWidthDesc">Adjust the width of floating player panel</div>
-          </div>
-          <div class="slider-container">
-            <input type="range" class="width-slider" id="player-width-slider" min="30" max="90" value="50" step="5">
-            <span class="width-value" id="player-width-value">50%</span>
-          </div>
-        </div>
+        <div class="setting-group">
+          <div class="setting-row">
 
-        <div class="setting-row">
+            <div class="setting-info">
 
-          <div class="setting-info">
+              <div class="setting-label" data-i18n="floatingPlayer.enableMarquee">Scrolling Text</div>
 
-            <div class="setting-label" data-i18n="floatingPlayer.enableMarquee">Scrolling Text</div>
+              <div class="setting-description" data-i18n="floatingPlayer.enableMarqueeDesc">Auto-scroll long track names</div>
 
-            <div class="setting-description" data-i18n="floatingPlayer.enableMarqueeDesc">Auto-scroll long track names</div>
+            </div>
 
-          </div>
+            <div class="toggle-container">
 
-          <div class="toggle-container">
+              <label class="toggle">
 
-            <label class="toggle">
+                <input type="checkbox" id="marquee-enabled" checked>
 
-              <input type="checkbox" id="marquee-enabled" checked>
+                <span class="toggle-slider"></span>
 
-              <span class="toggle-slider"></span>
+              </label>
 
-            </label>
+            </div>
 
           </div>
 
+          <div class="setting-row sub-setting">
+            <div class="setting-info">
+              <div class="setting-label" data-i18n="floatingPlayer.playerWidth">Player Width</div>
+              <div class="setting-description" data-i18n="floatingPlayer.playerWidthDesc">Adjust the width of floating player panel</div>
+            </div>
+            <div class="slider-control">
+              <input type="range" class="styled-slider" id="player-width-slider" min="30" max="90" value="50" step="5">
+              <span class="slider-value" id="player-width-value">50%</span>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -1379,6 +1482,9 @@ export class FloatingPlayerPanel extends HTMLElement {
     this.playerWidthSlider.value = playerWidth;
     this.playerWidthValue.textContent = `${playerWidth}%`;
 
+    const percent = ((playerWidth - 30) / (90 - 30)) * 100;
+    this.playerWidthSlider.style.background = `linear-gradient(to right, var(--accent1) 0%, var(--accent1) ${percent}%, var(--border) ${percent}%, var(--border) 100%)`;
+
 
 
     this.showIcon.checked = showIcon;
@@ -1453,7 +1559,11 @@ export class FloatingPlayerPanel extends HTMLElement {
 
     this.playerWidthSlider.addEventListener('input', (e) => {
       const value = e.target.value;
+      const percent = ((value - 30) / (90 - 30)) * 100;
+
       this.playerWidthValue.textContent = `${value}%`;
+      e.target.style.background = `linear-gradient(to right, var(--accent1) 0%, var(--accent1) ${percent}%, var(--border) ${percent}%, var(--border) 100%)`;
+
       store.setStorage('floatingPlayerWidth', parseInt(value));
 
       // Apply width change immediately
