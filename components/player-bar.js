@@ -56,6 +56,14 @@ template.innerHTML = `
     :host([data-show-step-buttons="false"]) .step-btn { display: none !important; }
     .settings-btn { display: none; }
     :host([data-show-settings-btn="true"]) .settings-btn { display: flex; margin-left: 0.5rem; }
+    .equalizer-bars { display: none; align-items: flex-end; gap: 3px; height: 24px; margin-right: 1rem; }
+    .equalizer-bars.active { display: flex; }
+    .equalizer-bar { width: 4px; background: linear-gradient(180deg, var(--accent1), var(--accent2)); border-radius: 2px; animation: equalize 0.8s ease-in-out infinite; }
+    .equalizer-bar:nth-child(1) { height: 60%; animation-delay: 0s; }
+    .equalizer-bar:nth-child(2) { height: 40%; animation-delay: 0.2s; }
+    .equalizer-bar:nth-child(3) { height: 80%; animation-delay: 0.4s; }
+    .equalizer-bar:nth-child(4) { height: 50%; animation-delay: 0.6s; }
+    @keyframes equalize { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(0.3); } }
     @media (max-width: 768px) { :host { height: var(--total-player-height-mobile); } .player-container { height: var(--player-height-mobile); padding: 0 1rem; gap: 0.75rem; } .station-icon { width: 50px; height: 50px; } .station-name { font-size: 14px; } .track-info { font-size: 12px; } .volume-control { display: none; } .step-btn { display: none !important; } .play-btn { width: 42px; height: 42px; } }
   </style>
   <div class="player-container">
@@ -68,6 +76,12 @@ template.innerHTML = `
      <div class="station-name"></div>
         <div class="track-info"><span class="track-text-wrapper"><span class="track-text"></span></span></div>
       </div>
+    </div>
+    <div class="equalizer-bars">
+      <div class="equalizer-bar"></div>
+      <div class="equalizer-bar"></div>
+      <div class="equalizer-bar"></div>
+      <div class="equalizer-bar"></div>
     </div>
     <div class="player-controls">
       <button class="control-btn step-btn" data-step="-1" title="Предыдущая"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
@@ -103,7 +117,8 @@ export class PlayerBar extends HTMLElement {
       stepBtns: this.shadowRoot.querySelectorAll('.step-btn'),
       volumeSlider: this.shadowRoot.querySelector('.volume-slider'),
       volumeBtn: this.shadowRoot.querySelector('.volume-btn'),
-      settingsBtn: this.shadowRoot.querySelector('.settings-btn')
+      settingsBtn: this.shadowRoot.querySelector('.settings-btn'),
+      equalizerBars: this.shadowRoot.querySelector('.equalizer-bars')
     };
     this.marqueeTimer = null;
     this.currentState = 'IDLE';
@@ -158,6 +173,13 @@ export class PlayerBar extends HTMLElement {
       if (store.current) store.toggleFavorite(store.current.id);
     });
 
+    // Listen for visualizer bars setting changes
+    document.addEventListener('settings-change', (e) => {
+      if (e.detail.key === 'visualizerBars') {
+        this.toggleEqualizerBars(e.detail.value);
+      }
+    });
+
     // Settings button handler
     this.elements.settingsBtn.addEventListener('click', () => {
       this.openFloatingPlayerSettings();
@@ -195,6 +217,7 @@ export class PlayerBar extends HTMLElement {
         this.applyPendingTrackData();
         this.updatePlayButton();
         this.updateIconVisualization(true);
+        this.toggleEqualizerBars(store.getStorage('visualizerBars', true));
         break;
 
       case 'PAUSED':
@@ -204,6 +227,7 @@ export class PlayerBar extends HTMLElement {
         this.clearStates();
         this.updatePlayButton();
         this.updateIconVisualization(false);
+        this.toggleEqualizerBars(false);
         break;
 
       case 'LOADING':
@@ -239,6 +263,7 @@ export class PlayerBar extends HTMLElement {
         this.realPlayingState = false;
         this.updatePlayButton();
         this.updateIconVisualization(false);
+        this.toggleEqualizerBars(false);
         break;
 
       case 'IDLE':
@@ -247,6 +272,7 @@ export class PlayerBar extends HTMLElement {
         this.clearStates();
         this.updatePlayButton();
         this.updateIconVisualization(false);
+        this.toggleEqualizerBars(false);
         break;
 
       case 'READY':
@@ -393,6 +419,14 @@ export class PlayerBar extends HTMLElement {
     }
   }
 
+  toggleEqualizerBars(enabled) {
+    if (enabled && this.isPlaying) {
+      this.elements.equalizerBars.classList.add('active');
+    } else {
+      this.elements.equalizerBars.classList.remove('active');
+    }
+  }
+
   showLoading() {
     this.clearStates();
     this.elements.trackInfo.classList.add('loading');
@@ -473,6 +507,10 @@ export class PlayerBar extends HTMLElement {
     const lastStation = store.stations.find(s => s.id === lastId);
     if (lastStation) this.updateStation(lastStation);
     this.updatePlayButton();
+
+    // Load equalizer bars setting
+    const visualizerBars = store.getStorage('visualizerBars', true);
+    this.toggleEqualizerBars(visualizerBars);
   }
 
   openFloatingPlayerSettings() {
