@@ -512,7 +512,14 @@ class Store extends EventTarget {
 
       logger.log('Store', 'Play', { station: station.name, isSame: isSameStation });
 
-      if (!isSameStation) {
+     if (!isSameStation) {
+        this.stopTrackUpdates();
+        this.clearLikePromptTimer();
+
+        if (this.currentSessionId) {
+          this.endSession();
+        }
+
         this.current = station;
         this.currentTrack = null;
         this.lastTrackId = null;
@@ -847,8 +854,8 @@ class Store extends EventTarget {
     });
   }
 
-  endSession() {
-    if (!this.sessionStartTime) return;
+ endSession() {
+    if (!this.currentSessionId || !this.sessionStartTime) return;
 
     if (this.sessionPauseTime) {
       const pauseDuration = Date.now() - this.sessionPauseTime;

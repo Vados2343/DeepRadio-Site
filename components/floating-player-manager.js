@@ -9,13 +9,14 @@ export class FloatingPlayerManager {
     this.startY = 0;
     this.initialX = 0;
     this.initialY = 0;
-    this.currentX = 0;
+     this.currentX = 0;
     this.currentY = 0;
     this.position = 'bottom-center';
     this.isFloating = false;
     this.dragThreshold = 5;
     this.hasMovedPastThreshold = false;
      this.draggingEnabled = true;
+    this.currentWidthPercent = undefined;
 
     this.dragListenersSetup = false;
     this.floatingClass = 'floating-player-host';
@@ -114,22 +115,19 @@ export class FloatingPlayerManager {
 
   enableFloating() {
     if (this.isFloating || !this.playerBar) return;
-
     this.isFloating = true;
     this.playerBar.classList.add(this.floatingClass);
-    if (this.draggingEnabled && !this.dragListenersSetup) {
+   if (this.draggingEnabled && !this.dragListenersSetup){
       this.playerBar.classList.add('draggable');
       this.setupDragListeners();
     }
     this.playerBar.style.position = 'fixed';
     this.playerBar.style.right = 'auto';
-    this.playerBar.style.left = '50%';
-    this.playerBar.style.top = 'auto';
     this.playerBar.style.bottom = '20px';
     this.playerBar.style.transform = 'translateX(-50%)';
-    this.playerBar.style.maxWidth = '460px';
-    this.playerBar.style.width = 'auto';
     this.playerBar.style.zIndex = '500';
+    const storedWidth = store.getStorage('floatingPlayerWidth', 50);
+    this.setPlayerWidth(storedWidth);
     document.body.style.paddingBottom = '0';
     const mainElement = document.querySelector('.app-main');
     if (mainElement) {
@@ -151,6 +149,7 @@ export class FloatingPlayerManager {
      this.removeDragListeners();
     this.playerBar.classList.remove('draggable', 'dragging', this.floatingClass);
     this.resetPosition();
+    this.currentWidthPercent = undefined;
     document.body.style.paddingBottom = '';
     const mainElement = document.querySelector('.app-main');
     if (mainElement) {
@@ -162,6 +161,9 @@ export class FloatingPlayerManager {
   handleResize() {
     if (!this.isFloating || !this.playerBar) return;
 
+    if (this.currentWidthPercent !== undefined) {
+      this.setPlayerWidth(this.currentWidthPercent);
+    }
     const rect = this.playerBar.getBoundingClientRect();
     const maxX = window.innerWidth - rect.width;
     const maxY = window.innerHeight - rect.height;
@@ -309,7 +311,6 @@ export class FloatingPlayerManager {
     this.playerBar.style.bottom = 'auto';
     this.playerBar.style.top = `${y}px`;
     this.playerBar.style.transform = 'none';
-    this.playerBar.style.width = 'auto';
   }
 
   snapToEdge() {
@@ -387,8 +388,8 @@ export class FloatingPlayerManager {
     // важно: включаем плавающий стиль перед восстановлением
     this.playerBar.classList.add(this.floatingClass);
     this.playerBar.style.right = 'auto';
-    this.playerBar.style.width = 'auto';
-    this.playerBar.style.maxWidth = '460px';
+    const storedWidth = store.getStorage('floatingPlayerWidth', 50);
+    this.setPlayerWidth(storedWidth);
 
     if (savedPosition) {
       this.position = savedPosition.position || 'bottom-center';
@@ -422,6 +423,7 @@ export class FloatingPlayerManager {
     this.playerBar.style.transform = '';
     this.playerBar.style.width = '';
     this.playerBar.style.maxWidth = '';
+    this.playerBar.style.minWidth = '';
     this.playerBar.removeAttribute('data-position');
   }
 
@@ -508,9 +510,24 @@ export class FloatingPlayerManager {
   }
    setPlayerWidth(widthPercent) {
     if (!this.playerBar || !this.isFloating) return;
-    const maxWidth = Math.min(window.innerWidth * (widthPercent / 100), window.innerWidth - 40);
-    this.playerBar.style.maxWidth = `${maxWidth}px`;
-    console.log('[FloatingPlayer] Width set to', widthPercent + '%', `(${maxWidth}px)`);
+
+    const numericPercent = Number(widthPercent);
+    const safePercent = Number.isFinite(numericPercent) ? numericPercent : 50;
+    const clampedPercent = Math.min(Math.max(safePercent, 0), 100);
+    this.currentWidthPercent = clampedPercent;
+
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
+    const availableWidth = Math.max(viewportWidth - 40, 0);
+    const baseWidth = (viewportWidth * clampedPercent) / 100;
+    const calculatedWidth = Math.min(baseWidth, availableWidth);
+    const pixelWidth = Math.max(calculatedWidth, 0);
+
+    const widthValue = `${pixelWidth}px`;
+    this.playerBar.style.width = widthValue;
+    this.playerBar.style.maxWidth = widthValue;
+    this.playerBar.style.minWidth = widthValue;
+
+    console.log('[FloatingPlayer] Width set to', `${clampedPercent}%`, `(${widthValue})`);
   }
   destroy() {
     this.disableFloating();
