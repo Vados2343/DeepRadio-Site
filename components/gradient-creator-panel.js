@@ -449,11 +449,16 @@ export class GradientCreatorPanel extends HTMLElement {
 
     // Save to localStorage
     store.setStorage('customGradient', { color1, color2, color3 });
+    store.setStorage('accent', 'custom');
 
     // Apply to CSS custom properties
     document.documentElement.style.setProperty('--accent1', color1);
     document.documentElement.style.setProperty('--accent2', color2);
     document.documentElement.style.setProperty('--accent3', color3);
+    document.documentElement.dataset.accent = 'custom';
+
+    // Update accent color buttons to show custom as active
+    document.dispatchEvent(new CustomEvent('accent-changed', { detail: 'custom' }));
 
     showToast('🎨 Custom gradient applied!', 'success');
     this.close();

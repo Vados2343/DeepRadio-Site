@@ -896,6 +896,7 @@ template.innerHTML = `
             <button class="accent-btn" data-accent="green" title="Green"></button>
             <button class="accent-btn" data-accent="red" title="Red"></button>
             <button class="accent-btn" data-accent="gradient" title="Gradient"></button>
+            <button class="accent-btn" data-accent="custom" title="Custom Gradient" style="background: linear-gradient(135deg, var(--accent1, #08f7fe), var(--accent2, #f15bb5), var(--accent3, #ffea00));">✨</button>
           </div>
           <button class="floating-player-btn" id="gradient-creator-btn" style="margin-top: 1rem;">
             🎨 Create Custom Gradient
@@ -1256,6 +1257,16 @@ export class SettingsPanel extends HTMLElement {
       btn.classList.toggle('active', btn.dataset.accent === accent);
     });
 
+    // Apply custom gradient if 'custom' is selected
+    if (accent === 'custom') {
+      const saved = store.getStorage('customGradient');
+      if (saved && saved.color1 && saved.color2 && saved.color3) {
+        document.documentElement.style.setProperty('--accent1', saved.color1);
+        document.documentElement.style.setProperty('--accent2', saved.color2);
+        document.documentElement.style.setProperty('--accent3', saved.color3);
+      }
+    }
+
     this.shadowRoot.querySelectorAll('.viz-tab').forEach(tab => {
       tab.classList.toggle('active', tab.dataset.class === vizClass);
     });
@@ -1470,6 +1481,22 @@ export class SettingsPanel extends HTMLElement {
         const accent = btn.dataset.accent;
         this.shadowRoot.querySelectorAll('.accent-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+
+        // Clear inline styles when switching away from custom gradient
+        if (accent !== 'custom') {
+          document.documentElement.style.removeProperty('--accent1');
+          document.documentElement.style.removeProperty('--accent2');
+          document.documentElement.style.removeProperty('--accent3');
+        } else {
+          // Apply saved custom gradient
+          const saved = store.getStorage('customGradient');
+          if (saved && saved.color1 && saved.color2 && saved.color3) {
+            document.documentElement.style.setProperty('--accent1', saved.color1);
+            document.documentElement.style.setProperty('--accent2', saved.color2);
+            document.documentElement.style.setProperty('--accent3', saved.color3);
+          }
+        }
+
         document.documentElement.dataset.accent = accent;
         store.setStorage('accent', accent);
         showToast(t('messages.accentColorChanged'), 'success');
@@ -1485,6 +1512,17 @@ export class SettingsPanel extends HTMLElement {
         }
       });
     }
+
+    // Listen for custom gradient applied
+    document.addEventListener('accent-changed', (e) => {
+      if (e.detail === 'custom') {
+        this.shadowRoot.querySelectorAll('.accent-btn').forEach(b => b.classList.remove('active'));
+        const customBtn = this.shadowRoot.querySelector('.accent-btn[data-accent="custom"]');
+        if (customBtn) {
+          customBtn.classList.add('active');
+        }
+      }
+    });
 
     this.shadowRoot.querySelectorAll('.viz-tab').forEach(tab => {
       tab.addEventListener('click', () => {
