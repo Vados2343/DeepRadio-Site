@@ -434,23 +434,29 @@ export class StationGrid extends HTMLElement {
       .map(genre => `<button class="genre-btn ${genre === 'all' ? 'active' : ''}" data-genre="${genre}">${genre === 'all' ? t('nav.allGenres') : genre}</button>`)
       .join('');
   }
-
   throttledRender() {
     if (this.renderThrottle) return;
     this.renderThrottle = setTimeout(() => { this.render(); this.renderThrottle = null }, 16);
   }
-
   render() {
     if (this.state.isRendering) return;
     this.state.isRendering = true;
     requestAnimationFrame(() => {
+      const statsView = document.querySelector('stats-view');
       if (this.state.viewMode === 'stats') {
-        this.elements.container.innerHTML = `<stats-view></stats-view>`;
+        this.elements.container.style.display = 'none';
         this.elements.genreFilter.style.display = 'none';
         this.elements.editBanner.classList.remove('show');
+        if (statsView) {
+          statsView.style.display = 'block';
+        }
         this.state.isRendering = false;
         return;
       }
+      if (statsView) {
+        statsView.style.display = 'none';
+      }
+      this.elements.container.style.display = 'block';
       this.elements.genreFilter.style.display = 'flex';
       const shouldShowBanner = this.state.isEditMode && this.state.viewMode === 'favorites';
       this.elements.editBanner.classList.toggle('show', shouldShowBanner);

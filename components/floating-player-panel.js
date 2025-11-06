@@ -911,97 +911,34 @@ template.innerHTML = `
     </button>
 
   </div>
-
- 
-
-  <div class="content">
-
+ <div class="content">
     <div class="section">
-
       <h3 class="section-title" data-i18n="floatingPlayer.mainSettings">Main Settings</h3>
-
- 
-
-      <div class="setting-row">
-
-        <div class="setting-info">
-
-          <div class="setting-label" data-i18n="floatingPlayer.enableFloating">Enable Floating Mode</div>
-
-          <div class="setting-description" data-i18n="floatingPlayer.enableFloatingDesc">Make the player float above all content</div>
-
+     <div class="setting-group">
+          <div class="setting-row">
+      <div class="setting-info">
+              <div class="setting-label" data-i18n="floatingPlayer.enableMarquee">Scrolling Text</div>
+             <div class="setting-description" data-i18n="floatingPlayer.enableMarqueeDesc">Auto-scroll long track names</div>
+           </div>
+            <div class="toggle-container">
+              <label class="toggle">
+                  <input type="checkbox" id="marquee-enabled" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+          <div class="setting-row sub-setting">
+            <div class="setting-info">
+              <div class="setting-label" data-i18n="floatingPlayer.playerWidth">Player Width</div>
+              <div class="setting-description" data-i18n="floatingPlayer.playerWidthDesc">Adjust the width of floating player panel</div>
+            </div>
+            <div class="slider-control">
+              <input type="range" class="styled-slider" id="player-width-slider" min="30" max="90" value="50" step="5">
+              <span class="slider-value" id="player-width-value">50%</span>
+            </div>
+          </div>
         </div>
-
-        <div class="toggle-container">
-
-          <label class="toggle">
-
-            <input type="checkbox" id="floating-enabled">
-
-            <span class="toggle-slider"></span>
-
-          </label>
-
-        </div>
-
       </div>
-
- 
-
-      <div id="floating-options" class="disabled-overlay">
-
-        <div class="setting-row">
-
-          <div class="setting-info">
-
-            <div class="setting-label" data-i18n="floatingPlayer.enableDragging">Enable Dragging</div>
-
-            <div class="setting-description" data-i18n="floatingPlayer.enableDraggingDesc">Allow moving the player by dragging (may consume resources)</div>
-
-          </div>
-
-          <div class="toggle-container">
-
-            <label class="toggle">
-
-              <input type="checkbox" id="dragging-enabled">
-
-              <span class="toggle-slider"></span>
-
-            </label>
-
-          </div>
-
-        </div>
-
- 
-
-        <div class="setting-row">
-
-          <div class="setting-info">
-
-            <div class="setting-label" data-i18n="floatingPlayer.enableMarquee">Scrolling Text</div>
-
-            <div class="setting-description" data-i18n="floatingPlayer.enableMarqueeDesc">Auto-scroll long track names</div>
-
-          </div>
-
-          <div class="toggle-container">
-
-            <label class="toggle">
-
-              <input type="checkbox" id="marquee-enabled" checked>
-
-              <span class="toggle-slider"></span>
-
-            </label>
-
-          </div>
-
-        </div>
-
-      </div>
-
     </div>
 
  
@@ -1287,7 +1224,9 @@ export class FloatingPlayerPanel extends HTMLElement {
     this.floatingEnabled = this.shadowRoot.getElementById('floating-enabled');
 
     this.draggingEnabled = this.shadowRoot.getElementById('dragging-enabled');
+    this.playerWidthSlider = this.shadowRoot.getElementById('player-width-slider');
 
+    this.playerWidthValue = this.shadowRoot.getElementById('player-width-value');
     this.marqueeEnabled = this.shadowRoot.getElementById('marquee-enabled');
 
     this.floatingOptions = this.shadowRoot.getElementById('floating-options');
@@ -1346,52 +1285,29 @@ export class FloatingPlayerPanel extends HTMLElement {
 
     const position = store.getStorage('floatingPosition', 'center');
 
-
-
+const playerWidth = store.getStorage('floatingPlayerWidth', 50);
     const showIcon = store.getStorage('floatingShowIcon', true);
-
     const showStationName = store.getStorage('floatingShowStationName', true);
-
     const showTrackInfo = store.getStorage('floatingShowTrackInfo', true);
-
     const showVolume = store.getStorage('floatingShowVolume', true);
-
     const showPlayButton = store.getStorage('floatingShowPlayButton', true);
-
     const showStepButtons = store.getStorage('floatingShowStepButtons', false);
-
-
-
     this.floatingEnabled.checked = floatingEnabled;
-
     this.draggingEnabled.checked = draggingEnabled;
-
     this.marqueeEnabled.checked = marqueeEnabled;
-
-
-
+    this.playerWidthSlider.value = playerWidth;
+    this.playerWidthValue.textContent = `${playerWidth}%`;
+    const percent = ((playerWidth - 30) / (90 - 30)) * 100;
+    this.playerWidthSlider.style.background = `linear-gradient(to right, var(--accent1) 0%, var(--accent1) ${percent}%, var(--border) ${percent}%, var(--border) 100%)`;
     this.showIcon.checked = showIcon;
-
     this.showStationName.checked = showStationName;
-
     this.showTrackInfo.checked = showTrackInfo;
-
     this.showVolume.checked = showVolume;
-
     this.showPlayButton.checked = showPlayButton;
-
     this.showStepButtons.checked = showStepButtons;
-
-
-
     this.updateFloatingOptionsState();
-
-
-
     this.shadowRoot.querySelectorAll('.position-btn').forEach(btn => {
-
       btn.classList.toggle('active', btn.dataset.position === position);
-
     });
 
   }
@@ -1490,55 +1406,92 @@ export class FloatingPlayerPanel extends HTMLElement {
 
 
 
+
+    const playerWidth = parseInt(this.playerWidthSlider.value);
+
+
+
     const showIcon = this.showIcon.checked;
+
+
 
     const showStationName = this.showStationName.checked;
 
+
+
     const showTrackInfo = this.showTrackInfo.checked;
+
+
 
     const showVolume = this.showVolume.checked;
 
+
+
     const showPlayButton = this.showPlayButton.checked;
+
+
 
     const showStepButtons = this.showStepButtons.checked;
 
 
 
+
+
+
+
     // Save all settings
+
+
 
     store.setStorage('floatingEnabled', floatingEnabled);
 
+
+
     store.setStorage('floatingDraggingEnabled', draggingEnabled);
 
+
+
     store.setStorage('floatingMarqueeEnabled', marqueeEnabled);
+
+    store.setStorage('floatingPlayerWidth', playerWidth);
 
 
 
     store.setStorage('floatingShowIcon', showIcon);
 
+
+
     store.setStorage('floatingShowStationName', showStationName);
+
+
 
     store.setStorage('floatingShowTrackInfo', showTrackInfo);
 
+
+
     store.setStorage('floatingShowVolume', showVolume);
+
+
 
     store.setStorage('floatingShowPlayButton', showPlayButton);
 
+
+
     store.setStorage('floatingShowStepButtons', showStepButtons);
 
-
-
-    // Dispatch events to update the floating player
-
     document.dispatchEvent(new CustomEvent('floating-player-change', {
-
       detail: {
-
         enabled: floatingEnabled,
+
+
 
         draggingEnabled: draggingEnabled,
 
+
+
         marqueeEnabled: marqueeEnabled,
+
+        width: playerWidth,
 
         visibility: {
 

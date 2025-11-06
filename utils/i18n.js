@@ -144,7 +144,39 @@ const translations = {
       floatingPlayerDesc: 'Настройка плавающего плеера',
       configure: 'Настроить'
     },
-
+ floatingPlayer: {
+      title: 'Плавающий плеер',
+      mainSettings: 'Основные настройки',
+      enableFloating: 'Включить плавающий режим',
+      enableFloatingDesc: 'Сделать плеер плавающим над контентом',
+      enableDragging: 'Включить перетаскивание',
+      enableDraggingDesc: 'Разрешить перемещение плеера перетаскиванием (может потреблять ресурсы)',
+      enableMarquee: 'Прокрутка текста',
+      enableMarqueeDesc: 'Автоматическая прокрутка длинных названий треков',
+      playerWidth: 'Ширина островка',
+      playerWidthDesc: 'Регулировка ширины плавающего плеера',
+      position: 'Позиция',
+      positionHint: 'Выберите начальную позицию плавающего плеера',
+      positions: {
+        topLeft: 'Сверху слева',
+        top: 'Сверху',
+        topRight: 'Сверху справа',
+        left: 'Слева',
+        center: 'По центру',
+        right: 'Справа',
+        bottomLeft: 'Снизу слева',
+        bottom: 'Снизу',
+        bottomRight: 'Снизу справа'
+      },
+      visibility: 'Видимость элементов',
+      showIcon: 'Иконка станции',
+      showStationName: 'Название станции',
+      showTrackInfo: 'Информация о треке',
+      showVolume: 'Громкость',
+      showPlayButton: 'Кнопка воспроизведения',
+      showStepButtons: 'Кнопки вперед/назад',
+      apply: 'Применить настройки'
+    },
     stats: {
       title: 'Статистика прослушивания',
        nowPlaying: 'Сейчас играет',
@@ -406,6 +438,8 @@ const translations = {
       enableDraggingDesc: 'Allow moving the player by dragging (may consume resources)',
       enableMarquee: 'Scrolling Text',
       enableMarqueeDesc: 'Auto-scroll long track names',
+       playerWidth: 'Player Width',
+      playerWidthDesc: 'Adjust the width of floating player panel',
       position: 'Position',
       positionHint: 'Choose initial position for the floating player',
       positions: {
@@ -689,6 +723,8 @@ const translations = {
       enableDraggingDesc: 'Дозволити переміщення плеєра перетягуванням (може споживати ресурси)',
       enableMarquee: 'Прокрутка тексту',
       enableMarqueeDesc: 'Автоматична прокрутка довгих назв треків',
+   playerWidth: 'Ширина острівця',
+      playerWidthDesc: 'Регулювання ширини плаваючого плеєра',
       position: 'Позиція',
       positionHint: 'Виберіть початкову позицію плаваючого плеєра',
       positions: {

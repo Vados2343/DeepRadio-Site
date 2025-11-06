@@ -245,6 +245,7 @@ class Store extends EventTarget {
       case PlayerStates.PAUSED_WAITING:
         this.isActuallyPlaying = false;
         this.playingStationId = null;
+        this.clearLoadingTimeout();
         this.emit('pause');
         this.emitUISync();
         this.clearLikePromptTimer();
