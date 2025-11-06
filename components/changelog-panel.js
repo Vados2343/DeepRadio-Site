@@ -308,22 +308,32 @@ const changelogData = {
       date: '06.11.2025',
       categories: [
         {
-          title: '🎨 Appearance Enhancements',
+          title: '🎨 Appearance & Customization',
           changes: [
             { type: 'new', text: 'Settings button now visible by default in floating player mode' },
             { type: 'new', text: 'Volume slider style customization - choose between accent color or transparent style' },
             { type: 'new', text: 'Expanded accent color palette with 8 new themes: Purple, Orange, Teal, Pink, Sunset, Ocean, Forest, and Neon' },
             { type: 'improve', text: 'Settings gear button properly positioned as rightmost element before volume control' },
-            { type: 'new', text: 'Added new Appearance section in floating player settings panel' }
+            { type: 'new', text: 'Added new Appearance section in floating player settings panel' },
+            { type: 'new', text: 'Custom Gradient Creator - interactive tool for creating personalized color gradients with live preview' }
+          ]
+        },
+        {
+          title: '🎵 Audio Visualization',
+          changes: [
+            { type: 'new', text: 'Station icon now pulses with accent color glow during playback' },
+            { type: 'new', text: 'Smooth animation with expanding glow effect synchronized to playing state' },
+            { type: 'improve', text: 'Enhanced visual feedback - icon scales slightly and displays colored shadow when audio is playing' }
           ]
         },
         {
           title: '🐛 Bug Fixes',
           changes: [
             { type: 'fix', text: 'Fixed Support button - now properly opens email client with support@deepradio.cloud' },
-            { type: 'fix', text: 'Fixed Feedback button - now uses support@deepradio.cloud with toast confirmation' },
+            { type: 'fix', text: 'Fixed Feedback button - uses support@deepradio.cloud with toast confirmation' },
             { type: 'fix', text: 'Fixed Create Playlist button - now creates playlists with proper storage and navigation update' },
-            { type: 'fix', text: 'Fixed favorites ordering - newly added favorites now appear at position #1 (top of list)' }
+            { type: 'fix', text: 'Fixed favorites ordering - newly added favorites now appear at position #1 (top of list)' },
+            { type: 'fix', text: 'Fixed missing CSS custom properties - added --radius-xs and --preview-color variables' }
           ]
         },
         {
@@ -337,6 +347,18 @@ const changelogData = {
             { type: 'new', text: 'Ocean: blue to cyan gradient for deep waters' },
             { type: 'new', text: 'Forest: deep to bright green for nature lovers' },
             { type: 'new', text: 'Neon: bright cyberpunk colors (green/magenta/cyan) for futuristic style' }
+          ]
+        },
+        {
+          title: '🛠️ Gradient Creator Features',
+          changes: [
+            { type: 'new', text: 'Interactive color picker with 3 accent colors (accent1, accent2, accent3)' },
+            { type: 'new', text: 'Live gradient preview with smooth animations' },
+            { type: 'new', text: '6 built-in preset gradients for quick selection' },
+            { type: 'new', text: 'Color input sync between picker and hex text fields' },
+            { type: 'new', text: 'Custom gradients persist across sessions via localStorage' },
+            { type: 'new', text: 'One-click apply to update entire app theme instantly' },
+            { type: 'new', text: 'Beautiful modal design with blur backdrop and smooth transitions' }
           ]
         }
       ]
