@@ -302,6 +302,45 @@ const styles = `
 // Changelog data with full translations for en, ru, uk, it
 const changelogData = {
   en: [
+    {
+      version: 'v3.1.1',
+      badge: 'update',
+      date: '06.11.2025',
+      categories: [
+        {
+          title: '🎨 Appearance Enhancements',
+          changes: [
+            { type: 'new', text: 'Settings button now visible by default in floating player mode' },
+            { type: 'new', text: 'Volume slider style customization - choose between accent color or transparent style' },
+            { type: 'new', text: 'Expanded accent color palette with 8 new themes: Purple, Orange, Teal, Pink, Sunset, Ocean, Forest, and Neon' },
+            { type: 'improve', text: 'Settings gear button properly positioned as rightmost element before volume control' },
+            { type: 'new', text: 'Added new Appearance section in floating player settings panel' }
+          ]
+        },
+        {
+          title: '🐛 Bug Fixes',
+          changes: [
+            { type: 'fix', text: 'Fixed Support button - now properly opens email client with support@deepradio.cloud' },
+            { type: 'fix', text: 'Fixed Feedback button - now uses support@deepradio.cloud with toast confirmation' },
+            { type: 'fix', text: 'Fixed Create Playlist button - now creates playlists with proper storage and navigation update' },
+            { type: 'fix', text: 'Fixed favorites ordering - newly added favorites now appear at position #1 (top of list)' }
+          ]
+        },
+        {
+          title: '🌈 New Color Themes',
+          changes: [
+            { type: 'new', text: 'Purple: violet and purple shades for a royal look' },
+            { type: 'new', text: 'Orange: warm orange gradient for energetic vibes' },
+            { type: 'new', text: 'Teal: cyan-teal gradient for calm ocean feels' },
+            { type: 'new', text: 'Pink: pink and rose shades for soft elegance' },
+            { type: 'new', text: 'Sunset: orange to pink gradient for warm evenings' },
+            { type: 'new', text: 'Ocean: blue to cyan gradient for deep waters' },
+            { type: 'new', text: 'Forest: deep to bright green for nature lovers' },
+            { type: 'new', text: 'Neon: bright cyberpunk colors (green/magenta/cyan) for futuristic style' }
+          ]
+        }
+      ]
+    },
        {
       version: 'v3.1.0',
       badge: 'stable',
