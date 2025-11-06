@@ -1212,9 +1212,31 @@ input[type="range"]::-moz-range-thumb:hover {
 
         </div>
 
+
+
+        <div class="setting-row">
+
+          <div class="setting-info">
+
+            <div class="setting-label" data-i18n="floatingPlayer.volumeSliderStyle">Volume Slider Style</div>
+
+            <div class="setting-description">Appearance of the volume slider in floating mode</div>
+
+          </div>
+
+          <select id="volume-slider-style" class="style-select">
+
+            <option value="accent" data-i18n-option="floatingPlayer.volumeStyleAccent">Accent Color</option>
+
+            <option value="transparent" data-i18n-option="floatingPlayer.volumeStyleTransparent">Transparent</option>
+
+          </select>
+
+        </div>
+
       </div>
 
- 
+
 
     <div class="section" id="position-section">
 
@@ -1478,25 +1500,6 @@ input[type="range"]::-moz-range-thumb:hover {
 
         </div>
 
-      </div>
-
-    </div>
-
-    <!-- Appearance Section -->
-    <div class="section" id="appearance-section">
-      <h3 class="section-title" data-i18n="floatingPlayer.appearance">Appearance</h3>
-
-      <div class="setting-item">
-        <div class="setting-label">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-            <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
-          </svg>
-          <span data-i18n="floatingPlayer.volumeSliderStyle">Volume Slider Style</span>
-        </div>
-        <select id="volume-slider-style" class="style-select">
-          <option value="accent" data-i18n-option="floatingPlayer.volumeStyleAccent">Accent Color</option>
-          <option value="transparent" data-i18n-option="floatingPlayer.volumeStyleTransparent">Transparent</option>
-        </select>
       </div>
 
     </div>
