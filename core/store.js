@@ -1089,6 +1089,12 @@ class Store extends EventTarget {
 
     if (this.view === 'favorites') {
       filtered = filtered.filter(s => this.favorites.includes(s.id));
+      // Sort by favorites array order (newest first)
+      filtered.sort((a, b) => {
+        const aIndex = this.favorites.indexOf(a.id);
+        const bIndex = this.favorites.indexOf(b.id);
+        return aIndex - bIndex;
+      });
     } else if (this.view === 'recent') {
       const recentIds = this.recent.slice(-20);
       filtered = filtered.filter(s => recentIds.includes(s.id));
