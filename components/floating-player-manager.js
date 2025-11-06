@@ -48,13 +48,15 @@ export class FloatingPlayerManager {
       const showVolume = store.getStorage('floatingShowVolume', true);
       const showPlayButton = store.getStorage('floatingShowPlayButton', true);
       const showStepButtons = store.getStorage('floatingShowStepButtons', false);
+      const showSettingsButton = store.getStorage('floatingShowSettingsButton', true);
       this.applyVisibilitySettings({
         icon: showIcon,
         stationName: showStationName,
         trackInfo: showTrackInfo,
         volume: showVolume,
         playButton: showPlayButton,
-        stepButtons: showStepButtons
+        stepButtons: showStepButtons,
+        settingsButton: showSettingsButton
       });
        const marqueeEnabled = store.getStorage('floatingMarqueeEnabled', true);
       this.playerBar.setAttribute('data-marquee-enabled', marqueeEnabled);
@@ -126,8 +128,7 @@ export class FloatingPlayerManager {
     this.playerBar.style.bottom = '20px';
     this.playerBar.style.transform = 'translateX(-50%)';
     this.playerBar.style.zIndex = '500';
-    // Show settings button in floating mode
-    this.playerBar.setAttribute('data-show-settings-btn', 'true');
+    // Settings button visibility controlled by applyVisibilitySettings()
     const storedWidth = store.getStorage('floatingPlayerWidth', 50);
     this.setPlayerWidth(storedWidth);
     document.body.style.paddingBottom = '0';
@@ -511,6 +512,7 @@ export class FloatingPlayerManager {
     this.playerBar.setAttribute('data-show-volume', visibility.volume !== false);
     this.playerBar.setAttribute('data-show-play-button', visibility.playButton !== false);
     this.playerBar.setAttribute('data-show-step-buttons', visibility.stepButtons === true);
+    this.playerBar.setAttribute('data-show-settings-btn', visibility.settingsButton !== false);
   }
    setPlayerWidth(widthPercent) {
     if (!this.playerBar || !this.isFloating) return;

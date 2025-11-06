@@ -1448,6 +1448,36 @@ input[type="range"]::-moz-range-thumb:hover {
 
         </div>
 
+
+
+        <div class="visibility-item">
+
+          <div class="visibility-label">
+
+            <svg viewBox="0 0 24 24" fill="currentColor">
+
+              <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94L14.4 2.81c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+
+            </svg>
+
+            <span data-i18n="floatingPlayer.showSettingsButton">Settings Button</span>
+
+          </div>
+
+          <div class="toggle-container">
+
+            <label class="toggle">
+
+              <input type="checkbox" id="show-settings-button" checked>
+
+              <span class="toggle-slider"></span>
+
+            </label>
+
+          </div>
+
+        </div>
+
       </div>
 
     </div>
@@ -1522,6 +1552,8 @@ export class FloatingPlayerPanel extends HTMLElement {
 
     this.showStepButtons = this.shadowRoot.getElementById('show-step-buttons');
 
+    this.showSettingsButton = this.shadowRoot.getElementById('show-settings-button');
+
     this.volumeSliderStyle = this.shadowRoot.getElementById('volume-slider-style');
 
 
@@ -1576,6 +1608,7 @@ const playerWidth = store.getStorage('floatingPlayerWidth', 50);
     const showVolume = store.getStorage('floatingShowVolume', true);
     const showPlayButton = store.getStorage('floatingShowPlayButton', true);
     const showStepButtons = store.getStorage('floatingShowStepButtons', false);
+    const showSettingsButton = store.getStorage('floatingShowSettingsButton', true);
     this.floatingEnabled.checked = floatingEnabled;
     this.draggingEnabled.checked = draggingEnabled;
     this.marqueeEnabled.checked = marqueeEnabled;
@@ -1589,6 +1622,7 @@ const playerWidth = store.getStorage('floatingPlayerWidth', 50);
     this.showVolume.checked = showVolume;
     this.showPlayButton.checked = showPlayButton;
     this.showStepButtons.checked = showStepButtons;
+    this.showSettingsButton.checked = showSettingsButton;
     const volumeSliderStyle = store.getStorage('floatingVolumeSliderStyle', 'accent');
     this.volumeSliderStyle.value = volumeSliderStyle;
     this.applyVolumeSliderStyle(volumeSliderStyle);
@@ -1651,7 +1685,7 @@ const playerWidth = store.getStorage('floatingPlayerWidth', 50);
 
     // Auto-apply for visibility toggles
     [this.showIcon, this.showStationName, this.showTrackInfo,
-     this.showVolume, this.showPlayButton, this.showStepButtons].forEach(toggle => {
+     this.showVolume, this.showPlayButton, this.showStepButtons, this.showSettingsButton].forEach(toggle => {
       if (toggle) {
         toggle.addEventListener('change', () => {
           this.autoApplySettings();
@@ -1744,6 +1778,10 @@ const playerWidth = store.getStorage('floatingPlayerWidth', 50);
 
 
 
+    const showSettingsButton = this.showSettingsButton.checked;
+
+
+
 
 
 
@@ -1788,6 +1826,10 @@ const playerWidth = store.getStorage('floatingPlayerWidth', 50);
 
     store.setStorage('floatingShowStepButtons', showStepButtons);
 
+
+
+    store.setStorage('floatingShowSettingsButton', showSettingsButton);
+
     document.dispatchEvent(new CustomEvent('floating-player-change', {
       detail: {
         enabled: floatingEnabled,
@@ -1814,7 +1856,9 @@ const playerWidth = store.getStorage('floatingPlayerWidth', 50);
 
           playButton: showPlayButton,
 
-          stepButtons: showStepButtons
+          stepButtons: showStepButtons,
+
+          settingsButton: showSettingsButton
 
         }
 
