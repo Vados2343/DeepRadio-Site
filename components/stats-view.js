@@ -8,9 +8,9 @@ template.innerHTML = `
   <style>
     :host {
       display: block;
-      padding: 2rem;
-      max-width: 1200px;
+   max-width: 1200px;
       margin: 0 auto;
+      padding: 0 1rem;
       font-family: var(--font-main);
     }
 
@@ -1699,6 +1699,13 @@ select.innerHTML = `<option value="all">${t('stats.allStations')}</option>`;
     if (n1 > 1 && n1 < 5) return few;
     if (n1 === 1) return one;
     return many;
+  }
+   formatDateString(date) {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 }
 

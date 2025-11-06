@@ -11,7 +11,89 @@ const template = document.createElement('template');
 template.innerHTML = `
 
 <style>
+input[type="range"] {
 
+  -webkit-appearance: none;
+
+  appearance: none;
+
+  width: 100%;
+
+  height: 6px;
+
+  border-radius: 3px;
+
+  outline: none;
+
+  background: var(--border);
+
+}
+
+ 
+
+input[type="range"]::-webkit-slider-thumb {
+
+  -webkit-appearance: none;
+
+  appearance: none;
+
+  width: 18px;
+
+  height: 18px;
+
+  border-radius: 50%;
+
+  background: var(--accent1);
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+}
+
+ 
+
+input[type="range"]::-webkit-slider-thumb:hover {
+
+  transform: scale(1.2);
+
+  box-shadow: 0 0 0 4px rgba(8, 247, 254, 0.2);
+
+}
+
+ 
+
+input[type="range"]::-moz-range-thumb {
+
+  width: 18px;
+
+  height: 18px;
+
+  border-radius: 50%;
+
+  background: var(--accent1);
+
+  cursor: pointer;
+
+  border: none;
+
+  transition: all 0.2s ease;
+
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+}
+
+ 
+
+input[type="range"]::-moz-range-thumb:hover {
+
+  transform: scale(1.2);
+
+  box-shadow: 0 0 0 4px rgba(8, 247, 254, 0.2);
+
+}
 :host {
 
   display: none;
@@ -914,36 +996,119 @@ template.innerHTML = `
  <div class="content">
     <div class="section">
       <h3 class="section-title" data-i18n="floatingPlayer.mainSettings">Main Settings</h3>
-     <div class="setting-group">
-          <div class="setting-row">
-      <div class="setting-info">
-              <div class="setting-label" data-i18n="floatingPlayer.enableMarquee">Scrolling Text</div>
-             <div class="setting-description" data-i18n="floatingPlayer.enableMarqueeDesc">Auto-scroll long track names</div>
-           </div>
-            <div class="toggle-container">
-              <label class="toggle">
-                  <input type="checkbox" id="marquee-enabled" checked>
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-          </div>
-          <div class="setting-row sub-setting">
-            <div class="setting-info">
-              <div class="setting-label" data-i18n="floatingPlayer.playerWidth">Player Width</div>
-              <div class="setting-description" data-i18n="floatingPlayer.playerWidthDesc">Adjust the width of floating player panel</div>
-            </div>
-            <div class="slider-control">
-              <input type="range" class="styled-slider" id="player-width-slider" min="30" max="90" value="50" step="5">
-              <span class="slider-value" id="player-width-value">50%</span>
-            </div>
-          </div>
+     <div class="setting-row">
+
+        <div class="setting-info">
+
+          <div class="setting-label" data-i18n="floatingPlayer.enableFloating">Enable Floating Player</div>
+
+          <div class="setting-description" data-i18n="floatingPlayer.enableFloatingDesc">Show player as a floating window</div>
+
         </div>
+
+        <div class="toggle-container">
+
+          <label class="toggle">
+
+            <input type="checkbox" id="floating-enabled">
+
+            <span class="toggle-slider"></span>
+
+          </label>
+
+        </div>
+
       </div>
+
     </div>
 
  
 
-    <div class="section" id="position-section" style="display: none;">
+    <div id="floating-options">
+
+      <div class="section">
+
+        <h3 class="section-title" data-i18n="floatingPlayer.behavior">Behavior</h3>
+
+ 
+
+        <div class="setting-row">
+
+          <div class="setting-info">
+
+            <div class="setting-label" data-i18n="floatingPlayer.enableDragging">Enable Dragging</div>
+
+            <div class="setting-description" data-i18n="floatingPlayer.enableDraggingDesc">Allow moving the player around</div>
+
+          </div>
+
+          <div class="toggle-container">
+
+            <label class="toggle">
+
+              <input type="checkbox" id="dragging-enabled" checked>
+
+              <span class="toggle-slider"></span>
+
+            </label>
+
+          </div>
+
+        </div>
+
+ 
+
+        <div class="setting-row">
+
+          <div class="setting-info">
+
+            <div class="setting-label" data-i18n="floatingPlayer.enableMarquee">Scrolling Text</div>
+
+            <div class="setting-description" data-i18n="floatingPlayer.enableMarqueeDesc">Auto-scroll long track names</div>
+
+          </div>
+
+          <div class="toggle-container">
+
+            <label class="toggle">
+
+              <input type="checkbox" id="marquee-enabled" checked>
+
+              <span class="toggle-slider"></span>
+
+            </label>
+
+          </div>
+
+        </div>
+
+ 
+
+        <div class="setting-row">
+
+          <div class="setting-info">
+
+            <div class="setting-label" data-i18n="floatingPlayer.playerWidth">Player Width</div>
+
+            <div class="setting-description" data-i18n="floatingPlayer.playerWidthDesc">Adjust the width of floating player panel</div>
+
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 1rem;">
+
+            <input type="range" style="flex: 1; height: 6px; border-radius: 3px; outline: none; -webkit-appearance: none; appearance: none;" id="player-width-slider" min="30" max="90" value="50" step="5">
+
+            <span id="player-width-value" style="min-width: 50px; text-align: right; font-weight: 600;">50%</span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+ 
+
+    <div class="section" id="position-section">
 
       <h3 class="section-title" data-i18n="floatingPlayer.position">Position</h3>
 
@@ -989,7 +1154,7 @@ template.innerHTML = `
 
  
 
-    <div class="section" id="visibility-section" style="display: none;">
+  <div class="section" id="visibility-section">
 
       <h3 class="section-title" data-i18n="floatingPlayer.visibility">Element Visibility</h3>
 
@@ -1178,7 +1343,7 @@ template.innerHTML = `
       </div>
 
     </div>
-
+</div>
  
 
     <div class="section">
@@ -1270,6 +1435,17 @@ export class FloatingPlayerPanel extends HTMLElement {
   document.addEventListener('language-change', () => {
     this.updateTexts();
   });
+   this.playerWidthSlider.addEventListener('input', (e) => {
+
+      const value = parseInt(e.target.value);
+
+      this.playerWidthValue.textContent = `${value}%`;
+
+      const percent = ((value - 30) / (90 - 30)) * 100;
+
+      this.playerWidthSlider.style.background = `linear-gradient(to right, var(--accent1) 0%, var(--accent1) ${percent}%, var(--border) ${percent}%, var(--border) 100%)`;
+
+    });
 }
 
 
@@ -1376,22 +1552,13 @@ const playerWidth = store.getStorage('floatingPlayerWidth', 50);
 
     if (isEnabled) {
 
-      this.floatingOptions.classList.remove('disabled-overlay');
-
-      this.positionSection.style.display = 'block';
-
-      this.visibilitySection.style.display = 'block';
-
+ this.floatingOptions.style.display = 'block';
+      this.floatingOptions.style.opacity = '1';
+      this.floatingOptions.style.pointerEvents = 'auto';
     } else {
-
-      this.floatingOptions.classList.add('disabled-overlay');
-
-      this.positionSection.style.display = 'none';
-
-      this.visibilitySection.style.display = 'none';
-
+      this.floatingOptions.style.opacity = '0.5';
+      this.floatingOptions.style.pointerEvents = 'none';
     }
-
   }
 
 
