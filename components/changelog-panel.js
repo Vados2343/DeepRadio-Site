@@ -303,6 +303,72 @@ const styles = `
 const changelogData = {
   en: [
        {
+      version: 'v3.1.0',
+      badge: 'stable',
+      date: '06.11.2025',
+      categories: [
+        {
+          title: '🎉 First Stable Release',
+          changes: [
+            { type: 'new', text: 'Presenting the first stable version with all critical bugs fixed and known issues resolved' },
+            { type: 'improve', text: 'Complete overhaul of floating player UX and functionality' }
+          ]
+        },
+        {
+          title: '🏝️ Floating Player Island Improvements',
+          changes: [
+            { type: 'fix', text: 'Fixed cursor on floating player - now shows pointer on buttons, move cursor only on empty areas' },
+            { type: 'fix', text: 'Removed "Apply Changes" button - all settings now auto-apply instantly' },
+            { type: 'new', text: 'Added toast notification system with duplicate protection (shows ×2, ×3 counters)' },
+            { type: 'fix', text: 'Fixed marquee (scrolling text) to respect enable/disable toggle' },
+            { type: 'fix', text: 'Fixed position buttons - now work immediately without applying' },
+            { type: 'new', text: 'Added settings gear icon to floating player for easy access' },
+            { type: 'new', text: 'First-time interactive tour when clicking settings - highlights Player Style and Floating Player sections' }
+          ]
+        },
+        {
+          title: '⚙️ Settings & Icons',
+          changes: [
+            { type: 'improve', text: 'Replaced settings icon with clear gear/cog icon for better UX' },
+            { type: 'new', text: 'Settings button in floating player opens dedicated panel' },
+            { type: 'new', text: 'Interactive tutorial on first settings access with smooth scroll and accent highlights' }
+          ]
+        },
+        {
+          title: '🎨 Visual Customization',
+          changes: [
+            { type: 'new', text: 'Added theme options for floating player (glass, solid, gradient)' },
+            { type: 'new', text: 'Text color customization for better visibility' },
+            { type: 'new', text: 'Font weight and size controls within reasonable limits' },
+            { type: 'new', text: 'Opacity/transparency settings for floating player background' }
+          ]
+        },
+        {
+          title: '🎵 Visualizer Fixes',
+          changes: [
+            { type: 'fix', text: 'Fixed equalizer visualization in player bar - now animates correctly during playback' },
+            { type: 'fix', text: 'Fixed visualization overlay on station icon - now activates and syncs with audio stream' }
+          ]
+        },
+        {
+          title: '💖 Favorites & Playlist Improvements',
+          changes: [
+            { type: 'fix', text: 'Fixed favorites ordering - newly added favorites appear at position #1' },
+            { type: 'fix', text: 'Favorites tab now shows only favorited stations in order of addition' },
+            { type: 'fix', text: 'Fixed "Create Playlist" button in burger menu' }
+          ]
+        },
+        {
+          title: '🔗 Support & Feedback',
+          changes: [
+            { type: 'fix', text: 'Fixed "Support" button - now opens mailto:support@deepradio.cloud' },
+            { type: 'new', text: 'Added "Thank you for your support!" toast confirmation' },
+            { type: 'fix', text: 'Fixed feedback button to use support@deepradio.cloud' }
+          ]
+        }
+      ]
+    },
+       {
 
       version: 'v3.0.2',
       badge: 'majorRelease',
