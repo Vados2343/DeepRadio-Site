@@ -420,6 +420,12 @@ export class PlayerBar extends HTMLElement {
     if (this.marqueeTimer) clearTimeout(this.marqueeTimer);
     const wrapper = this.elements.trackTextWrapper;
     wrapper.classList.remove('marquee');
+
+    // Check if marquee is enabled via data attribute
+    const marqueeEnabled = this.getAttribute('data-marquee-enabled') !== 'false';
+
+    if (!marqueeEnabled) return;
+
     this.marqueeTimer = setTimeout(() => {
       const textElement = this.elements.trackText;
       const container = textElement.parentElement;

@@ -1344,23 +1344,6 @@ input[type="range"]::-moz-range-thumb:hover {
 
     </div>
 </div>
- 
-
-    <div class="section">
-
-      <button class="action-button" id="apply-btn">
-
-        <svg viewBox="0 0 24 24" fill="currentColor">
-
-          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-
-        </svg>
-
-        <span data-i18n="floatingPlayer.apply">Apply Settings</span>
-
-      </button>
-
-    </div>
 
   </div>
 
@@ -1399,10 +1382,6 @@ export class FloatingPlayerPanel extends HTMLElement {
     this.positionSection = this.shadowRoot.getElementById('position-section');
 
     this.visibilitySection = this.shadowRoot.getElementById('visibility-section');
-
-    this.applyBtn = this.shadowRoot.getElementById('apply-btn');
-
-
 
     this.showIcon = this.shadowRoot.getElementById('show-icon');
 
@@ -1518,28 +1497,51 @@ const playerWidth = store.getStorage('floatingPlayerWidth', 50);
 
 
 
+    // Auto-apply for floating enabled toggle
+    this.floatingEnabled.addEventListener('change', () => {
+      this.autoApplySettings();
+    });
+
+    // Auto-apply for dragging enabled toggle
+    this.draggingEnabled.addEventListener('change', () => {
+      this.autoApplySettings();
+    });
+
+    // Auto-apply for marquee enabled toggle
+    this.marqueeEnabled.addEventListener('change', () => {
+      this.autoApplySettings();
+    });
+
+    // Auto-apply for player width slider
+    this.playerWidthSlider.addEventListener('change', () => {
+      this.autoApplySettings();
+    });
+
+    // Auto-apply for visibility toggles
+    [this.showIcon, this.showStationName, this.showTrackInfo,
+     this.showVolume, this.showPlayButton, this.showStepButtons].forEach(toggle => {
+      if (toggle) {
+        toggle.addEventListener('change', () => {
+          this.autoApplySettings();
+        });
+      }
+    });
+
+    // Auto-apply for position buttons
     this.shadowRoot.querySelectorAll('.position-btn').forEach(btn => {
-
       btn.addEventListener('click', () => {
-
         this.shadowRoot.querySelectorAll('.position-btn').forEach(b => b.classList.remove('active'));
-
         btn.classList.add('active');
-
         store.setStorage('floatingPosition', btn.dataset.position);
 
+        // Apply position immediately
+        if (window.floatingPlayerManager && this.floatingEnabled.checked) {
+          const position = btn.dataset.position;
+          window.floatingPlayerManager.setPosition(position);
+          showToast(t('messages.floatingPlayerUpdated'), 'success');
+        }
       });
-
     });
-
-
-
-    this.applyBtn.addEventListener('click', () => {
-
-      this.applySettings();
-
-    });
-
   }
 
 
@@ -1563,7 +1565,7 @@ const playerWidth = store.getStorage('floatingPlayerWidth', 50);
 
 
 
-  applySettings() {
+  autoApplySettings() {
 
     const floatingEnabled = this.floatingEnabled.checked;
 
@@ -1682,10 +1684,8 @@ const playerWidth = store.getStorage('floatingPlayerWidth', 50);
 
 
 
-    showToast(t('messages.floatingPlayerUpdated'), 'success');
-
-    this.close();
-
+    // Show toast with duplicate protection (will show ×2, ×3 if repeated quickly)
+    showToast(t('messages.floatingPlayerUpdated'), 'success', 3000);
   }
 
 

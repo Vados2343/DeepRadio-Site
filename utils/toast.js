@@ -109,7 +109,19 @@ class ToastManager {
 
     const messageEl = toast.element.querySelector('.toast-message');
     if (messageEl) {
-      messageEl.textContent = message;
+      // Find the duplicate entry to get the count
+      let count = 1;
+      for (const [hash, duplicate] of this.duplicateTracker.entries()) {
+        if (duplicate.id === id) {
+          count = duplicate.count;
+          break;
+        }
+      }
+
+      // Update message with count if > 1
+      const displayMessage = count > 1 ? `${message} ×${count}` : message;
+      messageEl.textContent = displayMessage;
+
       toast.element.classList.add('toast-update');
       setTimeout(() => {
         toast.element.classList.remove('toast-update');

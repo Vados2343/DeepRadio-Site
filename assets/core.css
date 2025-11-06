@@ -880,9 +880,26 @@ player-bar.draggable {
   transform: translateX(-50%);
 }
 
+/* Fix cursor on interactive elements - they should have pointer, not move */
+player-bar.draggable button,
+player-bar.draggable input[type="range"],
+player-bar.draggable .volume-slider,
+player-bar.draggable .control-btn,
+player-bar.draggable .play-btn,
+player-bar.draggable .step-btn,
+player-bar.draggable .volume-btn,
+player-bar.draggable a {
+  cursor: pointer !important;
+}
+
+/* When dragging, everything gets grabbing cursor */
 player-bar.dragging {
-  cursor: grabbing;
+  cursor: grabbing !important;
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.7);
+}
+
+player-bar.dragging * {
+  cursor: grabbing !important;
 }
 
 player-bar.animating {
