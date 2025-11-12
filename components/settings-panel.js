@@ -361,10 +361,12 @@ template.innerHTML = `
 }
 
 .accent-colors {
- flex-wrap: wrap;
+ display: grid;
+  grid-template-columns: repeat(auto-fit, 36px);
   gap: 0.75rem;
   margin-top: 0.75rem;
   max-width: 100%;
+  justify-content: start;
 }
 
 .accent-btn {
@@ -891,7 +893,7 @@ template.innerHTML = `
         <div class="setting-info">
           <div class="setting-label" data-i18n="settings.accentColor">Accent Color</div>
           <div class="setting-description" data-i18n="settings.accentColorDesc">Main interface element colors</div>
-          <div class="accent-colors">
+            <div class="accent-colors" id="accent-colors-container">
             <button class="accent-btn active" data-accent="default" title="Default"></button>
             <button class="accent-btn" data-accent="blue" title="Blue"></button>
             <button class="accent-btn" data-accent="green" title="Green"></button>
@@ -1158,7 +1160,7 @@ template.innerHTML = `
           </svg>
         </div>
         <h3>DeepRadio</h3>
-        <p data-i18n="settings.version">Version 3.1.3</p>
+        <p data-i18n="settings.version">Version 3.1.4</p>
         <p data-i18n="settings.description">Modern internet radio with advanced visualization. Over 150 stations of various genres.</p>
         <div class="links">
           <a href="https://github.com/vados2343/deepradio" target="_blank" id="github-link" data-i18n="settings.github">GitHub</a>
@@ -1201,7 +1203,7 @@ export class SettingsPanel extends HTMLElement {
     this.lightningIntensityValue = this.shadowRoot.getElementById('lightning-intensity-value');
     this.geometricModes = this.shadowRoot.getElementById('geometric-modes');
     this.organicModes = this.shadowRoot.getElementById('organic-modes');
-
+    this.accentColorsContainer = this.shadowRoot.getElementById('accent-colors-container');
     this.currentVizClass = 'geometric';
     this.currentVizMode = 0;
     this.isOpen = false;
@@ -1212,9 +1214,13 @@ export class SettingsPanel extends HTMLElement {
     this.loadSettings();
     this.setupEventListeners();
     this.updateTexts();
-
+   this.loadCustomGradients();
+    this.updateTexts();
     document.addEventListener('language-change', () => {
       this.updateTexts();
+    })
+    document.addEventListener('custom-gradients-updated', () => {
+      this.loadCustomGradients();
     });
   }
 
@@ -1297,6 +1303,33 @@ export class SettingsPanel extends HTMLElement {
 
     this.updateLightningSettingsVisibility();
   }
+loadCustomGradients() {
+  const customGradients = store.getStorage('customGradients', []);
+  if (!this.accentColorsContainer) return;
+  const existingCustom = this.accentColorsContainer.querySelectorAll('.accent-btn[data-custom-gradient]');
+  existingCustom.forEach(btn => btn.remove());
+  customGradients.reverse().forEach((gradient, index) => {
+    const btn = document.createElement('button');
+    btn.className = 'accent-btn';
+    btn.setAttribute('data-custom-gradient', gradient.id);
+    btn.setAttribute('title', `Custom Gradient ${customGradients.length - index}`);
+    const colors = gradient.colors.join(', ');
+    btn.style.background = `linear-gradient(${gradient.direction}, ${colors})`;
+    btn.addEventListener('click', () => {
+      this.shadowRoot.querySelectorAll('.accent-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      gradient.colors.forEach((color, i) => {
+        if (i < 3) document.documentElement.style.setProperty(`--accent${i + 1}`, color);
+      });
+      document.documentElement.dataset.accent = 'custom';
+      store.setStorage('accent', 'custom');
+      store.setStorage('customGradient', gradient);
+      document.dispatchEvent(new CustomEvent('accent-changed', { detail: 'custom' }));
+      showToast(t('messages.accentColorChanged'), 'success');
+    });
+    this.accentColorsContainer.appendChild(btn);
+  });
+}
 
   setupEventListeners() {
     this.overlay.addEventListener('click', () => this.close());
@@ -1398,6 +1431,12 @@ export class SettingsPanel extends HTMLElement {
             });
           }, 200);
           showToast(t('messages.islandModeActivated'), 'success');
+        setTimeout(() => {
+            const floatingPanel = document.querySelector('floating-player-panel');
+            if (floatingPanel) {
+              floatingPanel.open();
+            }
+          }, 300);
         } else {
           const wasIsland = store.getStorage('playerStyle') === 'island';
           if (wasIsland) {
@@ -1415,11 +1454,6 @@ export class SettingsPanel extends HTMLElement {
       }));
     });
     this.floatingPlayerBtn.addEventListener('click', () => {
-       const currentStyle = store.getStorage('playerStyle', 'default');
-      if (currentStyle !== 'island') {
-        showToast(t('messages.islandModeRequired') || 'Please activate Island (Floating) player style first', 'warning');
-        return;
-      }
       const floatingPanel = document.querySelector('floating-player-panel');
       if (floatingPanel) {
         floatingPanel.open();
@@ -1499,14 +1533,23 @@ export class SettingsPanel extends HTMLElement {
           document.documentElement.style.removeProperty('--accent3');
         } else {
           const saved = store.getStorage('customGradient');
-          if (saved && saved.color1 && saved.color2 && saved.color3) {
-            document.documentElement.style.setProperty('--accent1', saved.color1);
-            document.documentElement.style.setProperty('--accent2', saved.color2);
-            document.documentElement.style.setProperty('--accent3', saved.color3);
+    if (saved) {
+       if (saved.colors && Array.isArray(saved.colors)) {
+              saved.colors.forEach((color, i) => {
+                if (i < 3) {
+                  document.documentElement.style.setProperty(`--accent${i + 1}`, color);
+                }
+              });
+            } else if (saved.color1 && saved.color2 && saved.color3) {
+              document.documentElement.style.setProperty('--accent1', saved.color1);
+              document.documentElement.style.setProperty('--accent2', saved.color2);
+              document.documentElement.style.setProperty('--accent3', saved.color3);
+            }
           }
         }
         document.documentElement.dataset.accent = accent;
         store.setStorage('accent', accent);
+        document.dispatchEvent(new CustomEvent('accent-changed', { detail: accent }));
         showToast(t('messages.accentColorChanged'), 'success');
       });
     });

@@ -302,6 +302,41 @@ const styles = `
 // Changelog data with full translations for en, ru, uk, it
 const changelogData = {
   en: [
+    {
+      version: 'v3.1.4',
+      badge: 'UI/UX Improvements & Major Fixes',
+      date: '2025-11-12',
+      categories: [
+        {
+          title: '🐛 Critical Bug Fixes',
+          changes: [
+            { type: 'fix', text: 'Removed extra top padding in main layout (fixed header offset)' },
+            { type: 'fix', text: 'Fixed draggable mode toggle — event listeners now correctly detach when disabled' },
+            { type: 'fix', text: 'Header theme now switches correctly in light mode — no more dark bar on white background' },
+            { type: 'fix', text: 'Accent color buttons realigned — now displayed in a clean responsive grid' },
+            { type: 'fix', text: 'Removed outdated “Enable Floating Mode” toggle from floating player panel' }
+          ]
+        },
+        {
+          title: '🎨 UI/UX Enhancements',
+          changes: [
+            { type: 'new', text: 'Gradient Creator rebuilt — supports from 1 to 6 colors with + Add and × Remove controls' },
+            { type: 'new', text: 'Added gradient direction selector: Diagonal ↘, Vertical ↓, Horizontal →, Diagonal ↗' },
+            { type: 'improve', text: 'Floating player now auto-opens settings when “Island Mode” is selected (300ms delay)' },
+            { type: 'improve', text: 'Favorites filter improved — in “All Genres” mode, favorites are now displayed first' }
+          ]
+        },
+        {
+          title: '🔧 Technical Improvements',
+          changes: [
+            { type: 'improve', text: 'Improved event cleanup logic in FloatingPlayerManager to prevent memory leaks' },
+            { type: 'improve', text: 'Enhanced settings layout grid — adaptive for small screens and tablets' },
+            { type: 'new', text: 'Backward compatibility preserved with old gradient format (3 colors)' }
+        ]
+    }
+  ]
+},
+
       {
   version: 'v3.1.3',
   badge: 'Bug Fixes',
@@ -746,6 +781,40 @@ const changelogData = {
     }
   ],
   ru: [
+    {
+      version: 'v3.1.4',
+      badge: 'Улучшения интерфейса и крупные исправления',
+      date: '2025-11-12',
+      categories: [
+        {
+          title: '🐛 Критические исправления ошибок',
+          changes: [
+            { type: 'fix', text: 'Удалён лишний отступ сверху (исправлено смещение заголовка)' },
+            { type: 'fix', text: 'Исправлен баг с режимом перетаскивания — слушатели теперь корректно удаляются при выключении' },
+            { type: 'fix', text: 'Исправлена светлая тема заголовка — теперь корректно меняется без чёрной панели на белом фоне' },
+            { type: 'fix', text: 'Исправлено выравнивание акцентных кнопок — теперь отображаются ровно в сетке' },
+            { type: 'fix', text: 'Удалён устаревший тумблер “Enable Floating Mode” из панели плавающего плеера' }
+          ]
+        },
+        {
+          title: '🎨 Улучшения интерфейса и UX',
+          changes: [
+            { type: 'new', text: 'Gradient Creator полностью переработан — теперь поддерживает от 1 до 6 цветов с кнопками + и ×' },
+            { type: 'new', text: 'Добавлен выбор направления градиента: диагональ ↘, вертикаль ↓, горизонталь →, диагональ ↗' },
+            { type: 'improve', text: 'Плавающий плеер теперь автоматически открывает настройки при выборе “Островок” (через 300мс)' },
+            { type: 'improve', text: 'Улучшена фильтрация избранных — в режиме “Все жанры” теперь они отображаются первыми' }
+          ]
+        },
+        {
+          title: '🔧 Технические улучшения',
+          changes: [
+            { type: 'improve', text: 'Улучшена очистка событий в FloatingPlayerManager для предотвращения утечек памяти' },
+            { type: 'improve', text: 'Оптимизирована сетка настроек — теперь адаптивна для маленьких экранов и планшетов' },
+            { type: 'new', text: 'Сохранена обратная совместимость со старым форматом градиентов (3 цвета)' }
+          ]
+        }
+      ]
+    },
        {
   version: 'v3.1.3',
   badge: 'Исправления ошибок',
@@ -775,7 +844,7 @@ const changelogData = {
     {
       title: '🌍 Обновление переводов',
       changes: [
-        { type: 'new', text: 'Добавлен перевод сообщения islandModeRequired (UA/EN)' },
+        { type: 'new', text: 'Добавлен перевод сообщения islandModeRequired (UA/EN/RU)' },
         { type: 'improve', text: 'Обновлены все строки интерфейса для лучшей согласованности' }
       ]
     },
@@ -1229,6 +1298,40 @@ const changelogData = {
     }
   ],
   uk: [
+       {
+      version: 'v3.1.4',
+      badge: 'Покращення інтерфейсу та основні виправлення',
+      date: '2025-11-12',
+      categories: [
+        {
+          title: '🐛 Критичні виправлення помилок',
+          changes: [
+            { type: 'fix', text: 'Видалено зайвий відступ зверху (виправлено зміщення заголовка)' },
+            { type: 'fix', text: 'Виправлено помилку з режимом перетягування — слухачі тепер правильно видаляються після вимкнення' },
+            { type: 'fix', text: 'Виправлено світлу тему заголовка — більше немає чорної панелі на білому фоні' },
+            { type: 'fix', text: 'Виправлено вирівнювання акцентних кнопок — тепер вони відображаються рівно в сітці' },
+            { type: 'fix', text: 'Видалено застарілий перемикач “Enable Floating Mode” з панелі плаваючого плеєра' }
+          ]
+        },
+        {
+          title: '🎨 Покращення інтерфейсу та UX',
+          changes: [
+            { type: 'new', text: 'Gradient Creator повністю перероблений — тепер підтримує від 1 до 6 кольорів з кнопками + та ×' },
+            { type: 'new', text: 'Додано вибір напрямку градієнта: діагональ ↘, вертикаль ↓, горизонталь →, діагональ ↗' },
+            { type: 'improve', text: 'Плаваючий плеєр тепер автоматично відкриває налаштування при виборі “Острівок” (через 300мс)' },
+            { type: 'improve', text: 'Покращено фільтрацію улюблених — у режимі “Всі жанри” тепер вони відображаються першими' }
+          ]
+        },
+        {
+          title: '🔧 Технічні покращення',
+          changes: [
+            { type: 'improve', text: 'Покращено очищення подій у FloatingPlayerManager для запобігання витокам пам’яті' },
+            { type: 'improve', text: 'Оптимізовано сітку налаштувань — тепер адаптивна для малих екранів і планшетів' },
+            { type: 'new', text: 'Збережено зворотну сумісність зі старим форматом градієнтів (3 кольори)' }
+          ]
+        }
+      ]
+    },
       {
   version: 'v3.1.3',
   badge: 'Виправлення помилок',
@@ -1710,6 +1813,40 @@ const changelogData = {
     }
   ],
   it: [
+      {
+      version: 'v3.1.4',
+      badge: 'Miglioramenti UI/UX e correzioni principali',
+      date: '2025-11-12',
+      categories: [
+        {
+          title: '🐛 Correzioni critiche di errori',
+          changes: [
+            { type: 'fix', text: 'Rimosso il padding superiore extra nel layout principale (corretto l’allineamento dell’intestazione)' },
+            { type: 'fix', text: 'Corretto il bug della modalità trascinamento — i listener ora vengono rimossi correttamente quando disattivati' },
+            { type: 'fix', text: 'Corretta la modalità chiara dell’intestazione — eliminata la barra nera su sfondo bianco' },
+            { type: 'fix', text: 'Corretto l’allineamento dei pulsanti accentati — ora disposti in una griglia reattiva ordinata' },
+            { type: 'fix', text: 'Rimosso il vecchio interruttore “Enable Floating Mode” dal pannello del lettore mobile' }
+          ]
+        },
+        {
+          title: '🎨 Miglioramenti UI/UX',
+          changes: [
+            { type: 'new', text: 'Gradient Creator completamente ridisegnato — ora supporta da 1 a 6 colori con pulsanti + e ×' },
+            { type: 'new', text: 'Aggiunto selettore direzione gradiente: diagonale ↘, verticale ↓, orizzontale →, diagonale ↗' },
+            { type: 'improve', text: 'Il lettore mobile ora apre automaticamente le impostazioni quando si seleziona “Isola” (dopo 300ms)' },
+            { type: 'improve', text: 'Migliorato il filtro dei preferiti — nella modalità “Tutti i generi” ora vengono mostrati per primi' }
+          ]
+        },
+        {
+          title: '🔧 Miglioramenti tecnici',
+          changes: [
+            { type: 'improve', text: 'Migliorata la pulizia degli eventi in FloatingPlayerManager per prevenire perdite di memoria' },
+            { type: 'improve', text: 'Ottimizzata la griglia delle impostazioni — ora adattiva per schermi piccoli e tablet' },
+            { type: 'new', text: 'Mantenuta la compatibilità con il vecchio formato dei gradienti (3 colori)' }
+          ]
+        }
+      ]
+    },
       {
   version: 'v3.1.3',
   badge: 'Correzioni di bug',

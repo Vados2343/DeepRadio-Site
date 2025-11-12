@@ -91,8 +91,6 @@ export class FloatingPlayerManager {
             if (draggingEnabled && !this.dragListenersSetup) {
               this.playerBar.classList.add('draggable');
               this.setupDragListeners();
-               } else if (!this.draggingEnabled) {
-      this.playerBar.classList.remove('draggable');
             } else if (!draggingEnabled && this.dragListenersSetup) {
               this.playerBar.classList.remove('draggable');
               this.removeDragListeners();
@@ -164,13 +162,13 @@ export class FloatingPlayerManager {
       this.setPlayerWidth(this.currentWidthPercent);
     }
     const rect = this.playerBar.getBoundingClientRect();
-    const maxX = window.innerWidth - rect.width;
-    const maxY = window.innerHeight - rect.height;
-
-    const x = Math.max(20, Math.min(rect.left, maxX - 20));
-    const y = Math.max(20, Math.min(rect.top, maxY - 20));
-
-    this.updatePosition(x, y);
+    const maxX = window.innerWidth - rect.width - 20;
+    const maxY = window.innerHeight - rect.height - 20;
+      if (rect.left < 20 || rect.left > maxX || rect.top < 20 || rect.top > maxY) {
+      const x = Math.max(20, Math.min(rect.left, maxX));
+      const y = Math.max(20, Math.min(rect.top, maxY));
+      this.updatePosition(x, y);
+    }
   }
 
   handleDragStart(e) {
@@ -384,17 +382,21 @@ export class FloatingPlayerManager {
 
   restorePosition() {
     if (!this.playerBar) return;
-   this.playerBar.classList.add(this.floatingClass);
+ this.playerBar.classList.add(this.floatingClass);
     this.playerBar.style.right = 'auto';
     const storedWidth = store.getStorage('floatingPlayerWidth', 50);
     this.setPlayerWidth(storedWidth);
-    this.position = 'bottom';
-    this.playerBar.setAttribute('data-position', 'bottom');
-    const rect = this.playerBar.getBoundingClientRect();
-    const x = (window.innerWidth - rect.width) / 2;
-    const y = window.innerHeight - rect.height - 20;
-    this.updatePosition(x, y);
-    console.log('[FloatingPlayer] Position reset to bottom-center');
+    const savedPosition = store.getStorage('floatingPlayerPosition', null);
+    const storedPos = store.getStorage('floatingPosition', 'center');
+    if (savedPosition && savedPosition.x !== undefined && savedPosition.y !== undefined) {
+      this.position = savedPosition.position || storedPos;
+      this.playerBar.setAttribute('data-position', this.position);
+      this.updatePosition(savedPosition.x, savedPosition.y);
+      console.log('[FloatingPlayer] Position restored from storage:', savedPosition);
+    } else {
+      this.setPosition(storedPos);
+      console.log('[FloatingPlayer] Position set to preset:', storedPos);
+    }
   }
 
   resetPosition() {
@@ -421,26 +423,78 @@ export class FloatingPlayerManager {
     let x, y;
 
     switch (position) {
-      case 'top':
-        x = (windowWidth - rect.width) / 2;
-        y = 20;
-        break;
-      case 'bottom':
-        x = (windowWidth - rect.width) / 2;
-        y = windowHeight - rect.height - 20;
-        break;
-      case 'left':
+ case 'top-left':
+
         x = 20;
-        y = (windowHeight - rect.height) / 2;
+
+        y = 20;
+
         break;
-      case 'right':
-        x = windowWidth - rect.width - 20;
-        y = (windowHeight - rect.height) / 2;
-        break;
-      case 'center':
-      default:
+
+      case 'top':
+
         x = (windowWidth - rect.width) / 2;
+
+        y = 20;
+
+        break;
+
+      case 'top-right':
+
+        x = windowWidth - rect.width - 20;
+
+        y = 20;
+
+        break;
+
+      case 'left':
+
+        x = 20;
+
         y = (windowHeight - rect.height) / 2;
+
+        break;
+
+      case 'center':
+
+        x = (windowWidth - rect.width) / 2;
+
+        y = (windowHeight - rect.height) / 2;
+
+        break;
+
+      case 'right':
+
+        x = windowWidth - rect.width - 20;
+
+        y = (windowHeight - rect.height) / 2;
+
+        break;
+
+      case 'bottom-left':
+
+        x = 20;
+
+        y = windowHeight - rect.height - 20;
+
+        break;
+
+      case 'bottom':
+
+        x = (windowWidth - rect.width) / 2;
+
+        y = windowHeight - rect.height - 20;
+
+        break;
+
+      case 'bottom-right':
+
+        x = windowWidth - rect.width - 20;
+
+        y = windowHeight - rect.height - 20;
+
+        break;
+      y = (windowHeight - rect.height) / 2;
         break;
     }
 
@@ -521,7 +575,6 @@ export class FloatingPlayerManager {
   }
 }
 
-// Create singleton instance
 let floatingPlayerInstance = null;
 
 if (document.readyState === 'loading') {

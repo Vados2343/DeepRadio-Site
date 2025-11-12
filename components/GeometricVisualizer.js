@@ -58,17 +58,14 @@ export class GeometricVisualizer {
     this.fullClearInterval = 10000;
     this.fadeAccumulator = 0;
     this.isInitializing = false;
-
+     this.handleResize = this.setupCanvas.bind(this);
     this.setupCanvas();
     this.animate();
-
-    window.addEventListener('resize', () => this.setupCanvas());
-
+    window.addEventListener('resize', this.handleResize);
     document.addEventListener('visualizer-mode-change', (e) => {
       this.currentMode = e.detail % this.modes.length;
       this.resetMode();
     });
-
     document.addEventListener('settings-change', (e) => {
       if (e.detail.key === 'visualizerEnabled') {
         this.isEnabled = e.detail.value;
@@ -77,7 +74,6 @@ export class GeometricVisualizer {
         }
       }
     });
-
     this.themeObserver = new MutationObserver(() => {
       this.theme = this.getTheme();
     });
@@ -1094,7 +1090,9 @@ export class GeometricVisualizer {
       cancelAnimationFrame(this.animationId);
       this.animationId = null;
     }
-
+ if (this.handleResize) {
+      window.removeEventListener('resize', this.handleResize);
+    }
     if (this.themeObserver) {
       this.themeObserver.disconnect();
     }

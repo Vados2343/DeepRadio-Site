@@ -494,6 +494,17 @@ export class StationGrid extends HTMLElement {
       const recentStations = [];
       store.recent.forEach(id => { const station = store.stations.find(s => s.id === id); if (station) recentStations.push(station) });
       stations = recentStations;
+       } else {
+      const favoriteStations = [];
+      const nonFavoriteStations = [];
+      stations.forEach(station => {
+        if (store.isFavorite(station.id)) {
+          favoriteStations.push(station);
+        } else {
+          nonFavoriteStations.push(station);
+        }
+      });
+      stations = [...favoriteStations, ...nonFavoriteStations];
     }
     if (this.state.selectedGenre !== 'all') stations = stations.filter(s => s.tags.includes(this.state.selectedGenre));
     return stations;
