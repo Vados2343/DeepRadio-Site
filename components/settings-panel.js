@@ -362,8 +362,10 @@ template.innerHTML = `
 
 .accent-colors {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.75rem;
   margin-top: 0.75rem;
+  max-width: 100%;
 }
 
 .accent-btn {
@@ -1394,6 +1396,11 @@ export class SettingsPanel extends HTMLElement {
       }));
     });
     this.floatingPlayerBtn.addEventListener('click', () => {
+      const currentStyle = store.getStorage('playerStyle', 'default');
+      if (currentStyle !== 'island') {
+        showToast(t('messages.islandModeRequired') || 'Please activate Island (Floating) player style first', 'warning');
+        return;
+      }
       const floatingPanel = document.querySelector('floating-player-panel');
       if (floatingPanel) {
         floatingPanel.open();

@@ -116,24 +116,19 @@ export class FloatingPlayerManager {
   enableFloating() {
     if (this.isFloating || !this.playerBar) return;
     this.isFloating = true;
-    this.playerBar.classList.add(this.floatingClass);
-   if (this.draggingEnabled && !this.dragListenersSetup){
+    this.playerBar.style.position = 'fixed';
+    this.playerBar.style.zIndex = '500';
+    if (this.draggingEnabled && !this.dragListenersSetup){
       this.playerBar.classList.add('draggable');
       this.setupDragListeners();
     }
-    this.playerBar.style.position = 'fixed';
-    this.playerBar.style.right = 'auto';
-    this.playerBar.style.bottom = '20px';
-    this.playerBar.style.transform = 'translateX(-50%)';
-    this.playerBar.style.zIndex = '500';
-    const storedWidth = store.getStorage('floatingPlayerWidth', 50);
-    this.setPlayerWidth(storedWidth);
     document.body.style.paddingBottom = '0';
     const mainElement = document.querySelector('.app-main');
     if (mainElement) {
       mainElement.style.paddingBottom = '0';
     }
     this.playerBar.classList.add('animating');
+    this.restorePosition();
     setTimeout(() => {
       if (this.playerBar) {
         this.playerBar.classList.remove('animating');
@@ -168,8 +163,8 @@ export class FloatingPlayerManager {
     const maxX = window.innerWidth - rect.width;
     const maxY = window.innerHeight - rect.height;
 
-    const x = Math.max(0, Math.min(rect.left, maxX));
-    const y = Math.max(0, Math.min(rect.top, maxY));
+    const x = Math.max(20, Math.min(rect.left, maxX - 20));
+    const y = Math.max(20, Math.min(rect.top, maxY - 20));
 
     this.updatePosition(x, y);
   }
@@ -298,14 +293,13 @@ export class FloatingPlayerManager {
     if (!this.playerBar) return;
 
     const rect = this.playerBar.getBoundingClientRect();
-    const maxX = window.innerWidth - rect.width;
-    const maxY = window.innerHeight - rect.height;
+    const padding = 20;
+    const maxX = window.innerWidth - rect.width - padding;
+    const maxY = window.innerHeight - rect.height - padding;
 
-    // Constrain to viewport
-    x = Math.max(0, Math.min(x, maxX));
-    y = Math.max(0, Math.min(y, maxY));
+    x = Math.max(padding, Math.min(x, maxX));
+    y = Math.max(padding, Math.min(y, maxY));
 
-    // очень важно: в режиме плавающего плеера мы ВСЕГДА убираем right
     this.playerBar.style.right = 'auto';
     this.playerBar.style.left = `${x}px`;
     this.playerBar.style.bottom = 'auto';

@@ -1129,7 +1129,7 @@ class Store extends EventTarget {
   toggleFavorite(id) {
     const index = this.favorites.indexOf(id);
     if (index === -1) {
-      this.favorites.push(id);
+      this.favorites.unshift(id);
     } else {
       this.favorites.splice(index, 1);
     }

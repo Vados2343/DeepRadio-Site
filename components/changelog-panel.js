@@ -302,7 +302,50 @@ const styles = `
 // Changelog data with full translations for en, ru, uk, it
 const changelogData = {
   en: [
-       {
+    {
+      version: 'v3.0.3',
+      badge: 'bugFix',
+      date: '12.11.2025',
+      categories: [
+        {
+          title: '🐛 Critical Bug Fixes',
+          changes: [
+            { type: 'fix', text: 'Fixed favorite stations index - now adds to beginning of list (index 1) instead of end' },
+            { type: 'fix', text: 'Fixed floating player boundaries - now stays within viewport with 20px padding' },
+            { type: 'fix', text: 'Fixed drag mode toggle - player no longer jumps when enabling/disabling floating mode' },
+            { type: 'fix', text: 'Fixed default header layout - logo now properly centered as described' },
+            { type: 'fix', text: 'Fixed accent color buttons - now wrap correctly and stay within form boundaries' },
+            { type: 'fix', text: 'Added Configure button blocking with warning toast when island mode is not active' }
+          ]
+        },
+        {
+          title: '🎨 UI/UX Improvements',
+          changes: [
+            { type: 'new', text: 'Added 5 header themes: glass, neon, dark, minimal (plus existing light/oled)' },
+            { type: 'new', text: 'Header themes now adapt to form colors (white, neon dark, black, glass)' },
+            { type: 'improve', text: 'Improved mobile responsiveness for floating player (max 90vw width)' },
+            { type: 'improve', text: 'Enhanced floating player positioning logic to prevent off-screen placement' }
+          ]
+        },
+        {
+          title: '🌍 Translation Updates',
+          changes: [
+            { type: 'new', text: 'Added islandModeRequired message translation (RU/EN)' },
+            { type: 'improve', text: 'Updated all UI strings for better consistency' }
+          ]
+        },
+        {
+          title: '🔧 Technical Improvements',
+          changes: [
+            { type: 'improve', text: 'Refactored enableFloating() to use restorePosition() instead of fixed coordinates' },
+            { type: 'improve', text: 'Enhanced updatePosition() with padding constraints' },
+            { type: 'improve', text: 'Improved handleResize() to maintain player within bounds during window resize' },
+            { type: 'new', text: 'Added flex-wrap to accent-colors container for better layout' }
+          ]
+        }
+      ]
+    },
+    {
 
       version: 'v3.0.2',
       badge: 'majorRelease',
@@ -577,7 +620,50 @@ const changelogData = {
     }
   ],
   ru: [
-      {
+    {
+      version: 'v3.0.3',
+      badge: 'Виправлення помилок',
+      date: '12.11.2025',
+      categories: [
+        {
+          title: '🐛 Критичні виправлення помилок',
+          changes: [
+            { type: 'fix', text: 'Виправлено індекс обраних станцій - тепер додає на початок списку (індекс 1) замість кінця' },
+            { type: 'fix', text: 'Виправлено межі плаваючого плеєра - тепер залишається в межах вікна з відступом 20px' },
+            { type: 'fix', text: 'Виправлено перемикання режиму перетягування - плеєр більше не стрибає при увімкненні/вимкненні' },
+            { type: 'fix', text: 'Виправлено стандартний макет заголовка - логотип тепер справді по центру' },
+            { type: 'fix', text: 'Виправлено кнопки акцентних кольорів - тепер переносяться і залишаються в межах форми' },
+            { type: 'fix', text: 'Додано блокування кнопки Configure з попередженням коли режим островка не активний' }
+          ]
+        },
+        {
+          title: '🎨 Покращення UI/UX',
+          changes: [
+            { type: 'new', text: 'Додано 5 тем заголовка: glass, neon, dark, minimal (плюс існуючі light/oled)' },
+            { type: 'new', text: 'Теми заголовка тепер адаптуються до кольорів форми (біла, неон дарк, чорна, скло)' },
+            { type: 'improve', text: 'Покращено мобільну адаптивність плаваючого плеєра (макс 90vw ширина)' },
+            { type: 'improve', text: 'Покращено логіку позиціонування плаваючого плеєра для запобігання виходу за екран' }
+          ]
+        },
+        {
+          title: '🌍 Оновлення перекладів',
+          changes: [
+            { type: 'new', text: 'Додано переклад повідомлення islandModeRequired (UA/EN)' },
+            { type: 'improve', text: 'Оновлено всі рядки інтерфейсу для кращої послідовності' }
+          ]
+        },
+        {
+          title: '🔧 Технічні покращення',
+          changes: [
+            { type: 'improve', text: 'Рефакторинг enableFloating() для використання restorePosition() замість фіксованих координат' },
+            { type: 'improve', text: 'Покращено updatePosition() з обмеженнями відступів' },
+            { type: 'improve', text: 'Покращено handleResize() для утримання плеєра в межах при зміні розміру вікна' },
+            { type: 'new', text: 'Додано flex-wrap до контейнера accent-colors для кращого макета' }
+          ]
+        }
+      ]
+    },
+    {
   version: 'v3.0.2',
   badge: 'главное обновление',
   date: '05.11.2025',
