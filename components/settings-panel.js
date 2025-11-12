@@ -361,10 +361,12 @@ template.innerHTML = `
 }
 
 .accent-colors {
- flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 36px);
   gap: 0.75rem;
   margin-top: 0.75rem;
   max-width: 100%;
+  justify-content: start;
 }
 
 .accent-btn {
