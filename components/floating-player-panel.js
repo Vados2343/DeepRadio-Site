@@ -994,9 +994,9 @@ export class FloatingPlayerPanel extends HTMLElement {
       btn.addEventListener('click', () => {
         this.shadowRoot.querySelectorAll('.position-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        store.setStorage('floatingPosition', btn.dataset.position);
-        if (window.floatingPlayerManager && this.floatingEnabled.checked) {
-          const position = btn.dataset.position;
+        const position = btn.dataset.position;
+        store.setStorage('floatingPosition', position);
+        if (window.floatingPlayerManager && window.floatingPlayerManager.isFloating) {
           window.floatingPlayerManager.setPosition(position);
           showToast(t('messages.floatingPlayerUpdated'), 'success');
         }

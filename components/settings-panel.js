@@ -893,7 +893,7 @@ template.innerHTML = `
         <div class="setting-info">
           <div class="setting-label" data-i18n="settings.accentColor">Accent Color</div>
           <div class="setting-description" data-i18n="settings.accentColorDesc">Main interface element colors</div>
-          <div class="accent-colors">
+          <div class="accent-colors" id="accent-colors-container">
             <button class="accent-btn active" data-accent="default" title="Default"></button>
             <button class="accent-btn" data-accent="blue" title="Blue"></button>
             <button class="accent-btn" data-accent="green" title="Green"></button>
@@ -1203,6 +1203,7 @@ export class SettingsPanel extends HTMLElement {
     this.lightningIntensityValue = this.shadowRoot.getElementById('lightning-intensity-value');
     this.geometricModes = this.shadowRoot.getElementById('geometric-modes');
     this.organicModes = this.shadowRoot.getElementById('organic-modes');
+    this.accentColorsContainer = this.shadowRoot.getElementById('accent-colors-container');
 
     this.currentVizClass = 'geometric';
     this.currentVizMode = 0;
@@ -1213,10 +1214,15 @@ export class SettingsPanel extends HTMLElement {
   connectedCallback() {
     this.loadSettings();
     this.setupEventListeners();
+    this.loadCustomGradients();
     this.updateTexts();
 
     document.addEventListener('language-change', () => {
       this.updateTexts();
+    });
+
+    document.addEventListener('custom-gradients-updated', () => {
+      this.loadCustomGradients();
     });
   }
 
@@ -1298,6 +1304,47 @@ export class SettingsPanel extends HTMLElement {
     });
 
     this.updateLightningSettingsVisibility();
+  }
+
+  loadCustomGradients() {
+    const customGradients = store.getStorage('customGradients', []);
+    if (!this.accentColorsContainer) return;
+
+    // Remove existing custom gradient buttons (but keep the built-in ones)
+    const existingCustom = this.accentColorsContainer.querySelectorAll('.accent-btn[data-custom-gradient]');
+    existingCustom.forEach(btn => btn.remove());
+
+    // Add custom gradient buttons
+    customGradients.reverse().forEach((gradient, index) => {
+      const btn = document.createElement('button');
+      btn.className = 'accent-btn';
+      btn.setAttribute('data-custom-gradient', gradient.id);
+      btn.setAttribute('title', `Custom Gradient ${customGradients.length - index}`);
+
+      // Create gradient background
+      const colors = gradient.colors.join(', ');
+      btn.style.background = `linear-gradient(${gradient.direction}, ${colors})`;
+
+      // Add click event
+      btn.addEventListener('click', () => {
+        this.shadowRoot.querySelectorAll('.accent-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Apply gradient colors
+        gradient.colors.forEach((color, i) => {
+          if (i < 3) {
+            document.documentElement.style.setProperty(`--accent${i + 1}`, color);
+          }
+        });
+
+        document.documentElement.dataset.accent = 'custom';
+        store.setStorage('accent', 'custom');
+        store.setStorage('customGradient', gradient);
+        showToast(t('messages.accentColorChanged'), 'success');
+      });
+
+      this.accentColorsContainer.appendChild(btn);
+    });
   }
 
   setupEventListeners() {

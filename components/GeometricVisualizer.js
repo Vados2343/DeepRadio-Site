@@ -59,10 +59,12 @@ export class GeometricVisualizer {
     this.fadeAccumulator = 0;
     this.isInitializing = false;
 
+    this.handleResize = this.setupCanvas.bind(this);
+
     this.setupCanvas();
     this.animate();
 
-    window.addEventListener('resize', () => this.setupCanvas());
+    window.addEventListener('resize', this.handleResize);
 
     document.addEventListener('visualizer-mode-change', (e) => {
       this.currentMode = e.detail % this.modes.length;
@@ -1093,6 +1095,10 @@ export class GeometricVisualizer {
     if (this.animationId) {
       cancelAnimationFrame(this.animationId);
       this.animationId = null;
+    }
+
+    if (this.handleResize) {
+      window.removeEventListener('resize', this.handleResize);
     }
 
     if (this.themeObserver) {

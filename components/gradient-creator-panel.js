@@ -352,7 +352,7 @@ template.innerHTML = `
 
     display: flex;
 
-    gap: 0.5rem;
+    gap: 0.3rem;
 
     align-items: center;
     position: relative;
@@ -930,10 +930,34 @@ export class GradientCreatorPanel extends HTMLElement {
 
   applyGradient() {
     // Save to localStorage
-    store.setStorage('customGradient', {
+    const gradient = {
       colors: this.colors,
-      direction: this.direction
-    });
+      direction: this.direction,
+      id: `custom-${Date.now()}`,
+      timestamp: Date.now()
+    };
+
+    store.setStorage('customGradient', gradient);
+
+    // Add to custom gradients palette
+    const customGradients = store.getStorage('customGradients', []);
+    // Check if similar gradient already exists
+    const exists = customGradients.some(g =>
+      JSON.stringify(g.colors) === JSON.stringify(gradient.colors) &&
+      g.direction === gradient.direction
+    );
+
+    if (!exists) {
+      customGradients.push(gradient);
+      // Keep only last 10 custom gradients
+      if (customGradients.length > 10) {
+        customGradients.shift();
+      }
+      store.setStorage('customGradients', customGradients);
+
+      // Notify settings panel to update
+      document.dispatchEvent(new CustomEvent('custom-gradients-updated'));
+    }
 
     // Apply first 3 colors as CSS variables (for backwards compatibility)
     if (this.colors[0]) document.documentElement.style.setProperty('--accent1', this.colors[0]);
@@ -942,7 +966,7 @@ export class GradientCreatorPanel extends HTMLElement {
 
     document.documentElement.dataset.accent = 'custom';
     document.dispatchEvent(new CustomEvent('accent-changed', { detail: 'custom' }));
-    showToast('🎨 Custom gradient applied!', 'success');
+    showToast('🎨 Custom gradient applied and added to palette!', 'success');
     this.close();
   }
 

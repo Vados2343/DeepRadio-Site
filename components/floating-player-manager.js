@@ -382,17 +382,26 @@ export class FloatingPlayerManager {
 
   restorePosition() {
     if (!this.playerBar) return;
-   this.playerBar.classList.add(this.floatingClass);
+    this.playerBar.classList.add(this.floatingClass);
     this.playerBar.style.right = 'auto';
     const storedWidth = store.getStorage('floatingPlayerWidth', 50);
     this.setPlayerWidth(storedWidth);
-    this.position = 'bottom';
-    this.playerBar.setAttribute('data-position', 'bottom');
-    const rect = this.playerBar.getBoundingClientRect();
-    const x = (window.innerWidth - rect.width) / 2;
-    const y = window.innerHeight - rect.height - 20;
-    this.updatePosition(x, y);
-    console.log('[FloatingPlayer] Position reset to bottom-center');
+
+    // Try to restore saved position
+    const savedPosition = store.getStorage('floatingPlayerPosition', null);
+    const storedPos = store.getStorage('floatingPosition', 'center');
+
+    if (savedPosition && savedPosition.x !== undefined && savedPosition.y !== undefined) {
+      // Restore exact pixel position
+      this.position = savedPosition.position || storedPos;
+      this.playerBar.setAttribute('data-position', this.position);
+      this.updatePosition(savedPosition.x, savedPosition.y);
+      console.log('[FloatingPlayer] Position restored from storage:', savedPosition);
+    } else {
+      // Use position preset
+      this.setPosition(storedPos);
+      console.log('[FloatingPlayer] Position set to preset:', storedPos);
+    }
   }
 
   resetPosition() {
