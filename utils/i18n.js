@@ -175,6 +175,11 @@ const translations = {
       showVolume: 'Громкость',
       showPlayButton: 'Кнопка воспроизведения',
       showStepButtons: 'Кнопки вперед/назад',
+      showSettingsButton: 'Кнопка настроек',
+      appearance: 'Внешний вид',
+      volumeSliderStyle: 'Стиль слайдера громкости',
+      volumeStyleAccent: 'Акцентный цвет',
+      volumeStyleTransparent: 'Прозрачный',
       apply: 'Применить настройки'
     },
     stats: {
@@ -274,6 +279,7 @@ const translations = {
       headerLayoutChanged: 'Макет заголовка изменен',
       playerStyleChanged: 'Стиль плеера изменен',
       islandModeActivated: '🏝️ Островок активирован! Перетаскивайте плеер',
+      islandModeRequired: '⚠️ Сначала активируйте режим "Островок (перетаскиваемый)"',
       centeringEnabled: 'Центрирование включено',
       centeringDisabled: 'Центрирование выключено',
       accentColorChanged: 'Цветовая схема изменена',
@@ -281,7 +287,8 @@ const translations = {
       lightningTypePrefix: 'Тип молний: ',
       toastPositionChanged: 'Позиция уведомлений изменена',
       floatingPlayerUpdated: 'Настройки плавающего плеера обновлены',
-        appReady: '✨ DeepRadio готов к работе'
+        appReady: '✨ DeepRadio готов к работе',
+        openingEmailClient: '📧 Открытие почтового клиента...'
     }
   },
   en: {
@@ -460,6 +467,11 @@ const translations = {
       showVolume: 'Volume Control',
       showPlayButton: 'Play Button',
       showStepButtons: 'Previous/Next Buttons',
+      showSettingsButton: 'Settings Button',
+      appearance: 'Appearance',
+      volumeSliderStyle: 'Volume Slider Style',
+      volumeStyleAccent: 'Accent Color',
+      volumeStyleTransparent: 'Transparent',
       apply: 'Apply Settings'
     },
     stats: {
@@ -560,6 +572,7 @@ const translations = {
       headerLayoutChanged: 'Header layout changed',
       playerStyleChanged: 'Player style changed',
       islandModeActivated: '🏝️ Island mode activated! Drag the player',
+      islandModeRequired: '⚠️ Please activate Island (Floating) player style first',
       centeringEnabled: 'Centering enabled',
       centeringDisabled: 'Centering disabled',
       accentColorChanged: 'Color scheme changed',
@@ -567,7 +580,8 @@ const translations = {
       lightningTypePrefix: 'Lightning type: ',
       toastPositionChanged: 'Toast position changed',
       floatingPlayerUpdated: 'Floating player settings updated',
-       appReady: '✨ DeepRadio is ready'
+       appReady: '✨ DeepRadio is ready',
+      openingEmailClient: '📧 Opening email client...'
     }
   },
   uk: {
@@ -745,6 +759,11 @@ const translations = {
       showVolume: 'Гучність',
       showPlayButton: 'Кнопка відтворення',
       showStepButtons: 'Кнопки вперед/назад',
+    showSettingsButton: 'Кнопка налаштувань',
+      appearance: 'Зовнішній вигляд',
+      volumeSliderStyle: 'Стиль повзунка гучності',
+      volumeStyleAccent: 'Акцентний колір',
+      volumeStyleTransparent: 'Прозорий',
       apply: 'Застосувати налаштування'
     },
     stats: {
@@ -844,6 +863,7 @@ const translations = {
       headerLayoutChanged: 'Макет заголовка змінено',
       playerStyleChanged: 'Стиль плеєра змінено',
       islandModeActivated: '🏝️ Острівець активовано! Перетягуйте плеєр',
+      islandModeRequired: '⚠️ Спершу активуйте режим Острівець',
       centeringEnabled: 'Центрування увімкнено',
       centeringDisabled: 'Центрування вимкнено',
       accentColorChanged: 'Колірну схему змінено',
@@ -851,7 +871,8 @@ const translations = {
       lightningTypePrefix: 'Тип блискавок: ',
       toastPositionChanged: 'Позицію сповіщень змінено',
       floatingPlayerUpdated: 'Налаштування плаваючого плеєра оновлено',
-         appReady: '✨ DeepRadio готовий до роботи'
+         appReady: '✨ DeepRadio готовий до роботи',
+      openingEmailClient: '📧 Відкриття поштового клієнта...'
     }
   }
 };

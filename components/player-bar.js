@@ -15,7 +15,9 @@ template.innerHTML = `
     .player-container { height: var(--player-height); display: flex; align-items: center; padding: 0 max(1.5rem, var(--safe-area-left)) 0 max(1.5rem, var(--safe-area-right)); gap: 1.5rem; }
     .station-info { display: flex; align-items: center; gap: 1rem; min-width: 0; flex: 1; }
     .station-icon-wrapper { position: relative; flex-shrink: 0; cursor: pointer; border-radius: var(--radius); }
-    .station-icon { width: 60px; height: 60px; border-radius: var(--radius); object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,.3); transition: var(--transition); display: block; }
+    .station-icon { width: 60px; height: 60px; border-radius: var(--radius); object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,.3); transition: box-shadow 0.1s ease, transform 0.1s ease; display: block; }
+    .station-icon.playing { animation: iconPulse 0.8s ease-in-out infinite; }
+    @keyframes iconPulse { 0%, 100% { box-shadow: 0 4px 12px rgba(0,0,0,.3), 0 0 0 0 var(--accent1); } 50% { box-shadow: 0 4px 20px rgba(0,0,0,.4), 0 0 15px 3px var(--accent1); transform: scale(1.02); } }
     .fav-indicator { position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; color: var(--accent3); background: rgba(0,0,0,0.5); border-radius: 50%; padding: 2px; display: none; pointer-events: none; transition: transform 0.2s, opacity 0.2s; opacity: 0; transform: scale(0.8); }
     .fav-indicator.is-favorite { display: block; transform: scale(1); opacity: 1; }
     .station-details { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: .25rem; overflow: hidden; }
@@ -38,17 +40,30 @@ template.innerHTML = `
     .play-btn.loading svg { animation: rotate 1s linear infinite; }
     @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     .volume-control { display: flex; align-items: center; gap: .75rem; min-width: 150px; }
-    .volume-slider { -webkit-appearance: none; appearance: none; width: 100px; height: 4px; background: var(--surface-hover); border-radius: 2px; outline: none; cursor: pointer; }
+    .volume-slider { -webkit-appearance: none; appearance: none; width: 100px; height: 4px; background: var(--surface-hover); border-radius: 2px; outline: none; cursor: pointer; transition: all 0.2s ease; }
     .volume-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; background: var(--accent1); border-radius: 50%; cursor: pointer; transition: transform 0.2s; }
     .volume-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
     .volume-slider::-moz-range-thumb { width: 16px; height: 16px; background: var(--accent1); border-radius: 50%; cursor: pointer; border: none; transition: transform 0.2s; }
     .volume-slider::-moz-range-thumb:hover { transform: scale(1.2); }
+    :host([data-volume-slider-style="transparent"]) .volume-slider { background: rgba(255, 255, 255, 0.1); }
+    :host([data-volume-slider-style="transparent"]) .volume-slider::-webkit-slider-thumb { background: rgba(255, 255, 255, 0.8); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
+    :host([data-volume-slider-style="transparent"]) .volume-slider::-moz-range-thumb { background: rgba(255, 255, 255, 0.8); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
     :host([data-show-icon="false"]) .station-icon-wrapper { display: none !important; }
     :host([data-show-station-name="false"]) .station-name { display: none !important; }
     :host([data-show-track-info="false"]) .track-info { display: none !important; }
     :host([data-show-volume="false"]) .volume-control { display: none !important; }
     :host([data-show-play-button="false"]) .play-btn { display: none !important; }
     :host([data-show-step-buttons="false"]) .step-btn { display: none !important; }
+    .settings-btn { display: none; }
+    :host([data-show-settings-btn="true"]) .settings-btn { display: flex; margin-left: 0.5rem; }
+     .equalizer-bars { display: none; align-items: flex-end; gap: 3px; height: 24px; margin-right: 1rem; }
+    .equalizer-bars.active { display: flex; }
+    .equalizer-bar { width: 4px; background: linear-gradient(180deg, var(--accent1), var(--accent2)); border-radius: 2px; animation: equalize 0.8s ease-in-out infinite; }
+    .equalizer-bar:nth-child(1) { height: 60%; animation-delay: 0s; }
+    .equalizer-bar:nth-child(2) { height: 40%; animation-delay: 0.2s; }
+    .equalizer-bar:nth-child(3) { height: 80%; animation-delay: 0.4s; }
+    .equalizer-bar:nth-child(4) { height: 50%; animation-delay: 0.6s; }
+    @keyframes equalize { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(0.3); } }
     @media (max-width: 768px) { :host { height: var(--total-player-height-mobile); } .player-container { height: var(--player-height-mobile); padding: 0 1rem; gap: 0.75rem; } .station-icon { width: 50px; height: 50px; } .station-name { font-size: 14px; } .track-info { font-size: 12px; } .volume-control { display: none; } .step-btn { display: none !important; } .play-btn { width: 42px; height: 42px; } }
   </style>
   <div class="player-container">
@@ -62,6 +77,12 @@ template.innerHTML = `
         <div class="track-info"><span class="track-text-wrapper"><span class="track-text"></span></span></div>
       </div>
     </div>
+     <div class="equalizer-bars">
+        <div class="equalizer-bar"></div>
+        <div class="equalizer-bar"></div>
+        <div class="equalizer-bar"></div>
+        <div class="equalizer-bar"></div>
+      </div>
     <div class="player-controls">
       <button class="control-btn step-btn" data-step="-1" title="Предыдущая"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
       <button class="control-btn play-btn" title="Play/Pause"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
@@ -71,6 +92,11 @@ template.innerHTML = `
       <button class="control-btn volume-btn" title="Громкость"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg></button>
       <input type="range" class="volume-slider" min="0" max="100" value="70">
     </div>
+<button class="control-btn settings-btn" title="Настройки плеера">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94L14.4 2.81c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.47.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+      </svg>
+    </button>
   </div>
 `;
 
@@ -90,7 +116,10 @@ export class PlayerBar extends HTMLElement {
       playBtn: this.shadowRoot.querySelector('.play-btn'),
       stepBtns: this.shadowRoot.querySelectorAll('.step-btn'),
       volumeSlider: this.shadowRoot.querySelector('.volume-slider'),
-      volumeBtn: this.shadowRoot.querySelector('.volume-btn')
+     volumeBtn: this.shadowRoot.querySelector('.volume-btn'),
+       settingsBtn: this.shadowRoot.querySelector('.settings-btn'),
+      equalizerBars: this.shadowRoot.querySelector('.equalizer-bars')
+
     };
     this.marqueeTimer = null;
     this.currentState = 'IDLE';
@@ -144,7 +173,17 @@ export class PlayerBar extends HTMLElement {
     this.elements.stationIconWrapper.addEventListener('click', () => {
       if (store.current) store.toggleFavorite(store.current.id);
     });
+     document.addEventListener('settings-change', (e) => {
+      if (e.detail.key === 'visualizerBars') {
+        this.toggleEqualizerBars(e.detail.value);
+         } else if (e.detail.key === 'iconVisualizer') {
+        this.updateIconVisualization(this.isPlaying);
+      }
+    });
+    this.elements.settingsBtn.addEventListener('click', () => {
+      this.openFloatingPlayerSettings();
 
+    });
     store.on('station-changing', (e) => this.updateStation(e.detail, true));
     store.on('station-active', (e) => { this.updateStation(e.detail, false); });
     store.on('track-update', (e) => this.updateTrack(e.detail));
@@ -176,6 +215,8 @@ export class PlayerBar extends HTMLElement {
         this.clearStates();
         this.applyPendingTrackData();
         this.updatePlayButton();
+         this.updateIconVisualization(true);
+         this.toggleEqualizerBars(store.getStorage('visualizerBars', true));
         break;
 
       case 'PAUSED':
@@ -184,6 +225,8 @@ export class PlayerBar extends HTMLElement {
         this.realPlayingState = false;
         this.clearStates();
         this.updatePlayButton();
+        this.updateIconVisualization(false);
+        this.toggleEqualizerBars(false);
         break;
 
       case 'LOADING':
@@ -218,6 +261,8 @@ export class PlayerBar extends HTMLElement {
         this.isPlaying = false;
         this.realPlayingState = false;
         this.updatePlayButton();
+       this.updateIconVisualization(false);
+        this.toggleEqualizerBars(false);
         break;
 
       case 'IDLE':
@@ -225,6 +270,9 @@ export class PlayerBar extends HTMLElement {
         this.realPlayingState = false;
         this.clearStates();
         this.updatePlayButton();
+        this.updateIconVisualization(false);
+        this.toggleEqualizerBars(false);
+        this.updateIconVisualization(false);
         break;
 
       case 'READY':
@@ -362,7 +410,21 @@ export class PlayerBar extends HTMLElement {
     const isFav = this.currentStation && store.isFavorite(this.currentStation.id);
     this.elements.favIndicator.classList.toggle('is-favorite', !!isFav);
   }
-
+   updateIconVisualization(isPlaying) {
+    const iconVisualizerEnabled = store.getStorage('iconVisualizer', false);
+    if (isPlaying && iconVisualizerEnabled) {
+      this.elements.stationIcon.classList.add('playing');
+    } else {
+      this.elements.stationIcon.classList.remove('playing');
+    }
+  }
+toggleEqualizerBars(enabled) {
+    if (enabled && this.isPlaying) {
+      this.elements.equalizerBars.classList.add('active');
+    } else {
+      this.elements.equalizerBars.classList.remove('active');
+    }
+  }
   showLoading() {
     this.clearStates();
     this.elements.trackInfo.classList.add('loading');
@@ -420,6 +482,8 @@ export class PlayerBar extends HTMLElement {
     if (this.marqueeTimer) clearTimeout(this.marqueeTimer);
     const wrapper = this.elements.trackTextWrapper;
     wrapper.classList.remove('marquee');
+    const marqueeEnabled = this.getAttribute('data-marquee-enabled') !== 'false';
+    if (!marqueeEnabled) return;
     this.marqueeTimer = setTimeout(() => {
       const textElement = this.elements.trackText;
       const container = textElement.parentElement;
@@ -437,6 +501,113 @@ export class PlayerBar extends HTMLElement {
     const lastStation = store.stations.find(s => s.id === lastId);
     if (lastStation) this.updateStation(lastStation);
     this.updatePlayButton();
+     const visualizerBars = store.getStorage('visualizerBars', true);
+    this.toggleEqualizerBars(visualizerBars);
+  }
+  openFloatingPlayerSettings() {
+
+    // Check if this is the first time opening settings
+
+    const isFirstTime = !localStorage.getItem('deepradio_floating_settings_visited');
+
+
+
+    if (isFirstTime) {
+
+      // Show tutorial/tour
+
+      this.showSettingsTour();
+
+      localStorage.setItem('deepradio_floating_settings_visited', 'true');
+
+    }
+
+
+
+    // Open floating player settings panel
+
+    const floatingPanel = document.querySelector('floating-player-panel');
+
+    if (floatingPanel) {
+
+      floatingPanel.open();
+
+    }
+
+  }
+
+
+
+  showSettingsTour() {
+
+    const settingsPanel = document.querySelector('settings-panel');
+
+    if (settingsPanel) {
+
+      settingsPanel.open();
+
+      setTimeout(() => {
+
+        const playerStyleSection = settingsPanel.shadowRoot?.querySelector('#player-style-section');
+
+        const floatingPlayerSection = settingsPanel.shadowRoot?.querySelector('#floating-player-section');
+
+        if (playerStyleSection) {
+          playerStyleSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+          playerStyleSection.style.outline = '2px solid var(--accent1)';
+
+          playerStyleSection.style.outlineOffset = '4px';
+
+          playerStyleSection.style.borderRadius = '12px';
+
+          playerStyleSection.style.transition = 'all 0.3s ease';
+
+
+
+          setTimeout(() => {
+
+            if (floatingPlayerSection) {
+
+              floatingPlayerSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+              floatingPlayerSection.style.outline = '2px solid var(--accent1)';
+
+              floatingPlayerSection.style.outlineOffset = '4px';
+
+              floatingPlayerSection.style.borderRadius = '12px';
+
+              floatingPlayerSection.style.transition = 'all 0.3s ease';
+              setTimeout(() => {
+                playerStyleSection.style.outline = '';
+                playerStyleSection.style.outlineOffset = '';
+                floatingPlayerSection.style.outline = '';
+                floatingPlayerSection.style.outlineOffset = '';
+                settingsPanel.close();
+
+                setTimeout(() => {
+
+                  const floatingPanel = document.querySelector('floating-player-panel');
+
+                  if (floatingPanel) {
+
+                    floatingPanel.open();
+
+                  }
+
+                }, 300);
+
+              }, 2000);
+
+            }
+
+          }, 1500);
+
+        }
+
+      }, 300);
+
+    }
   }
 }
 

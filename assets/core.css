@@ -11,10 +11,14 @@
   --text-primary: #ffffff;
   --text-secondary: rgba(255, 255, 255, 0.7);
   --text-muted: rgba(255, 255, 255, 0.5);
+  --radius-xs: 4px;
   --radius-sm: 8px;
   --radius: 14px;
   --radius-lg: 20px;
   --radius-xl: 24px;
+  --preview-color1: #08f7fe;
+  --preview-color2: #f15bb5;
+  --preview-color3: #ffea00;
   --z-modals: 1000;
   --shadow-glow: 0 0 20px rgba(8, 247, 254, 0.3);
   --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
@@ -79,6 +83,48 @@
   --accent1: #08f7fe;
   --accent2: #f15bb5;
   --accent3: #ffea00;
+}
+[data-accent="purple"] {
+  --accent1: #a855f7;
+  --accent2: #ec4899;
+  --accent3: #8b5cf6;
+}
+[data-accent="orange"] {
+  --accent1: #f97316;
+  --accent2: #fb923c;
+  --accent3: #fdba74;
+}
+[data-accent="teal"] {
+  --accent1: #14b8a6;
+  --accent2: #06b6d4;
+  --accent3: #22d3ee;
+}
+
+[data-accent="pink"] {
+  --accent1: #ec4899;
+  --accent2: #f472b6;
+  --accent3: #f9a8d4;
+}
+[data-accent="sunset"] {
+  --accent1: #f97316;
+  --accent2: #ec4899;
+  --accent3: #fbbf24;
+}
+[data-accent="ocean"] {
+  --accent1: #06b6d4;
+  --accent2: #3b82f6;
+  --accent3: #0ea5e9;
+}
+[data-accent="forest"] {
+  --accent1: #059669;
+  --accent2: #10b981;
+  --accent3: #34d399;
+}
+
+[data-accent="neon"] {
+  --accent1: #00ff88;
+  --accent2: #ff00ff;
+  --accent3: #00ffff;
 }
 
 @media (min-width: 769px) {
@@ -224,16 +270,97 @@ body.center-elements .genre-filter {
   gap: 1rem;
   transition: var(--transition);
 }
-
+[data-theme="light"] .app-header {
+  background: rgba(248, 250, 252, 0.95);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+[data-theme="oled"] .app-header {
+  background: rgba(0, 0, 0, 0.98);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.app-header[data-header-theme="glass"],
+.app-header.theme-glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+}
+.app-header[data-header-theme="neon"],
+.app-header.theme-neon {
+  background: linear-gradient(135deg,
+    rgba(8, 247, 254, 0.15) 0%,
+    rgba(241, 91, 181, 0.15) 100%);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border-bottom: 2px solid;
+  border-image: linear-gradient(90deg,
+    var(--accent1),
+    var(--accent2),
+    var(--accent3)) 1;
+  box-shadow: 0 0 30px rgba(8, 247, 254, 0.3);
+}
+.app-header[data-header-theme="dark"],
+.app-header.theme-dark {
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.app-header[data-header-theme="minimal"],
+.app-header.theme-minimal {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
 .app-header[data-header-layout="default"],
 .app-header.layout-default {
   justify-content: space-between;
   gap: 1rem;
+  position: relative;
+
   background: linear-gradient(180deg,
+
     rgba(10, 10, 20, 0.95) 0%,
+
     rgba(15, 15, 25, 0.98) 100%);
+
   border-bottom: 1px solid rgba(8, 247, 254, 0.2);
+
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+
+}
+
+.app-header[data-header-layout="default"] .header-left,
+
+.app-header.layout-default .header-left {
+
+  z-index: 2;
+
+}
+
+.app-header[data-header-layout="default"] .header-right,
+
+.app-header.layout-default .header-right {
+
+  z-index: 2;
+
+}
+
+.app-header[data-header-layout="default"] .header-center,
+
+.app-header.layout-default .header-center {
+
+  position: absolute;
+
+  left: 50%;
+
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+
+  z-index: 1;
 }
 
 .app-header[data-header-layout="default"]::after,
@@ -880,11 +1007,23 @@ player-bar.draggable {
   transform: translateX(-50%);
 }
 
+player-bar.draggable button,
+player-bar.draggable input[type="range"],
+player-bar.draggable .volume-slider,
+player-bar.draggable .control-btn,
+player-bar.draggable .play-btn,
+player-bar.draggable .step-btn,
+player-bar.draggable .volume-btn,
+player-bar.draggable a {
+  cursor: pointer !important;
+}
 player-bar.dragging {
-  cursor: grabbing;
+  cursor: grabbing !important;
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.7);
 }
-
+player-bar.dragging * {
+  cursor: grabbing !important;
+}
 player-bar.animating {
   animation: playerFloat 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -1364,7 +1503,15 @@ changelog-panel[style*="display: block"] {
   body.menu-open {
     overflow: hidden;
   }
-
+ player-bar.draggable {
+    max-width: 90vw;
+    min-width: 280px;
+  }
+  player-bar[player-style="island"] {
+    max-width: 85vw;
+    min-width: 260px;
+    border-radius: var(--radius-lg);
+  }
   .app-header {
     padding-left: max(0.75rem, var(--safe-area-left));
     padding-right: max(0.75rem, var(--safe-area-right));

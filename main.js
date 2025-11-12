@@ -9,6 +9,7 @@ import './components/stats-view.js';
 import './components/like-prompt.js';
 import './components/changelog-panel.js';
 import './components/capsule-search.js';
+import './components/gradient-creator-panel.js';
 import { BurgerMenu } from './components/burger-menu.js';
 import { FloatingPlayerManager } from './components/floating-player-manager.js';
 import { GeometricVisualizer } from './components/GeometricVisualizer.js';
@@ -251,7 +252,23 @@ class EnhancedApp {
         setTimeout(() => changelogPanel.open(), 50);
       }
     });
-
+const addPlaylistBtn = document.getElementById('add-playlist');
+    addPlaylistBtn?.addEventListener('click', () => {
+      const playlistName = prompt('Введите название плейлиста:', '');
+      if (playlistName && playlistName.trim()) {
+        const playlistId = `playlist_${Date.now()}`;
+        const newPlaylist = {
+          id: playlistId,
+          name: playlistName.trim(),
+          stations: [],
+          createdAt: Date.now()
+        };
+        store.playlists[playlistId] = newPlaylist;
+        store.setStorage('playlists', store.playlists);
+        this.updatePlaylistsNav();
+        showToast(t('messages.playlistCreated'), 'success');
+      }
+    });
     viewToggle?.addEventListener('click', () => {
       if (store.isEditMode()) {
         showToast('Сначала завершите редактирование', 'warning');
@@ -519,7 +536,7 @@ class EnhancedApp {
   async registerServiceWorker() {
     if ('serviceWorker' in navigator) {
       try {
-        await navigator.serviceWorker.register('/sw.js');
+        await navigator.serviceWorker.register('/server/sw.js');
       } catch (err) {
         console.error('Service worker registration failed:', err);
       }

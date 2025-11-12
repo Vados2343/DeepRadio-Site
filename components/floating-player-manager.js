@@ -48,13 +48,16 @@ export class FloatingPlayerManager {
       const showVolume = store.getStorage('floatingShowVolume', true);
       const showPlayButton = store.getStorage('floatingShowPlayButton', true);
       const showStepButtons = store.getStorage('floatingShowStepButtons', false);
+      const showSettingsButton = store.getStorage('floatingShowSettingsButton', true);
+
       this.applyVisibilitySettings({
         icon: showIcon,
         stationName: showStationName,
         trackInfo: showTrackInfo,
         volume: showVolume,
         playButton: showPlayButton,
-        stepButtons: showStepButtons
+        stepButtons: showStepButtons,
+        settingsButton: showSettingsButton
       });
        const marqueeEnabled = store.getStorage('floatingMarqueeEnabled', true);
       this.playerBar.setAttribute('data-marquee-enabled', marqueeEnabled);
@@ -116,24 +119,19 @@ export class FloatingPlayerManager {
   enableFloating() {
     if (this.isFloating || !this.playerBar) return;
     this.isFloating = true;
-    this.playerBar.classList.add(this.floatingClass);
-   if (this.draggingEnabled && !this.dragListenersSetup){
+   this.playerBar.style.position = 'fixed';
+    this.playerBar.style.zIndex = '500';
+    if (this.draggingEnabled && !this.dragListenersSetup){
       this.playerBar.classList.add('draggable');
       this.setupDragListeners();
     }
-    this.playerBar.style.position = 'fixed';
-    this.playerBar.style.right = 'auto';
-    this.playerBar.style.bottom = '20px';
-    this.playerBar.style.transform = 'translateX(-50%)';
-    this.playerBar.style.zIndex = '500';
-    const storedWidth = store.getStorage('floatingPlayerWidth', 50);
-    this.setPlayerWidth(storedWidth);
     document.body.style.paddingBottom = '0';
     const mainElement = document.querySelector('.app-main');
     if (mainElement) {
       mainElement.style.paddingBottom = '0';
     }
     this.playerBar.classList.add('animating');
+    this.restorePosition();
     setTimeout(() => {
       if (this.playerBar) {
         this.playerBar.classList.remove('animating');
@@ -148,6 +146,7 @@ export class FloatingPlayerManager {
     this.isFloating = false;
      this.removeDragListeners();
     this.playerBar.classList.remove('draggable', 'dragging', this.floatingClass);
+     this.playerBar.setAttribute('data-show-settings-btn', 'false');
     this.resetPosition();
     this.currentWidthPercent = undefined;
     document.body.style.paddingBottom = '';
@@ -168,8 +167,8 @@ export class FloatingPlayerManager {
     const maxX = window.innerWidth - rect.width;
     const maxY = window.innerHeight - rect.height;
 
-    const x = Math.max(0, Math.min(rect.left, maxX));
-    const y = Math.max(0, Math.min(rect.top, maxY));
+    const x = Math.max(20, Math.min(rect.left, maxX - 20));
+    const y = Math.max(20, Math.min(rect.top, maxY - 20));
 
     this.updatePosition(x, y);
   }
@@ -298,14 +297,17 @@ export class FloatingPlayerManager {
     if (!this.playerBar) return;
 
     const rect = this.playerBar.getBoundingClientRect();
-    const maxX = window.innerWidth - rect.width;
-    const maxY = window.innerHeight - rect.height;
+   const padding = 20;
 
-    // Constrain to viewport
-    x = Math.max(0, Math.min(x, maxX));
-    y = Math.max(0, Math.min(y, maxY));
+    const maxX = window.innerWidth - rect.width - padding;
 
-    // очень важно: в режиме плавающего плеера мы ВСЕГДА убираем right
+    const maxY = window.innerHeight - rect.height - padding;
+
+
+
+    x = Math.max(padding, Math.min(x, maxX));
+
+    y = Math.max(padding, Math.min(y, maxY));
     this.playerBar.style.right = 'auto';
     this.playerBar.style.left = `${x}px`;
     this.playerBar.style.bottom = 'auto';
@@ -382,35 +384,17 @@ export class FloatingPlayerManager {
 
   restorePosition() {
     if (!this.playerBar) return;
-
-    const savedPosition = store.getStorage('floatingPlayerPosition');
-
-    // важно: включаем плавающий стиль перед восстановлением
-    this.playerBar.classList.add(this.floatingClass);
+   this.playerBar.classList.add(this.floatingClass);
     this.playerBar.style.right = 'auto';
     const storedWidth = store.getStorage('floatingPlayerWidth', 50);
     this.setPlayerWidth(storedWidth);
-
-    if (savedPosition) {
-      this.position = savedPosition.position || 'bottom-center';
-      this.playerBar.setAttribute('data-position', this.position);
-
-      const rect = this.playerBar.getBoundingClientRect();
-      const maxX = window.innerWidth - rect.width;
-      const maxY = window.innerHeight - rect.height;
-
-      let x = Math.max(0, Math.min(savedPosition.x, maxX));
-      let y = Math.max(0, Math.min(savedPosition.y, maxY));
-
-      this.updatePosition(x, y);
-
-      console.log('[FloatingPlayer] Position restored:', savedPosition);
-    } else {
-      const rect = this.playerBar.getBoundingClientRect();
-      const x = (window.innerWidth - rect.width) / 2;
-      const y = window.innerHeight - rect.height - 20;
-      this.updatePosition(x, y);
-    }
+    this.position = 'bottom';
+    this.playerBar.setAttribute('data-position', 'bottom');
+    const rect = this.playerBar.getBoundingClientRect();
+    const x = (window.innerWidth - rect.width) / 2;
+    const y = window.innerHeight - rect.height - 20;
+    this.updatePosition(x, y);
+    console.log('[FloatingPlayer] Position reset to bottom-center');
   }
 
   resetPosition() {
@@ -507,6 +491,7 @@ export class FloatingPlayerManager {
     this.playerBar.setAttribute('data-show-volume', visibility.volume !== false);
     this.playerBar.setAttribute('data-show-play-button', visibility.playButton !== false);
     this.playerBar.setAttribute('data-show-step-buttons', visibility.stepButtons === true);
+     this.playerBar.setAttribute('data-show-settings-btn', visibility.settingsButton !== false);
   }
    setPlayerWidth(widthPercent) {
     if (!this.playerBar || !this.isFloating) return;

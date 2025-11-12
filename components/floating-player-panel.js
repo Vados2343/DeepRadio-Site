@@ -1,825 +1,411 @@
 import { store } from '../core/store.js';
-
 import { showToast } from '../utils/toast.js';
-
 import { t } from '../utils/i18n.js';
-
-
-
 const template = document.createElement('template');
-
 template.innerHTML = `
-
 <style>
 input[type="range"] {
-
   -webkit-appearance: none;
-
   appearance: none;
-
   width: 100%;
-
   height: 6px;
-
   border-radius: 3px;
-
   outline: none;
-
   background: var(--border);
-
 }
-
- 
-
 input[type="range"]::-webkit-slider-thumb {
-
   -webkit-appearance: none;
-
   appearance: none;
-
   width: 18px;
-
   height: 18px;
-
   border-radius: 50%;
-
   background: var(--accent1);
-
   cursor: pointer;
-
   transition: all 0.2s ease;
-
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-
 }
-
- 
-
 input[type="range"]::-webkit-slider-thumb:hover {
-
   transform: scale(1.2);
-
   box-shadow: 0 0 0 4px rgba(8, 247, 254, 0.2);
-
 }
-
- 
-
-input[type="range"]::-moz-range-thumb {
-
+ input[type="range"]::-moz-range-thumb {
   width: 18px;
-
   height: 18px;
-
   border-radius: 50%;
-
   background: var(--accent1);
-
   cursor: pointer;
-
   border: none;
-
   transition: all 0.2s ease;
-
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-
 }
-
- 
-
 input[type="range"]::-moz-range-thumb:hover {
-
   transform: scale(1.2);
-
   box-shadow: 0 0 0 4px rgba(8, 247, 254, 0.2);
-
 }
 :host {
-
   display: none;
-
   position: fixed;
-
   inset: 0;
-
   z-index: var(--z-modals, 1000);
-
   animation: fadeIn 0.3s ease;
-
 }
-
- 
-
 :host([open]) {
-
   display: block !important;
-
   pointer-events: auto;
-
   visibility: visible;
-
 }
-
- 
-
 @keyframes fadeIn {
-
   from { opacity: 0; }
-
   to { opacity: 1; }
-
 }
-
- 
-
 .overlay {
-
   position: absolute;
-
   inset: 0;
-
   background: rgba(0, 0, 0, 0);
-
   backdrop-filter: blur(0px);
-
   -webkit-backdrop-filter: blur(0px);
-
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-
   opacity: 0;
-
   pointer-events: none;
 
 }
-
- 
-
 :host([open]) .overlay {
-
   background: rgba(0, 0, 0, 0.4);
-
   backdrop-filter: blur(5px);
-
   -webkit-backdrop-filter: blur(5px);
-
   opacity: 1;
-
   pointer-events: auto;
-
 }
-
- 
-
 .panel {
-
   position: absolute;
-
   right: 0;
-
   top: 0;
-
   bottom: 0;
-
   width: 420px;
-
   max-width: 100vw;
-
   background: var(--bg-gradient-start);
-
   border-left: 1px solid var(--border);
-
   transform: translateX(100%);
-
   transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-
   overflow: hidden;
-
   display: flex;
-
   flex-direction: column;
-
   will-change: transform;
-
   box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3);
-
 }
-
- 
-
 :host([open]) .panel {
-
   transform: translateX(0);
-
 }
-
- 
-
 .panel > * {
-
   opacity: 0;
-
   transform: translateX(20px);
-
   transition: all 0.3s ease;
-
   transition-delay: 0s;
-
 }
-
- 
-
 :host([open]) .panel > * {
-
   opacity: 1;
-
   transform: translateX(0);
-
   transition-delay: 0.2s;
-
 }
-
- 
-
 .header {
-
   padding: 1.5rem;
-
   border-bottom: 1px solid var(--border);
-
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   flex-shrink: 0;
-
   background: rgba(0, 0, 0, 0.2);
-
 }
-
- 
-
 .title {
-
   font-size: 1.25rem;
-
   font-weight: 600;
-
   display: flex;
-
   align-items: center;
-
   gap: 0.75rem;
-
 }
-
- 
-
 .title svg {
-
   width: 24px;
-
   height: 24px;
-
   color: var(--accent1);
-
 }
-
- 
-
 .close-btn {
-
   background: none;
-
   border: none;
-
   color: var(--text-secondary);
-
   width: 40px;
-
   height: 40px;
-
   border-radius: 50%;
-
   cursor: pointer;
-
   display: flex;
-
   align-items: center;
-
   justify-content: center;
-
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-
   position: relative;
-
   overflow: hidden;
-
 }
-
- 
-
 .close-btn::before {
-
   content: '';
-
   position: absolute;
-
   inset: 0;
-
   background: var(--surface-hover);
-
   border-radius: 50%;
-
   transform: scale(0);
-
   transition: transform 0.3s ease;
-
 }
-
- 
-
 .close-btn:hover::before {
-
   transform: scale(1);
-
 }
-
- 
-
 .close-btn:hover {
-
   color: var(--text-primary);
-
 }
-
- 
-
 .close-btn svg {
-
   position: relative;
-
   z-index: 1;
-
   transition: transform 0.3s ease;
-
 }
-
- 
-
 .close-btn:hover svg {
-
   transform: rotate(90deg);
-
 }
-
- 
-
 .content {
-
   flex: 1;
-
   overflow-y: auto;
-
   overflow-x: hidden;
-
   padding: 1.5rem;
-
   scroll-behavior: smooth;
-
 }
-
- 
-
 .content::-webkit-scrollbar {
-
   width: 6px;
-
 }
-
- 
-
 .content::-webkit-scrollbar-track {
-
   background: transparent;
-
 }
-
- 
-
 .content::-webkit-scrollbar-thumb {
-
   background: var(--border);
-
   border-radius: 3px;
-
   transition: background 0.2s;
-
 }
-
- 
-
 .content::-webkit-scrollbar-thumb:hover {
-
   background: var(--border-hover);
-
 }
-
- 
-
 .section {
-
   margin-bottom: 2rem;
-
   opacity: 0;
-
   transform: translateY(20px);
-
   animation: sectionFadeIn 0.4s ease forwards;
-
 }
-
- 
-
 .section:nth-child(1) { animation-delay: 0.3s; }
-
 .section:nth-child(2) { animation-delay: 0.4s; }
-
 .section:nth-child(3) { animation-delay: 0.5s; }
-
 .section:nth-child(4) { animation-delay: 0.6s; }
-
- 
-
-@keyframes sectionFadeIn {
-
+ @keyframes sectionFadeIn {
   to {
-
     opacity: 1;
-
     transform: translateY(0);
-
   }
-
 }
-
- 
-
 .section-title {
-
   font-size: 0.9rem;
-
   font-weight: 600;
-
   text-transform: uppercase;
-
   letter-spacing: 1px;
-
   color: var(--text-muted);
-
   margin-bottom: 1rem;
-
   display: flex;
-
   align-items: center;
-
   gap: 0.5rem;
-
 }
-
- 
-
 .section-title::before {
-
   content: '';
-
   width: 20px;
-
   height: 2px;
-
   background: var(--accent1);
-
   border-radius: 1px;
 
 }
-
- 
-
 .setting-row {
-
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   padding: 0.875rem 0;
-
   border-bottom: 1px solid var(--border);
-
   transition: all 0.2s ease;
-
   position: relative;
-
 }
-
- 
-
 .setting-row:hover {
-
   padding-left: 0.5rem;
-
   background: var(--surface);
-
   margin: 0 -0.5rem;
-
   padding-right: 0.5rem;
-
   border-radius: var(--radius-sm);
-
 }
-
- 
-
 .setting-row:last-child {
-
   border-bottom: none;
-
 }
-
- 
-
 .setting-info {
-
   flex: 1;
-
   margin-right: 1rem;
-
 }
-
- 
-
 .setting-label {
-
   font-size: 0.95rem;
-
   color: var(--text-primary);
-
   font-weight: 500;
-
 }
-
- 
-
 .setting-description {
-
   font-size: 0.85rem;
-
   color: var(--text-muted);
-
   margin-top: 0.25rem;
-
   line-height: 1.4;
-
 }
-
- 
-
 .toggle-container {
-
   position: relative;
-
 }
-
- 
-
 .toggle {
-
   position: relative;
-
   width: 52px;
-
   height: 28px;
-
   background: var(--surface-hover);
-
   border-radius: 28px;
-
   cursor: pointer;
-
   transition: all 0.3s ease;
-
   display: inline-block;
-
   border: 1px solid var(--border);
-
 }
-
- 
-
 .toggle:hover {
-
   border-color: var(--border-hover);
-
 }
-
- 
-
 .toggle input {
-
   opacity: 0;
-
   width: 0;
-
   height: 0;
-
   position: absolute;
-
 }
-
- 
-
 .toggle-slider {
-
   position: absolute;
-
   top: 3px;
-
   left: 3px;
-
   width: 22px;
-
   height: 22px;
-
   background: var(--text-muted);
-
   border-radius: 50%;
-
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-
 }
-
- 
-
 .toggle input:checked + .toggle-slider {
-
   transform: translateX(24px);
-
   background: white;
-
 }
-
- 
-
 .toggle:has(input:checked) {
-
   background: var(--accent1);
-
   border-color: var(--accent1);
-
 }
-
- 
-
-.position-grid {
-
+ .position-grid {
   display: grid;
-
   grid-template-columns: repeat(3, 1fr);
-
   gap: 0.5rem;
-
   margin-top: 1rem;
-
 }
-
- 
-
 .position-btn {
-
   padding: 0.75rem 0.5rem;
-
   background: var(--surface);
-
   border: 1px solid var(--border);
-
   border-radius: var(--radius-sm);
-
   color: var(--text-secondary);
-
   font-size: 0.75rem;
-
   cursor: pointer;
-
   transition: all 0.2s ease;
-
   text-align: center;
-
 }
-
- 
-
 .position-btn:hover {
-
   background: var(--surface-hover);
-
   border-color: var(--border-hover);
-
   color: var(--text-primary);
-
 }
-
- 
-
 .position-btn.active {
-
   background: var(--accent1);
-
   color: #000;
-
   border-color: var(--accent1);
-
 }
-
- 
 
 .visibility-grid {
-
   display: grid;
-
   grid-template-columns: 1fr;
-
   gap: 0.75rem;
-
   margin-top: 1rem;
-
 }
-
- 
-
 .visibility-item {
-
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   padding: 0.75rem 1rem;
-
   background: var(--surface);
-
   border: 1px solid var(--border);
-
   border-radius: var(--radius-sm);
-
   transition: all 0.2s ease;
-
 }
-
- 
-
 .visibility-item:hover {
-
   border-color: var(--border-hover);
-
   background: var(--surface-hover);
-
 }
-
- 
-
 .visibility-label {
-
   font-size: 0.9rem;
-
   color: var(--text-primary);
-
   display: flex;
-
   align-items: center;
-
   gap: 0.5rem;
-
 }
-
- 
-
 .visibility-label svg {
-
   width: 20px;
-
   height: 20px;
-
   color: var(--accent1);
+}
+.setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+.setting-item:hover {
+  border-color: var(--border-hover);
+  background: var(--surface-hover);
+}
+.setting-label {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.setting-label svg {
+  width: 20px;
+  height: 20px;
+  color: var(--accent1);
+  flex-shrink: 0;
 
 }
-
- 
-
+.style-select {
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-gradient-start);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 140px;
+}
+.style-select:hover {
+  border-color: var(--accent1);
+  background: var(--surface-hover);
+}
+.style-select:focus {
+  outline: none;
+  border-color: var(--accent1);
+  box-shadow: 0 0 0 3px rgba(8, 247, 254, 0.1);
+}
 .info-box {
 
   background: var(--surface);
@@ -1158,11 +744,11 @@ input[type="range"]::-moz-range-thumb:hover {
 
       <h3 class="section-title" data-i18n="floatingPlayer.visibility">Element Visibility</h3>
 
- 
 
       <div class="visibility-grid">
 
         <div class="visibility-item">
+        
 
           <div class="visibility-label">
 
@@ -1251,118 +837,79 @@ input[type="range"]::-moz-range-thumb:hover {
         </div>
 
  
-
         <div class="visibility-item">
-
           <div class="visibility-label">
-
             <svg viewBox="0 0 24 24" fill="currentColor">
-
               <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
-
             </svg>
-
             <span data-i18n="floatingPlayer.showVolume">Volume Control</span>
-
           </div>
-
           <div class="toggle-container">
-
             <label class="toggle">
-
               <input type="checkbox" id="show-volume" checked>
-
               <span class="toggle-slider"></span>
-
             </label>
-
           </div>
-
         </div>
-
- 
-
         <div class="visibility-item">
-
           <div class="visibility-label">
-
             <svg viewBox="0 0 24 24" fill="currentColor">
-
               <path d="M8 5v14l11-7z"/>
-
             </svg>
-
             <span data-i18n="floatingPlayer.showPlayButton">Play Button</span>
-
           </div>
-
           <div class="toggle-container">
-
             <label class="toggle">
-
               <input type="checkbox" id="show-play-button" checked>
-
               <span class="toggle-slider"></span>
-
             </label>
-
           </div>
-
         </div>
-
- 
-
         <div class="visibility-item">
-
           <div class="visibility-label">
-
             <svg viewBox="0 0 24 24" fill="currentColor">
-
               <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
-
             </svg>
-
             <span data-i18n="floatingPlayer.showStepButtons">Previous/Next Buttons</span>
-
           </div>
-
           <div class="toggle-container">
-
             <label class="toggle">
-
               <input type="checkbox" id="show-step-buttons">
-
               <span class="toggle-slider"></span>
-
             </label>
-
           </div>
-
         </div>
-
-      </div>
-
-    </div>
-</div>
- 
-
-    <div class="section">
-
-      <button class="action-button" id="apply-btn">
-
-        <svg viewBox="0 0 24 24" fill="currentColor">
-
-          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-
-        </svg>
-
-        <span data-i18n="floatingPlayer.apply">Apply Settings</span>
-
-      </button>
-
-    </div>
-
+        <div class="visibility-item">
+  <div class="visibility-label">
+    <svg viewBox="0 0 24 24" fill="currentColor">
+      <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94L14.4 2.81c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+    </svg>
+    <span data-i18n="floatingPlayer.showSettingsButton">Settings Button</span>
   </div>
+  <div class="toggle-container">
+    <label class="toggle">
+      <input type="checkbox" id="show-settings-button" checked>
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+</div>
+      </div>
+    </div>
+<div class="section" id="appearance-section">
+  <h3 class="section-title" data-i18n="floatingPlayer.appearance">Appearance</h3>
+
+  <div class="setting-row">
+    <div class="setting-info">
+      <div class="setting-label" data-i18n="floatingPlayer.volumeSliderStyle">Volume Slider Style</div>
+      <div class="setting-description">Appearance of the volume slider in floating mode</div>
+    </div>
+
+    <select id="volume-slider-style" class="style-select">
+      <option value="accent" data-i18n-option="floatingPlayer.volumeStyleAccent">Accent Color</option>
+      <option value="transparent" data-i18n-option="floatingPlayer.volumeStyleTransparent">Transparent</option>
+    </select>
+  </div>
+</div>
 
 </div>
 
@@ -1371,80 +918,44 @@ input[type="range"]::-moz-range-thumb:hover {
 
 
 export class FloatingPlayerPanel extends HTMLElement {
-
   constructor() {
-
     super();
-
     this.attachShadow({ mode: 'open' });
-
     this.shadowRoot.appendChild(template.content.cloneNode(true));
-
-
-
     this.overlay = this.shadowRoot.getElementById('overlay');
-
     this.closeBtn = this.shadowRoot.getElementById('close-btn');
-
     this.floatingEnabled = this.shadowRoot.getElementById('floating-enabled');
-
     this.draggingEnabled = this.shadowRoot.getElementById('dragging-enabled');
     this.playerWidthSlider = this.shadowRoot.getElementById('player-width-slider');
-
     this.playerWidthValue = this.shadowRoot.getElementById('player-width-value');
     this.marqueeEnabled = this.shadowRoot.getElementById('marquee-enabled');
-
     this.floatingOptions = this.shadowRoot.getElementById('floating-options');
-
     this.positionSection = this.shadowRoot.getElementById('position-section');
-
     this.visibilitySection = this.shadowRoot.getElementById('visibility-section');
-
-    this.applyBtn = this.shadowRoot.getElementById('apply-btn');
-
-
-
     this.showIcon = this.shadowRoot.getElementById('show-icon');
-
     this.showStationName = this.shadowRoot.getElementById('show-station-name');
-
     this.showTrackInfo = this.shadowRoot.getElementById('show-track-info');
-
     this.showVolume = this.shadowRoot.getElementById('show-volume');
-
     this.showPlayButton = this.shadowRoot.getElementById('show-play-button');
-
     this.showStepButtons = this.shadowRoot.getElementById('show-step-buttons');
-
-
-
+      this.showSettingsButton = this.shadowRoot.getElementById('show-settings-button');
+     this.volumeSliderStyle = this.shadowRoot.getElementById('volume-slider-style');
     this.isOpen = false;
-
   }
-
-
-
  connectedCallback() {
   this.loadSettings();
   this.setupEventListeners();
-
   setTimeout(() => {
     this.updateTexts();
   }, 100);
-
   document.addEventListener('language-change', () => {
     this.updateTexts();
   });
    this.playerWidthSlider.addEventListener('input', (e) => {
-
       const value = parseInt(e.target.value);
-
       this.playerWidthValue.textContent = `${value}%`;
-
       const percent = ((value - 30) / (90 - 30)) * 100;
-
       this.playerWidthSlider.style.background = `linear-gradient(to right, var(--accent1) 0%, var(--accent1) ${percent}%, var(--border) ${percent}%, var(--border) 100%)`;
-
     });
 }
 
@@ -1454,20 +965,17 @@ export class FloatingPlayerPanel extends HTMLElement {
   loadSettings() {
 
     const floatingEnabled = store.getStorage('floatingEnabled', false);
-
     const draggingEnabled = store.getStorage('floatingDraggingEnabled', true);
-
     const marqueeEnabled = store.getStorage('floatingMarqueeEnabled', true);
-
     const position = store.getStorage('floatingPosition', 'center');
-
-const playerWidth = store.getStorage('floatingPlayerWidth', 50);
+    const playerWidth = store.getStorage('floatingPlayerWidth', 50);
     const showIcon = store.getStorage('floatingShowIcon', true);
     const showStationName = store.getStorage('floatingShowStationName', true);
     const showTrackInfo = store.getStorage('floatingShowTrackInfo', true);
     const showVolume = store.getStorage('floatingShowVolume', true);
     const showPlayButton = store.getStorage('floatingShowPlayButton', true);
     const showStepButtons = store.getStorage('floatingShowStepButtons', false);
+    const showSettingsButton = store.getStorage('floatingShowSettingsButton', true);
     this.floatingEnabled.checked = floatingEnabled;
     this.draggingEnabled.checked = draggingEnabled;
     this.marqueeEnabled.checked = marqueeEnabled;
@@ -1481,77 +989,69 @@ const playerWidth = store.getStorage('floatingPlayerWidth', 50);
     this.showVolume.checked = showVolume;
     this.showPlayButton.checked = showPlayButton;
     this.showStepButtons.checked = showStepButtons;
+     this.showSettingsButton.checked = showSettingsButton;
+     const volumeSliderStyle = store.getStorage('floatingVolumeSliderStyle', 'accent');
+    this.volumeSliderStyle.value = volumeSliderStyle;
+    this.applyVolumeSliderStyle(volumeSliderStyle);
     this.updateFloatingOptionsState();
     this.shadowRoot.querySelectorAll('.position-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.position === position);
     });
 
   }
-
-
-
   setupEventListeners() {
-
     this.overlay.addEventListener('click', () => this.close());
-
     this.closeBtn.addEventListener('click', () => this.close());
-
-
-
     document.addEventListener('keydown', (e) => {
-
       if (e.key === 'Escape' && this.hasAttribute('open')) {
-
         this.close();
-
       }
-
     });
-
-
-
     this.floatingEnabled.addEventListener('change', () => {
-
       this.updateFloatingOptionsState();
-
     });
-
-
-
+this.floatingEnabled.addEventListener('change', () => {
+      this.autoApplySettings();
+    });
+    this.draggingEnabled.addEventListener('change', () => {
+      this.autoApplySettings();
+    });
+    this.marqueeEnabled.addEventListener('change', () => {
+      this.autoApplySettings();
+    });
+    this.playerWidthSlider.addEventListener('change', () => {
+      this.autoApplySettings();
+    });
+    [this.showIcon, this.showStationName, this.showTrackInfo,
+    this.showVolume, this.showPlayButton, this.showStepButtons, this.showSettingsButton].forEach(toggle => {
+      if (toggle) {
+        toggle.addEventListener('change', () => {
+          this.autoApplySettings();
+        });
+      }
+    });
     this.shadowRoot.querySelectorAll('.position-btn').forEach(btn => {
-
       btn.addEventListener('click', () => {
-
         this.shadowRoot.querySelectorAll('.position-btn').forEach(b => b.classList.remove('active'));
-
         btn.classList.add('active');
-
         store.setStorage('floatingPosition', btn.dataset.position);
-
+        if (window.floatingPlayerManager && this.floatingEnabled.checked) {
+          const position = btn.dataset.position;
+          window.floatingPlayerManager.setPosition(position);
+          showToast(t('messages.floatingPlayerUpdated'), 'success');
+        }
       });
-
     });
-
-
-
-    this.applyBtn.addEventListener('click', () => {
-
-      this.applySettings();
-
+     this.volumeSliderStyle.addEventListener('change', () => {
+      const style = this.volumeSliderStyle.value;
+      store.setStorage('floatingVolumeSliderStyle', style);
+      this.applyVolumeSliderStyle(style);
+      showToast(t('messages.floatingPlayerUpdated'), 'success');
     });
-
   }
-
-
-
   updateFloatingOptionsState() {
-
     const isEnabled = this.floatingEnabled.checked;
-
-
-
     if (isEnabled) {
-
  this.floatingOptions.style.display = 'block';
       this.floatingOptions.style.opacity = '1';
       this.floatingOptions.style.pointerEvents = 'auto';
@@ -1560,148 +1060,62 @@ const playerWidth = store.getStorage('floatingPlayerWidth', 50);
       this.floatingOptions.style.pointerEvents = 'none';
     }
   }
-
-
-
-  applySettings() {
-
-    const floatingEnabled = this.floatingEnabled.checked;
-
-    const draggingEnabled = this.draggingEnabled.checked;
-
-    const marqueeEnabled = this.marqueeEnabled.checked;
-
-
-
-
-    const playerWidth = parseInt(this.playerWidthSlider.value);
-
-
-
-    const showIcon = this.showIcon.checked;
-
-
-
-    const showStationName = this.showStationName.checked;
-
-
-
-    const showTrackInfo = this.showTrackInfo.checked;
-
-
-
-    const showVolume = this.showVolume.checked;
-
-
-
-    const showPlayButton = this.showPlayButton.checked;
-
-
-
-    const showStepButtons = this.showStepButtons.checked;
-
-
-
-
-
-
-
-    // Save all settings
-
-
-
-    store.setStorage('floatingEnabled', floatingEnabled);
-
-
-
-    store.setStorage('floatingDraggingEnabled', draggingEnabled);
-
-
-
-    store.setStorage('floatingMarqueeEnabled', marqueeEnabled);
-
-    store.setStorage('floatingPlayerWidth', playerWidth);
-
-
-
-    store.setStorage('floatingShowIcon', showIcon);
-
-
-
-    store.setStorage('floatingShowStationName', showStationName);
-
-
-
-    store.setStorage('floatingShowTrackInfo', showTrackInfo);
-
-
-
-    store.setStorage('floatingShowVolume', showVolume);
-
-
-
-    store.setStorage('floatingShowPlayButton', showPlayButton);
-
-
-
-    store.setStorage('floatingShowStepButtons', showStepButtons);
-
-    document.dispatchEvent(new CustomEvent('floating-player-change', {
-      detail: {
-        enabled: floatingEnabled,
-
-
-
-        draggingEnabled: draggingEnabled,
-
-
-
-        marqueeEnabled: marqueeEnabled,
-
-        width: playerWidth,
-
-        visibility: {
-
-          icon: showIcon,
-
-          stationName: showStationName,
-
-          trackInfo: showTrackInfo,
-
-          volume: showVolume,
-
-          playButton: showPlayButton,
-
-          stepButtons: showStepButtons
-
-        }
-
-      }
-
-    }));
-
-
-
-    showToast(t('messages.floatingPlayerUpdated'), 'success');
-
-    this.close();
-
+ applyVolumeSliderStyle(style) {
+    const playerBar = document.querySelector('player-bar');
+    if (!playerBar) return;
+    playerBar.setAttribute('data-volume-slider-style', style);
+    console.log('[FloatingPlayerPanel] Applied volume slider style:', style);
   }
 
 
-
+    autoApplySettings() {
+    const floatingEnabled = this.floatingEnabled.checked;
+    const draggingEnabled = this.draggingEnabled.checked;
+    const marqueeEnabled = this.marqueeEnabled.checked;
+    const playerWidth = parseInt(this.playerWidthSlider.value);
+    const showIcon = this.showIcon.checked;
+    const showStationName = this.showStationName.checked;
+    const showTrackInfo = this.showTrackInfo.checked;
+    const showVolume = this.showVolume.checked;
+    const showPlayButton = this.showPlayButton.checked;
+    const showStepButtons = this.showStepButtons.checked;
+    const showSettingsButton = this.showSettingsButton.checked;
+    store.setStorage('floatingEnabled', floatingEnabled);
+    store.setStorage('floatingDraggingEnabled', draggingEnabled);
+    store.setStorage('floatingMarqueeEnabled', marqueeEnabled);
+    store.setStorage('floatingPlayerWidth', playerWidth);
+    store.setStorage('floatingShowIcon', showIcon);
+    store.setStorage('floatingShowStationName', showStationName);
+    store.setStorage('floatingShowTrackInfo', showTrackInfo);
+    store.setStorage('floatingShowVolume', showVolume);
+    store.setStorage('floatingShowPlayButton', showPlayButton);
+    store.setStorage('floatingShowStepButtons', showStepButtons);
+    store.setStorage('floatingShowSettingsButton', showSettingsButton);
+    document.dispatchEvent(new CustomEvent('floating-player-change', {
+      detail: {
+        enabled: floatingEnabled,
+        draggingEnabled: draggingEnabled,
+        marqueeEnabled: marqueeEnabled,
+        width: playerWidth,
+        visibility: {
+          icon: showIcon,
+          stationName: showStationName,
+          trackInfo: showTrackInfo,
+          volume: showVolume,
+          playButton: showPlayButton,
+         stepButtons: showStepButtons,
+          settingsButton: showSettingsButton
+        }
+      }
+    }));
+   showToast(t('messages.floatingPlayerUpdated'), 'success', 3000);
+  }
   updateTexts() {
-
     this.shadowRoot.querySelectorAll('[data-i18n]').forEach(element => {
-
       const key = element.getAttribute('data-i18n');
-
       const text = t(key);
-
       element.textContent = text;
-
     });
-
   }
 
 
@@ -1712,30 +1126,20 @@ const playerWidth = store.getStorage('floatingPlayerWidth', 50);
     this.isOpen = true;
     document.body.style.overflow = 'hidden';
       setTimeout(() => {
-
       this.updateTexts();
-
     }, 50);
   }
 
 
 
   close() {
-
     if (!this.isOpen) return;
-
     this.removeAttribute('open');
-
     this.isOpen = false;
-
     setTimeout(() => {
-
       document.body.style.overflow = '';
-
     }, 400);
-
   }
-
 }
 
 

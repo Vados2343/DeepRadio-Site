@@ -361,9 +361,10 @@ template.innerHTML = `
 }
 
 .accent-colors {
-  display: flex;
+ flex-wrap: wrap;
   gap: 0.75rem;
   margin-top: 0.75rem;
+  max-width: 100%;
 }
 
 .accent-btn {
@@ -896,7 +897,11 @@ template.innerHTML = `
             <button class="accent-btn" data-accent="green" title="Green"></button>
             <button class="accent-btn" data-accent="red" title="Red"></button>
             <button class="accent-btn" data-accent="gradient" title="Gradient"></button>
+            <button class="accent-btn" data-accent="custom" title="Custom Gradient" style="background: linear-gradient(135deg, var(--accent1, #08f7fe), var(--accent2, #f15bb5), var(--accent3, #ffea00));">✨</button>
           </div>
+  <button class="floating-player-btn" id="gradient-creator-btn" style="margin-top: 1rem;">
+            🎨 Create Custom Gradient
+          </button>
         </div>
       </div>
       
@@ -1153,12 +1158,12 @@ template.innerHTML = `
           </svg>
         </div>
         <h3>DeepRadio</h3>
-        <p data-i18n="settings.version">Version 3.0.0</p>
+        <p data-i18n="settings.version">Version 3.1.3</p>
         <p data-i18n="settings.description">Modern internet radio with advanced visualization. Over 150 stations of various genres.</p>
         <div class="links">
           <a href="https://github.com/vados2343/deepradio" target="_blank" id="github-link" data-i18n="settings.github">GitHub</a>
-          <a href="mailto:feedback@deepradio.app" id="feedback-link" data-i18n="settings.feedback">Feedback</a>
-          <a href="#" id="donate-link" data-i18n="settings.support">Support</a>
+          <a href="mailto:support@deepradio.cloud" id="feedback-link" data-i18n="settings.feedback">Feedback</a>
+          <a href="mailto:support@deepradio.cloud" id="donate-link" data-i18n="settings.support">Support</a>
         </div>
       </div>
     </div>
@@ -1252,7 +1257,23 @@ export class SettingsPanel extends HTMLElement {
     this.shadowRoot.querySelectorAll('.accent-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.accent === accent);
     });
-
+     if (accent === 'custom') {
+      const saved = store.getStorage('customGradient');
+      if (saved && saved.color1 && saved.color2 && saved.color3) {
+        document.documentElement.style.setProperty('--accent1', saved.color1);
+        document.documentElement.style.setProperty('--accent2', saved.color2);
+        document.documentElement.style.setProperty('--accent3', saved.color3);
+      }
+    }
+ const gradientCreatorBtn = this.shadowRoot.getElementById('gradient-creator-btn');
+    if (gradientCreatorBtn) {
+      gradientCreatorBtn.addEventListener('click', () => {
+        const panel = document.querySelector('gradient-creator-panel');
+        if (panel) {
+          panel.open();
+        }
+      });
+    }
     this.shadowRoot.querySelectorAll('.viz-tab').forEach(tab => {
       tab.classList.toggle('active', tab.dataset.class === vizClass);
     });
@@ -1394,6 +1415,11 @@ export class SettingsPanel extends HTMLElement {
       }));
     });
     this.floatingPlayerBtn.addEventListener('click', () => {
+       const currentStyle = store.getStorage('playerStyle', 'default');
+      if (currentStyle !== 'island') {
+        showToast(t('messages.islandModeRequired') || 'Please activate Island (Floating) player style first', 'warning');
+        return;
+      }
       const floatingPanel = document.querySelector('floating-player-panel');
       if (floatingPanel) {
         floatingPanel.open();
@@ -1467,6 +1493,18 @@ export class SettingsPanel extends HTMLElement {
         const accent = btn.dataset.accent;
         this.shadowRoot.querySelectorAll('.accent-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+         if (accent !== 'custom') {
+          document.documentElement.style.removeProperty('--accent1');
+          document.documentElement.style.removeProperty('--accent2');
+          document.documentElement.style.removeProperty('--accent3');
+        } else {
+          const saved = store.getStorage('customGradient');
+          if (saved && saved.color1 && saved.color2 && saved.color3) {
+            document.documentElement.style.setProperty('--accent1', saved.color1);
+            document.documentElement.style.setProperty('--accent2', saved.color2);
+            document.documentElement.style.setProperty('--accent3', saved.color3);
+          }
+        }
         document.documentElement.dataset.accent = accent;
         store.setStorage('accent', accent);
         showToast(t('messages.accentColorChanged'), 'success');
@@ -1533,7 +1571,29 @@ export class SettingsPanel extends HTMLElement {
         showToast(t('messages.toastPositionChanged'), 'success');
       });
     });
+      const feedbackLink = this.shadowRoot.getElementById('feedback-link');
+    const donateLink = this.shadowRoot.getElementById('donate-link');
+    if (feedbackLink) {
+      feedbackLink.addEventListener('click', (e) => {
+        showToast(t('messages.openingEmailClient'), 'info');
+      });
+    }
+    if (donateLink) {
+      donateLink.addEventListener('click', (e) => {
+        showToast(t('messages.openingEmailClient'), 'info');
+      });
+    }
+    document.addEventListener('accent-changed', (e) => {
+  if (e.detail === 'custom') {
+    this.shadowRoot.querySelectorAll('.accent-btn').forEach(b => b.classList.remove('active'));
+    const customBtn = this.shadowRoot.querySelector('.accent-btn[data-accent="custom"]');
+    if (customBtn) {
+      customBtn.classList.add('active');
+    }
   }
+});
+  }
+
 
   updateOpacityDisplay() {
     const value = this.vizOpacity.value;
