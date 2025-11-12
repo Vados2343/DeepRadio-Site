@@ -580,36 +580,6 @@ input[type="range"]::-moz-range-thumb:hover {
 
   </div>
  <div class="content">
-    <div class="section">
-      <h3 class="section-title" data-i18n="floatingPlayer.mainSettings">Main Settings</h3>
-     <div class="setting-row">
-
-        <div class="setting-info">
-
-          <div class="setting-label" data-i18n="floatingPlayer.enableFloating">Enable Floating Player</div>
-
-          <div class="setting-description" data-i18n="floatingPlayer.enableFloatingDesc">Show player as a floating window</div>
-
-        </div>
-
-        <div class="toggle-container">
-
-          <label class="toggle">
-
-            <input type="checkbox" id="floating-enabled">
-
-            <span class="toggle-slider"></span>
-
-          </label>
-
-        </div>
-
-      </div>
-
-    </div>
-
- 
-
     <div id="floating-options">
 
       <div class="section">
@@ -924,7 +894,6 @@ export class FloatingPlayerPanel extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
     this.overlay = this.shadowRoot.getElementById('overlay');
     this.closeBtn = this.shadowRoot.getElementById('close-btn');
-    this.floatingEnabled = this.shadowRoot.getElementById('floating-enabled');
     this.draggingEnabled = this.shadowRoot.getElementById('dragging-enabled');
     this.playerWidthSlider = this.shadowRoot.getElementById('player-width-slider');
     this.playerWidthValue = this.shadowRoot.getElementById('player-width-value');
@@ -964,7 +933,6 @@ export class FloatingPlayerPanel extends HTMLElement {
 
   loadSettings() {
 
-    const floatingEnabled = store.getStorage('floatingEnabled', false);
     const draggingEnabled = store.getStorage('floatingDraggingEnabled', true);
     const marqueeEnabled = store.getStorage('floatingMarqueeEnabled', true);
     const position = store.getStorage('floatingPosition', 'center');
@@ -976,7 +944,6 @@ export class FloatingPlayerPanel extends HTMLElement {
     const showPlayButton = store.getStorage('floatingShowPlayButton', true);
     const showStepButtons = store.getStorage('floatingShowStepButtons', false);
     const showSettingsButton = store.getStorage('floatingShowSettingsButton', true);
-    this.floatingEnabled.checked = floatingEnabled;
     this.draggingEnabled.checked = draggingEnabled;
     this.marqueeEnabled.checked = marqueeEnabled;
     this.playerWidthSlider.value = playerWidth;
@@ -993,7 +960,6 @@ export class FloatingPlayerPanel extends HTMLElement {
      const volumeSliderStyle = store.getStorage('floatingVolumeSliderStyle', 'accent');
     this.volumeSliderStyle.value = volumeSliderStyle;
     this.applyVolumeSliderStyle(volumeSliderStyle);
-    this.updateFloatingOptionsState();
     this.shadowRoot.querySelectorAll('.position-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.position === position);
     });
@@ -1006,12 +972,6 @@ export class FloatingPlayerPanel extends HTMLElement {
       if (e.key === 'Escape' && this.hasAttribute('open')) {
         this.close();
       }
-    });
-    this.floatingEnabled.addEventListener('change', () => {
-      this.updateFloatingOptionsState();
-    });
-this.floatingEnabled.addEventListener('change', () => {
-      this.autoApplySettings();
     });
     this.draggingEnabled.addEventListener('change', () => {
       this.autoApplySettings();
@@ -1049,17 +1009,6 @@ this.floatingEnabled.addEventListener('change', () => {
       showToast(t('messages.floatingPlayerUpdated'), 'success');
     });
   }
-  updateFloatingOptionsState() {
-    const isEnabled = this.floatingEnabled.checked;
-    if (isEnabled) {
- this.floatingOptions.style.display = 'block';
-      this.floatingOptions.style.opacity = '1';
-      this.floatingOptions.style.pointerEvents = 'auto';
-    } else {
-      this.floatingOptions.style.opacity = '0.5';
-      this.floatingOptions.style.pointerEvents = 'none';
-    }
-  }
  applyVolumeSliderStyle(style) {
     const playerBar = document.querySelector('player-bar');
     if (!playerBar) return;
@@ -1069,7 +1018,6 @@ this.floatingEnabled.addEventListener('change', () => {
 
 
     autoApplySettings() {
-    const floatingEnabled = this.floatingEnabled.checked;
     const draggingEnabled = this.draggingEnabled.checked;
     const marqueeEnabled = this.marqueeEnabled.checked;
     const playerWidth = parseInt(this.playerWidthSlider.value);
@@ -1080,7 +1028,6 @@ this.floatingEnabled.addEventListener('change', () => {
     const showPlayButton = this.showPlayButton.checked;
     const showStepButtons = this.showStepButtons.checked;
     const showSettingsButton = this.showSettingsButton.checked;
-    store.setStorage('floatingEnabled', floatingEnabled);
     store.setStorage('floatingDraggingEnabled', draggingEnabled);
     store.setStorage('floatingMarqueeEnabled', marqueeEnabled);
     store.setStorage('floatingPlayerWidth', playerWidth);
@@ -1093,7 +1040,7 @@ this.floatingEnabled.addEventListener('change', () => {
     store.setStorage('floatingShowSettingsButton', showSettingsButton);
     document.dispatchEvent(new CustomEvent('floating-player-change', {
       detail: {
-        enabled: floatingEnabled,
+        enabled: true,
         draggingEnabled: draggingEnabled,
         marqueeEnabled: marqueeEnabled,
         width: playerWidth,

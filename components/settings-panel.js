@@ -1398,6 +1398,13 @@ export class SettingsPanel extends HTMLElement {
             });
           }, 200);
           showToast(t('messages.islandModeActivated'), 'success');
+          // Автоматически открываем настройки floating player
+          setTimeout(() => {
+            const floatingPanel = document.querySelector('floating-player-panel');
+            if (floatingPanel) {
+              floatingPanel.open();
+            }
+          }, 300);
         } else {
           const wasIsland = store.getStorage('playerStyle') === 'island';
           if (wasIsland) {
@@ -1415,11 +1422,6 @@ export class SettingsPanel extends HTMLElement {
       }));
     });
     this.floatingPlayerBtn.addEventListener('click', () => {
-       const currentStyle = store.getStorage('playerStyle', 'default');
-      if (currentStyle !== 'island') {
-        showToast(t('messages.islandModeRequired') || 'Please activate Island (Floating) player style first', 'warning');
-        return;
-      }
       const floatingPanel = document.querySelector('floating-player-panel');
       if (floatingPanel) {
         floatingPanel.open();

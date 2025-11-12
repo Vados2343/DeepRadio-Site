@@ -91,8 +91,6 @@ export class FloatingPlayerManager {
             if (draggingEnabled && !this.dragListenersSetup) {
               this.playerBar.classList.add('draggable');
               this.setupDragListeners();
-               } else if (!this.draggingEnabled) {
-      this.playerBar.classList.remove('draggable');
             } else if (!draggingEnabled && this.dragListenersSetup) {
               this.playerBar.classList.remove('draggable');
               this.removeDragListeners();
