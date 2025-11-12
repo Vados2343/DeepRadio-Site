@@ -1306,16 +1306,25 @@ export class SettingsPanel extends HTMLElement {
 loadCustomGradients() {
   const customGradients = store.getStorage('customGradients', []);
   if (!this.accentColorsContainer) return;
-  const existingCustom = this.accentColorsContainer.querySelectorAll('.accent-btn[data-custom-gradient]');
-  existingCustom.forEach(btn => btn.remove());
+
+  const existingWrappers = Array.from(this.accentColorsContainer.children).filter(child =>
+    child.querySelector('.accent-btn[data-custom-gradient]')
+  );
+  existingWrappers.forEach(wrapper => wrapper.remove());
+
   customGradients.reverse().forEach((gradient, index) => {
+    const wrapper = document.createElement('div');
+    wrapper.style.position = 'relative';
+    wrapper.style.display = 'inline-block';
+
     const btn = document.createElement('button');
     btn.className = 'accent-btn';
     btn.setAttribute('data-custom-gradient', gradient.id);
     btn.setAttribute('title', `Custom Gradient ${customGradients.length - index}`);
     const colors = gradient.colors.join(', ');
     btn.style.background = `linear-gradient(${gradient.direction}, ${colors})`;
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      if (e.target.classList.contains('delete-gradient-btn')) return;
       this.shadowRoot.querySelectorAll('.accent-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       gradient.colors.forEach((color, i) => {
@@ -1327,8 +1336,80 @@ loadCustomGradients() {
       document.dispatchEvent(new CustomEvent('accent-changed', { detail: 'custom' }));
       showToast(t('messages.accentColorChanged'), 'success');
     });
-    this.accentColorsContainer.appendChild(btn);
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'delete-gradient-btn';
+    deleteBtn.innerHTML = '×';
+    deleteBtn.setAttribute('title', 'Remove gradient');
+    deleteBtn.style.cssText = `
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent2);
+      color: #000;
+      border: 2px solid var(--surface);
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      line-height: 1;
+      z-index: 10;
+      transition: all 0.2s ease;
+    `;
+    deleteBtn.addEventListener('mouseenter', () => {
+      deleteBtn.style.transform = 'scale(1.2)';
+      deleteBtn.style.background = '#ef4444';
+    });
+    deleteBtn.addEventListener('mouseleave', () => {
+      deleteBtn.style.transform = 'scale(1)';
+      deleteBtn.style.background = 'var(--accent2)';
+    });
+    deleteBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      this.removeCustomGradient(gradient.id);
+    });
+
+    wrapper.appendChild(btn);
+    wrapper.appendChild(deleteBtn);
+    this.accentColorsContainer.appendChild(wrapper);
   });
+}
+
+removeCustomGradient(gradientId) {
+  const customGradients = store.getStorage('customGradients', []);
+  const index = customGradients.findIndex(g => g.id === gradientId);
+
+  if (index === -1) return;
+
+  customGradients.splice(index, 1);
+  store.setStorage('customGradients', customGradients);
+
+  const currentCustom = store.getStorage('customGradient');
+  if (currentCustom && currentCustom.id === gradientId) {
+    const accent = store.getStorage('accent', 'default');
+    if (accent === 'custom') {
+      document.documentElement.style.removeProperty('--accent1');
+      document.documentElement.style.removeProperty('--accent2');
+      document.documentElement.style.removeProperty('--accent3');
+      document.documentElement.dataset.accent = 'default';
+      store.setStorage('accent', 'default');
+      this.shadowRoot.querySelectorAll('.accent-btn').forEach(b => b.classList.remove('active'));
+      const defaultBtn = this.shadowRoot.querySelector('.accent-btn[data-accent="default"]');
+      if (defaultBtn) defaultBtn.classList.add('active');
+    }
+    store.setStorage('customGradient', null);
+  }
+
+  this.loadCustomGradients();
+  showToast(t('messages.gradientRemoved') || 'Gradient removed', 'success');
+  document.dispatchEvent(new CustomEvent('custom-gradients-updated'));
 }
 
   setupEventListeners() {
@@ -1618,12 +1699,16 @@ loadCustomGradients() {
     const donateLink = this.shadowRoot.getElementById('donate-link');
     if (feedbackLink) {
       feedbackLink.addEventListener('click', (e) => {
+        e.preventDefault();
         showToast(t('messages.openingEmailClient'), 'info');
+        window.location.href = feedbackLink.href;
       });
     }
     if (donateLink) {
       donateLink.addEventListener('click', (e) => {
+        e.preventDefault();
         showToast(t('messages.openingEmailClient'), 'info');
+        window.location.href = donateLink.href;
       });
     }
     document.addEventListener('accent-changed', (e) => {

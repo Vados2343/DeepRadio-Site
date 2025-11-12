@@ -648,15 +648,13 @@ export class GradientCreatorPanel extends HTMLElement {
     if (this.colors[2]) document.documentElement.style.setProperty('--accent3', this.colors[2]);
 
     document.documentElement.dataset.accent = 'custom';
+    store.setStorage('accent', 'custom');
 
     document.dispatchEvent(new CustomEvent('accent-changed', {
-      detail: {
-        type: 'custom',
-        colors: this.colors,
-        direction: this.direction,
-        gradient: accentGradient
-      }
+      detail: 'custom'
     }));
+
+    document.dispatchEvent(new CustomEvent('custom-gradients-updated'));
 
     showToast('🎨 Custom gradient applied!', 'success');
     this.close();
@@ -667,6 +665,10 @@ export class GradientCreatorPanel extends HTMLElement {
     if (saved && saved.colors && Array.isArray(saved.colors)) {
       this.colors = saved.colors;
       this.direction = saved.direction || '135deg';
+
+      this.shadowRoot.querySelectorAll('.direction-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.direction === this.direction);
+      });
     }
   }
 
@@ -675,6 +677,10 @@ export class GradientCreatorPanel extends HTMLElement {
     this.setAttribute('open', '');
     this.isOpen = true;
     document.body.style.overflow = 'hidden';
+
+    this.loadSavedGradient();
+    this.renderColorPickers();
+    this.updatePreview();
   }
 
   close() {
