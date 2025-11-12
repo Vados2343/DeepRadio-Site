@@ -161,14 +161,18 @@ export class FloatingPlayerManager {
     if (this.currentWidthPercent !== undefined) {
       this.setPlayerWidth(this.currentWidthPercent);
     }
+
+    // Only adjust position if it's actually out of bounds
     const rect = this.playerBar.getBoundingClientRect();
-    const maxX = window.innerWidth - rect.width;
-    const maxY = window.innerHeight - rect.height;
+    const maxX = window.innerWidth - rect.width - 20;
+    const maxY = window.innerHeight - rect.height - 20;
 
-    const x = Math.max(20, Math.min(rect.left, maxX - 20));
-    const y = Math.max(20, Math.min(rect.top, maxY - 20));
-
-    this.updatePosition(x, y);
+    // Only update if player is actually out of visible area
+    if (rect.left < 20 || rect.left > maxX || rect.top < 20 || rect.top > maxY) {
+      const x = Math.max(20, Math.min(rect.left, maxX));
+      const y = Math.max(20, Math.min(rect.top, maxY));
+      this.updatePosition(x, y);
+    }
   }
 
   handleDragStart(e) {
@@ -428,23 +432,42 @@ export class FloatingPlayerManager {
     let x, y;
 
     switch (position) {
+      case 'top-left':
+        x = 20;
+        y = 20;
+        break;
       case 'top':
         x = (windowWidth - rect.width) / 2;
         y = 20;
         break;
-      case 'bottom':
-        x = (windowWidth - rect.width) / 2;
-        y = windowHeight - rect.height - 20;
+      case 'top-right':
+        x = windowWidth - rect.width - 20;
+        y = 20;
         break;
       case 'left':
         x = 20;
+        y = (windowHeight - rect.height) / 2;
+        break;
+      case 'center':
+        x = (windowWidth - rect.width) / 2;
         y = (windowHeight - rect.height) / 2;
         break;
       case 'right':
         x = windowWidth - rect.width - 20;
         y = (windowHeight - rect.height) / 2;
         break;
-      case 'center':
+      case 'bottom-left':
+        x = 20;
+        y = windowHeight - rect.height - 20;
+        break;
+      case 'bottom':
+        x = (windowWidth - rect.width) / 2;
+        y = windowHeight - rect.height - 20;
+        break;
+      case 'bottom-right':
+        x = windowWidth - rect.width - 20;
+        y = windowHeight - rect.height - 20;
+        break;
       default:
         x = (windowWidth - rect.width) / 2;
         y = (windowHeight - rect.height) / 2;

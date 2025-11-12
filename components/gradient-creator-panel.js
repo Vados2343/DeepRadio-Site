@@ -320,6 +320,8 @@ template.innerHTML = `
 
     gap: 1rem;
 
+    overflow-x: hidden;
+
   }
 
  
@@ -331,6 +333,8 @@ template.innerHTML = `
     flex-direction: column;
 
     gap: 0.5rem;
+
+    min-width: 0;
 
   }
 
@@ -352,10 +356,11 @@ template.innerHTML = `
 
     display: flex;
 
-    gap: 0.3rem;
+    gap: 0.25rem;
 
     align-items: center;
     position: relative;
+    min-width: 0;
 
   }
 
@@ -435,6 +440,8 @@ template.innerHTML = `
   input[type="text"] {
 
     flex: 1;
+
+    min-width: 0;
 
     padding: 0.5rem 0.75rem;
 

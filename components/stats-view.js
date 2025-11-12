@@ -20,15 +20,17 @@ template.innerHTML = `
 
       display: block;
 
-      width: 100%;
+      width: calc(100% + 2.5rem);
 
-      max-width: 1200px;
+      max-width: calc(1200px + 2.5rem);
 
-      margin: 0 auto;
+      margin: -1.25rem auto 0;
 
-      padding: 0 1rem;
+      padding: 1.25rem;
 
       font-family: var(--font-main);
+
+      box-sizing: border-box;
 
     }
 

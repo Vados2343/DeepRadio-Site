@@ -1340,6 +1340,7 @@ export class SettingsPanel extends HTMLElement {
         document.documentElement.dataset.accent = 'custom';
         store.setStorage('accent', 'custom');
         store.setStorage('customGradient', gradient);
+        document.dispatchEvent(new CustomEvent('accent-changed', { detail: 'custom' }));
         showToast(t('messages.accentColorChanged'), 'success');
       });
 
@@ -1550,14 +1551,24 @@ export class SettingsPanel extends HTMLElement {
           document.documentElement.style.removeProperty('--accent3');
         } else {
           const saved = store.getStorage('customGradient');
-          if (saved && saved.color1 && saved.color2 && saved.color3) {
-            document.documentElement.style.setProperty('--accent1', saved.color1);
-            document.documentElement.style.setProperty('--accent2', saved.color2);
-            document.documentElement.style.setProperty('--accent3', saved.color3);
+          if (saved) {
+            // Support both old format (color1, color2, color3) and new format (colors array)
+            if (saved.colors && Array.isArray(saved.colors)) {
+              saved.colors.forEach((color, i) => {
+                if (i < 3) {
+                  document.documentElement.style.setProperty(`--accent${i + 1}`, color);
+                }
+              });
+            } else if (saved.color1 && saved.color2 && saved.color3) {
+              document.documentElement.style.setProperty('--accent1', saved.color1);
+              document.documentElement.style.setProperty('--accent2', saved.color2);
+              document.documentElement.style.setProperty('--accent3', saved.color3);
+            }
           }
         }
         document.documentElement.dataset.accent = accent;
         store.setStorage('accent', accent);
+        document.dispatchEvent(new CustomEvent('accent-changed', { detail: accent }));
         showToast(t('messages.accentColorChanged'), 'success');
       });
     });
