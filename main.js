@@ -18,6 +18,9 @@ import { showToast } from './utils/toast.js';
 import { initI18n, t } from './utils/i18n.js';
 import { throttle } from './utils/performance.js';
 import { Config } from './core/config.js';
+import { authManager } from './auth/auth-manager.js';
+import './auth/auth-panel.js';
+import { dbSync } from './utils/db-sync.js';
 
 class EnhancedVisualizerManager {
   constructor(canvas) {
@@ -141,6 +144,13 @@ class EnhancedApp {
       await this.registerServiceWorker();
       await this.createManifest();
       await initI18n();
+
+      await authManager.init();
+
+      if (!document.querySelector('auth-panel')) {
+        const authPanel = document.createElement('auth-panel');
+        document.body.appendChild(authPanel);
+      }
 
       this.initializeComponents();
 

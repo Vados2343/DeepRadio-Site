@@ -86,6 +86,8 @@ template.innerHTML = `
   justify-content: space-between;
   flex-shrink: 0;
   background: rgba(0, 0, 0, 0.2);
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .title {
@@ -144,6 +146,92 @@ template.innerHTML = `
 
 .close-btn:hover svg {
   transform: rotate(90deg);
+}
+
+.auth-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  order: -1;
+  flex-basis: 100%;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--accent1);
+  object-fit: cover;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-email {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-btn {
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  color: #000;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.auth-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(8, 247, 254, 0.3);
+}
+
+.logout-btn {
+  background: rgba(255, 68, 68, 0.2);
+  border: 1px solid #ff4444;
+  color: var(--text-primary);
+  padding: 0.5rem 0.75rem;
+}
+
+.logout-btn:hover {
+  background: #ff4444;
+  color: #fff;
+  transform: translateY(-1px);
 }
 
 .content {
@@ -844,6 +932,7 @@ template.innerHTML = `
 <div class="overlay" id="overlay"></div>
 <div class="panel" id="panel">
   <div class="header">
+    <div class="auth-section" id="auth-section"></div>
     <h2 class="title">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
         <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.47.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
@@ -1214,14 +1303,70 @@ export class SettingsPanel extends HTMLElement {
     this.loadSettings();
     this.setupEventListeners();
     this.updateTexts();
-   this.loadCustomGradients();
-    this.updateTexts();
+    this.loadCustomGradients();
+    this.updateAuthSection();
+
+    if (window.authManager) {
+      window.authManager.on('auth-changed', () => {
+        this.updateAuthSection();
+      });
+    }
+
     document.addEventListener('language-change', () => {
       this.updateTexts();
-    })
+    });
     document.addEventListener('custom-gradients-updated', () => {
       this.loadCustomGradients();
     });
+  }
+
+  updateAuthSection() {
+    const authSection = this.shadowRoot.getElementById('auth-section');
+    if (!authSection) return;
+
+    if (window.authManager && window.authManager.isAuthenticated) {
+      const user = window.authManager.user;
+      authSection.innerHTML = `
+        <div class="user-info">
+          <img class="user-avatar" src="${user.avatar || '/Icons/default-avatar.png'}" alt="${user.name}" onerror="this.src='/Icons/default-avatar.png'">
+          <div class="user-details">
+            <div class="user-name">${this.escapeHtml(user.name)}</div>
+            <div class="user-email">${this.escapeHtml(user.email)}</div>
+          </div>
+        </div>
+        <button class="auth-btn logout-btn" id="logout-btn">Выйти</button>
+      `;
+
+      const logoutBtn = this.shadowRoot.getElementById('logout-btn');
+      logoutBtn?.addEventListener('click', () => {
+        if (window.authManager) {
+          window.authManager.logout();
+        }
+      });
+    } else {
+      authSection.innerHTML = `
+        <div class="user-details" style="flex: 1;">
+          <div class="user-name">Войдите для синхронизации</div>
+          <div class="user-email">Сохраняйте настройки в облаке</div>
+        </div>
+        <button class="auth-btn" id="login-btn">
+          🔐 Войти с Google
+        </button>
+      `;
+
+      const loginBtn = this.shadowRoot.getElementById('login-btn');
+      loginBtn?.addEventListener('click', () => {
+        if (window.authManager) {
+          window.authManager.login();
+        }
+      });
+    }
+  }
+
+  escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
   }
 
   loadSettings() {
@@ -1827,8 +1972,80 @@ removeCustomGradient(gradientId) {
     });
   }
 
+  async syncSettings() {
+    if (!window.authManager || !window.authManager.isAuthenticated) {
+      return;
+    }
+
+    if (!window.dbSync) {
+      return;
+    }
+
+    try {
+      const settings = {
+        theme: store.getStorage('theme', 'dark'),
+        language: store.getStorage('lang', 'en'),
+        animations: store.getStorage('animations', true),
+        compact: store.getStorage('compact', false),
+        accent: store.getStorage('accent', 'default'),
+        visualizerClass: store.getStorage('visualizerClass', 'geometric'),
+        visualizerMode: store.getStorage('visualizerMode', 0),
+        visualizerEnabled: store.getStorage('visualizerEnabled', true),
+        vizOpacity: store.getStorage('vizOpacity', 100),
+        headerLayout: store.getStorage('headerLayout', 'default'),
+        playerStyle: store.getStorage('playerStyle', 'default'),
+        centerElements: store.getStorage('centerElements', false),
+        floatingPlayerPosition: store.getStorage('floatingPlayerPosition', null),
+        floatingPlayerSize: store.getStorage('floatingPlayerSize', { width: 400, height: 500 }),
+        toastPosition: store.getStorage('toastPosition', 'top-right'),
+        displayMode: store.getStorage('displayMode', 'grid'),
+        volume: store.volume,
+        lastStation: store.getStorage('last', null)
+      };
+
+      await window.dbSync.saveSettings(settings);
+      console.log('✅ Settings synced to database');
+    } catch (error) {
+      console.error('❌ Failed to sync settings:', error);
+    }
+  }
+
+  async loadSettingsFromDB() {
+    if (!window.authManager || !window.authManager.isAuthenticated) {
+      return false;
+    }
+
+    if (!window.dbSync) {
+      return false;
+    }
+
+    try {
+      const settings = await window.dbSync.loadSettings();
+
+      if (settings) {
+        Object.entries(settings).forEach(([key, value]) => {
+          if (key === 'volume') {
+            store.setVolume(value);
+          } else if (key !== 'lastStation') {
+            store.setStorage(key, value);
+          }
+        });
+
+        console.log('✅ Settings loaded from database');
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('❌ Failed to load settings from database:', error);
+      return false;
+    }
+  }
+
   close() {
     if (!this.isOpen) return;
+
+    this.syncSettings();
 
     this.removeAttribute('open');
     this.isOpen = false;

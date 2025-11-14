@@ -1223,6 +1223,12 @@ class StatsView extends HTMLElement {
   connectedCallback() {
     logger.log('[StatsView]', 'Component connected to DOM');
 
+    if (!window.authManager || !window.authManager.isAuthenticated) {
+      logger.log('[StatsView]', 'User not authenticated, showing auth panel');
+      this.showAuthRequired();
+      return;
+    }
+
     this.setupEventListeners();
     this.bindMethods();
     this.attachStoreListeners();
@@ -1233,7 +1239,87 @@ class StatsView extends HTMLElement {
     this.updateTimer = setInterval(() => this.updateRealtimeStats(), 1000);
     document.addEventListener('language-change', this.boundMethods.languageChange);
 
+    window.authManager.on('auth-changed', (data) => {
+      if (!data.authenticated) {
+        this.showAuthRequired();
+      } else {
+        window.location.reload();
+      }
+    });
+
     logger.log('[StatsView]', 'Event listeners attached');
+  }
+
+  showAuthRequired() {
+    this.shadowRoot.innerHTML = `
+      <style>
+        .auth-required {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 100vh;
+          background: var(--bg-gradient-start);
+          padding: 2rem;
+          text-align: center;
+        }
+        .auth-icon {
+          width: 80px;
+          height: 80px;
+          margin-bottom: 2rem;
+          background: linear-gradient(135deg, var(--accent1), var(--accent2));
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 2.5rem;
+        }
+        .auth-title {
+          font-size: 1.75rem;
+          font-weight: 700;
+          color: var(--text-primary);
+          margin: 0 0 1rem 0;
+        }
+        .auth-message {
+          font-size: 1rem;
+          color: var(--text-secondary);
+          margin: 0 0 2rem 0;
+          max-width: 400px;
+        }
+        .auth-btn {
+          background: linear-gradient(135deg, var(--accent1), var(--accent2));
+          color: #000;
+          border: none;
+          border-radius: var(--radius-sm);
+          padding: 1rem 2rem;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: var(--transition);
+          box-shadow: 0 4px 12px rgba(8, 247, 254, 0.3);
+        }
+        .auth-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(8, 247, 254, 0.5);
+        }
+      </style>
+      <div class="auth-required">
+        <div class="auth-icon">📊</div>
+        <h2 class="auth-title">Требуется авторизация</h2>
+        <p class="auth-message">
+          Для просмотра статистики прослушивания необходимо войти в систему.
+          Ваша статистика будет сохраняться и синхронизироваться между устройствами.
+        </p>
+        <button class="auth-btn" id="auth-btn">🔐 Войти с Google</button>
+      </div>
+    `;
+
+    const authBtn = this.shadowRoot.getElementById('auth-btn');
+    authBtn?.addEventListener('click', () => {
+      if (window.authManager) {
+        window.authManager.login();
+      }
+    });
   }
 
   disconnectedCallback() {
