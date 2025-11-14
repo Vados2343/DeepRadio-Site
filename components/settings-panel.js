@@ -186,6 +186,7 @@ template.innerHTML = `
 .section:nth-child(5) { animation-delay: 0.7s; }
 .section:nth-child(6) { animation-delay: 0.8s; }
 .section:nth-child(7) { animation-delay: 0.9s; }
+.section:nth-child(8) { animation-delay: 1.0s; }
 
 @keyframes sectionFadeIn {
   to {
@@ -305,7 +306,7 @@ template.innerHTML = `
 }
 
 .select option {
- background: #1a1a1a !important;
+  background: #1a1a1a !important;
   background-color: #1a1a1a !important;
   color: #ffffff !important;
   padding: 0.75rem 1rem;
@@ -361,7 +362,7 @@ template.innerHTML = `
 }
 
 .accent-colors {
- display: grid;
+  display: grid;
   grid-template-columns: repeat(auto-fit, 36px);
   gap: 0.75rem;
   margin-top: 0.75rem;
@@ -432,6 +433,7 @@ template.innerHTML = `
 .accent-btn[data-accent="gradient"] {
   background: conic-gradient(from 0deg, #08f7fe, #f15bb5, #ffea00, #08f7fe);
 }
+
 .floating-player-btn {
   background: var(--accent1);
   border: none;
@@ -446,15 +448,18 @@ template.innerHTML = `
   align-items: center;
   gap: 0.5rem;
 }
+
 .floating-player-btn:hover {
   background: var(--accent2);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px color-mix(in srgb, var(--accent1) 40%, transparent);
 }
+
 .floating-player-btn svg {
   width: 16px;
   height: 16px;
 }
+
 .visualizer-tabs {
   display: flex;
   gap: 0.5rem;
@@ -770,6 +775,91 @@ template.innerHTML = `
   border-color: var(--accent1);
 }
 
+.auth-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 1.5rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.user-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid var(--accent1);
+  object-fit: cover;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-email {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-btn {
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  color: #000;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.auth-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(8, 247, 254, 0.3);
+}
+
+.logout-btn {
+  background: rgba(255, 68, 68, 0.2);
+  border: 1px solid #ff4444;
+  color: var(--text-primary);
+}
+
+.logout-btn:hover {
+  background: #ff4444;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
 .about {
   text-align: center;
   color: var(--text-secondary);
@@ -813,6 +903,7 @@ template.innerHTML = `
   gap: 1rem;
   justify-content: center;
   margin-top: 2rem;
+  flex-wrap: wrap;
 }
 
 .about a {
@@ -837,6 +928,15 @@ template.innerHTML = `
   
   .toast-positions {
     grid-template-columns: 1fr;
+  }
+  
+  .auth-section {
+    flex-direction: column;
+  }
+  
+  .auth-btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 </style>
@@ -893,7 +993,7 @@ template.innerHTML = `
         <div class="setting-info">
           <div class="setting-label" data-i18n="settings.accentColor">Accent Color</div>
           <div class="setting-description" data-i18n="settings.accentColorDesc">Main interface element colors</div>
-            <div class="accent-colors" id="accent-colors-container">
+          <div class="accent-colors" id="accent-colors-container">
             <button class="accent-btn active" data-accent="default" title="Default"></button>
             <button class="accent-btn" data-accent="blue" title="Blue"></button>
             <button class="accent-btn" data-accent="green" title="Green"></button>
@@ -901,8 +1001,8 @@ template.innerHTML = `
             <button class="accent-btn" data-accent="gradient" title="Gradient"></button>
             <button class="accent-btn" data-accent="custom" title="Custom Gradient" style="background: linear-gradient(135deg, var(--accent1, #08f7fe), var(--accent2, #f15bb5), var(--accent3, #ffea00));">✨</button>
           </div>
-  <button class="floating-player-btn" id="gradient-creator-btn" style="margin-top: 1rem;">
-            🎨 Create Custom Gradient
+          <button class="floating-player-btn" id="gradient-creator-btn" style="margin-top: 1rem;">
+            🎨 <span data-i18n="settings.createGradient">Create Custom Gradient</span>
           </button>
         </div>
       </div>
@@ -965,14 +1065,10 @@ template.innerHTML = `
             <option value="compact" data-i18n="settings.playerStyles.compact">Compact</option>
             <option value="modern" data-i18n="settings.playerStyles.modern">Modern</option>
             <option value="classic" data-i18n="settings.playerStyles.classic">Classic</option>
-             <option value="island" data-i18n="settings.playerStyles.island">Island (Floating)</option>
-         </select>
-
+            <option value="island" data-i18n="settings.playerStyles.island">Island (Floating)</option>
+          </select>
         </div>
-
       </div>
-
- 
 
       <div class="setting-row">
         <div class="setting-info">
@@ -1150,6 +1246,11 @@ template.innerHTML = `
     </div>
     
     <div class="section">
+      <h3 class="section-title" data-i18n="settings.account">Account</h3>
+      <div class="auth-section" id="auth-section"></div>
+    </div>
+    
+    <div class="section">
       <h3 class="section-title" data-i18n="settings.about">About</h3>
       <div class="about">
         <div class="logo">
@@ -1165,7 +1266,7 @@ template.innerHTML = `
         <div class="links">
           <a href="https://github.com/vados2343/deepradio" target="_blank" id="github-link" data-i18n="settings.github">GitHub</a>
           <a href="mailto:support@deepradio.cloud" id="feedback-link" data-i18n="settings.feedback">Feedback</a>
-          <a href="mailto:support@deepradio.cloud" id="donate-link" data-i18n="settings.support">Support</a>
+          <a href="mailto:support@deepradio.cloud" id="support-link" data-i18n="settings.support">Support</a>
         </div>
       </div>
     </div>
@@ -1214,14 +1315,67 @@ export class SettingsPanel extends HTMLElement {
     this.loadSettings();
     this.setupEventListeners();
     this.updateTexts();
-   this.loadCustomGradients();
-    this.updateTexts();
+    this.loadCustomGradients();
+    this.updateAuthSection();
+    if (window.authManager) {
+      window.authManager.on('auth-changed', () => {
+        this.updateAuthSection();
+      });
+    }
     document.addEventListener('language-change', () => {
       this.updateTexts();
-    })
+    });
     document.addEventListener('custom-gradients-updated', () => {
       this.loadCustomGradients();
     });
+  }
+
+  updateAuthSection() {
+    const authSection = this.shadowRoot.getElementById('auth-section');
+    if (!authSection) return;
+    if (window.authManager && window.authManager.isAuthenticated) {
+      const user = window.authManager.user;
+      authSection.innerHTML = `
+        <div class="user-info">
+          <img class="user-avatar" src="${user.avatar || '/Icons/default-avatar.png'}" alt="${user.name}" onerror="this.src='/Icons/default-avatar.png'">
+          <div class="user-details">
+            <div class="user-name">${this.escapeHtml(user.name)}</div>
+            <div class="user-email">${this.escapeHtml(user.email)}</div>
+          </div>
+        </div>
+        <button class="auth-btn logout-btn" id="logout-btn" data-i18n="settings.logout">Logout</button>
+      `;
+      const logoutBtn = this.shadowRoot.getElementById('logout-btn');
+      logoutBtn?.addEventListener('click', () => {
+        if (window.authManager) {
+          window.authManager.logout();
+        }
+      });
+    } else {
+      authSection.innerHTML = `
+        <div class="user-details" style="flex: 1;">
+          <div class="user-name" data-i18n="settings.signInPrompt">Sign in to sync</div>
+          <div class="user-email" data-i18n="settings.signInDesc">Save your settings in the cloud</div>
+        </div>
+        <button class="auth-btn" id="login-btn">
+          🔐 <span data-i18n="settings.signInGoogle">Sign In with Google</span>
+        </button>
+      `;
+      const loginBtn = this.shadowRoot.getElementById('login-btn');
+      loginBtn?.addEventListener('click', () => {
+        if (window.authManager) {
+          window.authManager.login();
+        }
+      });
+    }
+    // Update texts after auth section update
+    setTimeout(() => this.updateTexts(), 50);
+  }
+
+  escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
   }
 
   loadSettings() {
@@ -1263,7 +1417,7 @@ export class SettingsPanel extends HTMLElement {
     this.shadowRoot.querySelectorAll('.accent-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.accent === accent);
     });
-     if (accent === 'custom') {
+    if (accent === 'custom') {
       const saved = store.getStorage('customGradient');
       if (saved && saved.color1 && saved.color2 && saved.color3) {
         document.documentElement.style.setProperty('--accent1', saved.color1);
@@ -1271,7 +1425,7 @@ export class SettingsPanel extends HTMLElement {
         document.documentElement.style.setProperty('--accent3', saved.color3);
       }
     }
- const gradientCreatorBtn = this.shadowRoot.getElementById('gradient-creator-btn');
+    const gradientCreatorBtn = this.shadowRoot.getElementById('gradient-creator-btn');
     if (gradientCreatorBtn) {
       gradientCreatorBtn.addEventListener('click', () => {
         const panel = document.querySelector('gradient-creator-panel');
@@ -1280,6 +1434,7 @@ export class SettingsPanel extends HTMLElement {
         }
       });
     }
+
     this.shadowRoot.querySelectorAll('.viz-tab').forEach(tab => {
       tab.classList.toggle('active', tab.dataset.class === vizClass);
     });
@@ -1303,33 +1458,34 @@ export class SettingsPanel extends HTMLElement {
 
     this.updateLightningSettingsVisibility();
   }
-loadCustomGradients() {
-  const customGradients = store.getStorage('customGradients', []);
-  if (!this.accentColorsContainer) return;
-  const existingCustom = this.accentColorsContainer.querySelectorAll('.accent-btn[data-custom-gradient]');
-  existingCustom.forEach(btn => btn.remove());
-  customGradients.reverse().forEach((gradient, index) => {
-    const btn = document.createElement('button');
-    btn.className = 'accent-btn';
-    btn.setAttribute('data-custom-gradient', gradient.id);
-    btn.setAttribute('title', `Custom Gradient ${customGradients.length - index}`);
-    const colors = gradient.colors.join(', ');
-    btn.style.background = `linear-gradient(${gradient.direction}, ${colors})`;
-    btn.addEventListener('click', () => {
-      this.shadowRoot.querySelectorAll('.accent-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      gradient.colors.forEach((color, i) => {
-        if (i < 3) document.documentElement.style.setProperty(`--accent${i + 1}`, color);
+
+  loadCustomGradients() {
+    const customGradients = store.getStorage('customGradients', []);
+    if (!this.accentColorsContainer) return;
+    const existingCustom = this.accentColorsContainer.querySelectorAll('.accent-btn[data-custom-gradient]');
+    existingCustom.forEach(btn => btn.remove());
+    customGradients.reverse().forEach((gradient, index) => {
+      const btn = document.createElement('button');
+      btn.className = 'accent-btn';
+      btn.setAttribute('data-custom-gradient', gradient.id);
+      btn.setAttribute('title', `Custom Gradient ${customGradients.length - index}`);
+      const colors = gradient.colors.join(', ');
+      btn.style.background = `linear-gradient(${gradient.direction}, ${colors})`;
+      btn.addEventListener('click', () => {
+        this.shadowRoot.querySelectorAll('.accent-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        gradient.colors.forEach((color, i) => {
+          if (i < 3) document.documentElement.style.setProperty(`--accent${i + 1}`, color);
+        });
+        document.documentElement.dataset.accent = 'custom';
+        store.setStorage('accent', 'custom');
+        store.setStorage('customGradient', gradient);
+        document.dispatchEvent(new CustomEvent('accent-changed', { detail: 'custom' }));
+        showToast(t('messages.accentColorChanged'), 'success');
       });
-      document.documentElement.dataset.accent = 'custom';
-      store.setStorage('accent', 'custom');
-      store.setStorage('customGradient', gradient);
-      document.dispatchEvent(new CustomEvent('accent-changed', { detail: 'custom' }));
-      showToast(t('messages.accentColorChanged'), 'success');
+      this.accentColorsContainer.appendChild(btn);
     });
-    this.accentColorsContainer.appendChild(btn);
-  });
-}
+  }
 
   setupEventListeners() {
     this.overlay.addEventListener('click', () => this.close());
@@ -1383,13 +1539,14 @@ loadCustomGradients() {
       }));
       showToast(t('messages.headerLayoutChanged'), 'success');
     });
+
     this.playerStyleSelect.addEventListener('change', (e) => {
       const style = e.target.value;
       store.setStorage('playerStyle', style);
       const playerBar = document.querySelector('player-bar');
       if (playerBar) {
         playerBar.setAttribute('player-style', style);
-      if (style === 'island') {
+        if (style === 'island') {
           console.log('[Island Mode] Activating...', { playerBar });
           store.setStorage('floatingEnabled', true);
           const draggingEnabled = store.getStorage('floatingDraggingEnabled', true);
@@ -1431,7 +1588,7 @@ loadCustomGradients() {
             });
           }, 200);
           showToast(t('messages.islandModeActivated'), 'success');
-        setTimeout(() => {
+          setTimeout(() => {
             const floatingPanel = document.querySelector('floating-player-panel');
             if (floatingPanel) {
               floatingPanel.open();
@@ -1453,6 +1610,7 @@ loadCustomGradients() {
         detail: { key: 'playerStyle', value: style }
       }));
     });
+
     this.floatingPlayerBtn.addEventListener('click', () => {
       const floatingPanel = document.querySelector('floating-player-panel');
       if (floatingPanel) {
@@ -1527,14 +1685,14 @@ loadCustomGradients() {
         const accent = btn.dataset.accent;
         this.shadowRoot.querySelectorAll('.accent-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-         if (accent !== 'custom') {
+        if (accent !== 'custom') {
           document.documentElement.style.removeProperty('--accent1');
           document.documentElement.style.removeProperty('--accent2');
           document.documentElement.style.removeProperty('--accent3');
         } else {
           const saved = store.getStorage('customGradient');
-    if (saved) {
-       if (saved.colors && Array.isArray(saved.colors)) {
+          if (saved) {
+            if (saved.colors && Array.isArray(saved.colors)) {
               saved.colors.forEach((color, i) => {
                 if (i < 3) {
                   document.documentElement.style.setProperty(`--accent${i + 1}`, color);
@@ -1614,29 +1772,37 @@ loadCustomGradients() {
         showToast(t('messages.toastPositionChanged'), 'success');
       });
     });
-      const feedbackLink = this.shadowRoot.getElementById('feedback-link');
-    const donateLink = this.shadowRoot.getElementById('donate-link');
+
+    // FIX: Prevent email links from triggering navigation that moves floating player
+    const feedbackLink = this.shadowRoot.getElementById('feedback-link');
+    const supportLink = this.shadowRoot.getElementById('support-link');
     if (feedbackLink) {
       feedbackLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        window.location.href = 'mailto:support@deepradio.cloud';
         showToast(t('messages.openingEmailClient'), 'info');
       });
     }
-    if (donateLink) {
-      donateLink.addEventListener('click', (e) => {
+    if (supportLink) {
+      supportLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        window.location.href = 'mailto:support@deepradio.cloud';
         showToast(t('messages.openingEmailClient'), 'info');
       });
     }
-    document.addEventListener('accent-changed', (e) => {
-  if (e.detail === 'custom') {
-    this.shadowRoot.querySelectorAll('.accent-btn').forEach(b => b.classList.remove('active'));
-    const customBtn = this.shadowRoot.querySelector('.accent-btn[data-accent="custom"]');
-    if (customBtn) {
-      customBtn.classList.add('active');
-    }
-  }
-});
-  }
 
+    document.addEventListener('accent-changed', (e) => {
+      if (e.detail === 'custom') {
+        this.shadowRoot.querySelectorAll('.accent-btn').forEach(b => b.classList.remove('active'));
+        const customBtn = this.shadowRoot.querySelector('.accent-btn[data-accent="custom"]');
+        if (customBtn) {
+          customBtn.classList.add('active');
+        }
+      }
+    });
+  }
 
   updateOpacityDisplay() {
     const value = this.vizOpacity.value;
@@ -1742,15 +1908,77 @@ loadCustomGradients() {
     });
   }
 
+  async syncSettings() {
+    if (!window.authManager || !window.authManager.isAuthenticated) {
+      return;
+    }
+    if (!window.dbSync) {
+      return;
+    }
+    try {
+      const settings = {
+        theme: store.getStorage('theme', 'dark'),
+        language: store.getStorage('lang', 'en'),
+        animations: store.getStorage('animations', true),
+        compact: store.getStorage('compact', false),
+        accent: store.getStorage('accent', 'default'),
+        visualizerClass: store.getStorage('visualizerClass', 'geometric'),
+        visualizerMode: store.getStorage('visualizerMode', 0),
+        visualizerEnabled: store.getStorage('visualizerEnabled', true),
+        vizOpacity: store.getStorage('vizOpacity', 100),
+        headerLayout: store.getStorage('headerLayout', 'default'),
+        playerStyle: store.getStorage('playerStyle', 'default'),
+        centerElements: store.getStorage('centerElements', false),
+        floatingPlayerPosition: store.getStorage('floatingPlayerPosition', null),
+        floatingPlayerSize: store.getStorage('floatingPlayerSize', { width: 400, height: 500 }),
+        toastPosition: store.getStorage('toastPosition', 'top-right'),
+        displayMode: store.getStorage('displayMode', 'grid'),
+        volume: store.volume,
+        lastStation: store.getStorage('last', null)
+      };
+      await window.dbSync.saveSettings(settings);
+      console.log('✅ Settings synced to database');
+    } catch (error) {
+      console.error('❌ Failed to sync settings:', error);
+    }
+  }
+
+  async loadSettingsFromDB() {
+    if (!window.authManager || !window.authManager.isAuthenticated) {
+      return false;
+    }
+    if (!window.dbSync) {
+      return false;
+    }
+    try {
+      const settings = await window.dbSync.loadSettings();
+      if (settings) {
+        Object.entries(settings).forEach(([key, value]) => {
+          if (key === 'volume') {
+            store.setVolume(value);
+          } else if (key !== 'lastStation') {
+            store.setStorage(key, value);
+          }
+        });
+        console.log('✅ Settings loaded from database');
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('❌ Failed to load settings from database:', error);
+      return false;
+    }
+  }
+
+  // FIX: Correct close method implementation
   close() {
     if (!this.isOpen) return;
-
     this.removeAttribute('open');
     this.isOpen = false;
-
     setTimeout(() => {
       document.body.style.overflow = '';
     }, 400);
+    this.syncSettings();
   }
 }
 

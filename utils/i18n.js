@@ -10,12 +10,12 @@ const translations = {
       allStations: 'Все станции',
       favorites: 'Избранное',
       recent: 'Недавние',
-       stats: 'Статистика',
+      stats: 'Статистика',
       changelog: 'Изменения',
       playlists: 'Плейлисты',
       createPlaylist: 'Создать плейлист',
       allGenres: 'Все жанры'
-       },
+    },
     contextMenu: {
       play: 'Воспроизвести',
       pause: 'Пауза',
@@ -82,7 +82,7 @@ const translations = {
       },
       visualizerModes: {
         geometric: {
-        hexGrid: 'Гексагональная сетка',
+          hexGrid: 'Гексагональная сетка',
           spiralGalaxy: 'Спиральная галактика',
           crystalFormations: 'Кристаллические формации',
           voronoiCells: 'Ячейки Вороного',
@@ -102,7 +102,6 @@ const translations = {
           cosmicDust: 'Космическая пыль'
         }
       },
-
       lightningTypes: {
         classic: 'Классические',
         plasma: 'Плазменные',
@@ -125,6 +124,7 @@ const translations = {
       },
       accentColor: 'Цветовой акцент',
       accentColorDesc: 'Основные цвета элементов интерфейса',
+      createGradient: 'Создать свой градиент',
       playerBars: 'Полоски в плеере',
       iconVisualizerLabel: 'Визуализация на обложке',
       requiredFields: 'Заполните обязательные поля',
@@ -134,6 +134,7 @@ const translations = {
       stationUrl: 'URL потока',
       stationTags: 'Жанры (через запятую)',
       addButton: 'Добавить станцию',
+      account: 'Аккаунт',
       about: 'О приложении',
       version: 'Версия 3.1.5',
       description: 'Современное интернет-радио с продвинутой визуализацией. Более 150 станций различных жанров.',
@@ -142,11 +143,25 @@ const translations = {
       support: 'Поддержать',
       floatingPlayer: 'Плавающий плеер',
       floatingPlayerDesc: 'Настройка плавающего плеера',
-      configure: 'Настроить'
+      configure: 'Настроить',
+      logout: 'Выйти',
+      signInPrompt: 'Войдите для синхронизации',
+      signInDesc: 'Сохраняйте настройки в облаке',
+      signInGoogle: 'Войти с Google',
+      authPanelTitle: 'Войдите, чтобы продолжить',
+authPanelSubtitle: 'Сохраняйте избранное, отслеживайте статистику и синхронизируйте настройки между устройствами',
+authPanelFeaturesTitle: 'Возможности аккаунта',
+authPanelFeatureFavorites: 'Сохраняйте любимые станции',
+authPanelFeatureStats: 'Отслеживайте историю прослушивания',
+authPanelFeatureSync: 'Синхронизация между устройствами',
+authPanelNotice: 'Мы используем Google OAuth для безопасной авторизации. Ваши данные защищены и не передаются третьим лицам.',
+authPanelClose: 'Закрыть',
+authPanelContinueGoogle: 'Продолжить с Google',
     },
- floatingPlayer: {
+    floatingPlayer: {
       title: 'Плавающий плеер',
       mainSettings: 'Основные настройки',
+      behavior: 'Поведение',
       enableFloating: 'Включить плавающий режим',
       enableFloatingDesc: 'Сделать плеер плавающим над контентом',
       enableDragging: 'Включить перетаскивание',
@@ -184,7 +199,7 @@ const translations = {
     },
     stats: {
       title: 'Статистика прослушивания',
-       nowPlaying: 'Сейчас играет',
+      nowPlaying: 'Сейчас играет',
       export: 'Экспорт',
       today: 'Сегодня',
       week: 'За неделю',
@@ -230,7 +245,7 @@ const translations = {
       months: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
       weekdays: ['Пн','Вт','Ср','Чт','Пт','Сб','Вс']
     },
-     changelog: {
+    changelog: {
       title: 'Список изменений',
       new: 'НОВОЕ',
       fix: 'ИСПРАВЛЕНИЕ',
@@ -275,7 +290,7 @@ const translations = {
       hintsDisabled: 'Подсказки отключены',
       requiredFieldsError: 'Заполните обязательные поля',
       likePrompt: 'Нравится',
-       noMorePrompts: '🔕 Больше не спрашивать',
+      noMorePrompts: '🔕 Больше не спрашивать',
       headerLayoutChanged: 'Макет заголовка изменен',
       playerStyleChanged: 'Стиль плеера изменен',
       islandModeActivated: '🏝️ Островок активирован! Перетаскивайте плеер',
@@ -287,8 +302,9 @@ const translations = {
       lightningTypePrefix: 'Тип молний: ',
       toastPositionChanged: 'Позиция уведомлений изменена',
       floatingPlayerUpdated: 'Настройки плавающего плеера обновлены',
-        appReady: '✨ DeepRadio готов к работе',
-        openingEmailClient: '📧 Открытие почтового клиента...'
+      appReady: '✨ DeepRadio готов к работе',
+      openingEmailClient: '📧 Открытие почтового клиента...',
+       initError: 'Ошибка инициализации приложения'
     }
   },
   en: {
@@ -307,7 +323,7 @@ const translations = {
       playlists: 'Playlists',
       createPlaylist: 'Create Playlist',
       allGenres: 'All Genres'
-       },
+    },
     contextMenu: {
       play: 'Play',
       pause: 'Pause',
@@ -364,7 +380,7 @@ const translations = {
       lightningIntensity: 'Lightning intensity',
       geometric: 'Geometric',
       organic: 'Organic',
-       toastPositions: {
+      toastPositions: {
         topLeft: 'Top Left',
         topRight: 'Top Right',
         bottomLeft: 'Bottom Left',
@@ -383,7 +399,6 @@ const translations = {
           pulsingSphere: 'Pulsing Sphere',
           kaleidoscope: 'Kaleidoscope'
         },
-
         organic: {
           fluidSim: 'Fluid Simulation',
           northernLights: 'Northern Lights',
@@ -417,6 +432,7 @@ const translations = {
       },
       accentColor: 'Accent Color',
       accentColorDesc: 'Main colors of interface elements',
+      createGradient: 'Create Custom Gradient',
       playerBars: 'Player Bars',
       iconVisualizerLabel: 'Icon Visualization',
       requiredFields: 'Fill in required fields',
@@ -426,6 +442,7 @@ const translations = {
       stationUrl: 'Stream URL',
       stationTags: 'Genres (comma separated)',
       addButton: 'Add Station',
+      account: 'Account',
       about: 'About',
       version: 'Version 3.1.5',
       description: 'Modern internet radio with advanced visualization. Over 150 stations of various genres.',
@@ -434,18 +451,32 @@ const translations = {
       support: 'Support',
       floatingPlayer: 'Floating Player',
       floatingPlayerDesc: 'Configure draggable floating player mode',
-      configure: 'Configure'
+      configure: 'Configure',
+      logout: 'Logout',
+      signInPrompt: 'Sign in to sync',
+      signInDesc: 'Save your settings in the cloud',
+      signInGoogle: 'Sign In with Google',
+      authPanelTitle: 'Sign in to continue',
+authPanelSubtitle: 'Save favorites, track your listening stats and sync settings across all devices',
+authPanelFeaturesTitle: 'Account Features',
+authPanelFeatureFavorites: 'Save your favorite stations',
+authPanelFeatureStats: 'Track your listening history',
+authPanelFeatureSync: 'Sync across all devices',
+authPanelNotice: 'We use Google OAuth for secure authentication. Your data is protected and never shared with third parties.',
+authPanelClose: 'Close',
+authPanelContinueGoogle: 'Continue with Google',
     },
     floatingPlayer: {
       title: 'Floating Player',
       mainSettings: 'Main Settings',
+      behavior: 'Behavior',
       enableFloating: 'Enable Floating Mode',
       enableFloatingDesc: 'Make the player float above all content',
       enableDragging: 'Enable Dragging',
       enableDraggingDesc: 'Allow moving the player by dragging (may consume resources)',
       enableMarquee: 'Scrolling Text',
       enableMarqueeDesc: 'Auto-scroll long track names',
-       playerWidth: 'Player Width',
+      playerWidth: 'Player Width',
       playerWidthDesc: 'Adjust the width of floating player panel',
       position: 'Position',
       positionHint: 'Choose initial position for the floating player',
@@ -522,7 +553,6 @@ const translations = {
       months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
       weekdays: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
     },
-
     changelog: {
       title: 'Changelog',
       new: 'NEW',
@@ -532,7 +562,7 @@ const translations = {
       firstRelease: 'FIRST RELEASE',
       majorRelease: 'MAJOR RELEASE'
     },
-      display: {
+    display: {
       viewPrefix: 'View',
       viewModes: {
         grid: 'Grid',
@@ -580,8 +610,9 @@ const translations = {
       lightningTypePrefix: 'Lightning type: ',
       toastPositionChanged: 'Toast position changed',
       floatingPlayerUpdated: 'Floating player settings updated',
-       appReady: '✨ DeepRadio is ready',
-      openingEmailClient: '📧 Opening email client...'
+      appReady: '✨ DeepRadio is ready',
+      openingEmailClient: '📧 Opening email client...',
+        initError: 'Application initialization error'
     }
   },
   uk: {
@@ -657,7 +688,7 @@ const translations = {
       lightningIntensity: 'Інтенсивність блискавок',
       geometric: 'Геометричні',
       organic: 'Органічні',
-       toastPositions: {
+      toastPositions: {
         topLeft: 'Зверху зліва',
         topRight: 'Зверху справа',
         bottomLeft: 'Знизу зліва',
@@ -667,7 +698,7 @@ const translations = {
       },
       visualizerModes: {
         geometric: {
-           hexGrid: 'Гексагональна сітка',
+          hexGrid: 'Гексагональна сітка',
           spiralGalaxy: 'Спіральна галактика',
           crystalFormations: 'Кристалічні формації',
           voronoiCells: 'Комірки Вороного',
@@ -709,6 +740,7 @@ const translations = {
       },
       accentColor: 'Кольоровий акцент',
       accentColorDesc: 'Основні кольори елементів інтерфейсу',
+      createGradient: 'Створити свій градієнт',
       playerBars: 'Смужки в плеєрі',
       iconVisualizerLabel: 'Візуалізація на обкладинці',
       requiredFields: 'Заповніть обов\'язкові поля',
@@ -718,6 +750,7 @@ const translations = {
       stationUrl: 'URL потоку',
       stationTags: 'Жанри (через кому)',
       addButton: 'Додати станцію',
+      account: 'Аккаунт',
       about: 'Про додаток',
       version: 'Версія 3.1.5',
       description: 'Сучасне інтернет-радіо з просунутою візуалізацією. Понад 150 станцій різних жанрів.',
@@ -726,18 +759,32 @@ const translations = {
       support: 'Підтримати',
       floatingPlayer: 'Плаваючий плеєр',
       floatingPlayerDesc: 'Налаштування плаваючого плеєра',
-      configure: 'Налаштувати'
+      configure: 'Налаштувати',
+      logout: 'Вийти',
+      signInPrompt: 'Увійдіть для синхронізації',
+      signInDesc: 'Зберігайте налаштування в хмарі',
+      signInGoogle: 'Увійти з Google',
+      authPanelTitle: 'Увійдіть, щоб продовжити',
+authPanelSubtitle: 'Зберігайте улюблені станції, відстежуйте статистику та синхронізуйте налаштування між пристроями',
+authPanelFeaturesTitle: 'Можливості акаунта',
+authPanelFeatureFavorites: 'Зберігайте улюблені станції',
+authPanelFeatureStats: 'Відстежуйте історію прослуховування',
+authPanelFeatureSync: 'Синхронізація між пристроями',
+authPanelNotice: 'Ми використовуємо Google OAuth для безпечної авторизації. Ваші дані захищені та не передаються третім сторонам.',
+authPanelClose: 'Закрити',
+authPanelContinueGoogle: 'Продовжити з Google',
     },
- floatingPlayer: {
+    floatingPlayer: {
       title: 'Плаваючий плеєр',
       mainSettings: 'Основні налаштування',
+      behavior: 'Поведінка',
       enableFloating: 'Увімкнути плаваючий режим',
       enableFloatingDesc: 'Зробити плеєр плаваючим над контентом',
       enableDragging: 'Увімкнути перетягування',
       enableDraggingDesc: 'Дозволити переміщення плеєра перетягуванням (може споживати ресурси)',
       enableMarquee: 'Прокрутка тексту',
       enableMarqueeDesc: 'Автоматична прокрутка довгих назв треків',
-   playerWidth: 'Ширина острівця',
+      playerWidth: 'Ширина острівця',
       playerWidthDesc: 'Регулювання ширини плаваючого плеєра',
       position: 'Позиція',
       positionHint: 'Виберіть початкову позицію плаваючого плеєра',
@@ -759,7 +806,7 @@ const translations = {
       showVolume: 'Гучність',
       showPlayButton: 'Кнопка відтворення',
       showStepButtons: 'Кнопки вперед/назад',
-    showSettingsButton: 'Кнопка налаштувань',
+      showSettingsButton: 'Кнопка налаштувань',
       appearance: 'Зовнішній вигляд',
       volumeSliderStyle: 'Стиль повзунка гучності',
       volumeStyleAccent: 'Акцентний колір',
@@ -808,9 +855,9 @@ const translations = {
       live: 'LIVE',
       sessionRemoved: 'Сесію видалено зі статистики',
       statsCleared: 'Статистику очищено',
-       statsExported: 'Статистику експортовано',
+      statsExported: 'Статистику експортовано',
       genresLabel: 'Жанри',
-       andMore: 'і ще',
+      andMore: 'і ще',
       months: ['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'],
       weekdays: ['Пн','Вт','Ср','Чт','Пт','Сб','Нд']
     },
@@ -848,7 +895,7 @@ const translations = {
       startListening: 'Почніть слухати радіо',
       clickToPlay: 'Натисніть Play для відтворення',
       supportMessage: 'Дякуємо за підтримку! 💜',
-     buffering: 'Буферизація...',
+      buffering: 'Буферизація...',
       loadingInfo: 'Завантаження інформації...',
       retrying: '🔄 Повторна спроба підключення...',
       connectionProblem: '⚠️ Проблеми з підключенням',
@@ -859,7 +906,7 @@ const translations = {
       hintsDisabled: 'Підказки вимкнено',
       requiredFieldsError: 'Заповніть обов\'язкові поля',
       likePrompt: 'Подобається',
-     noMorePrompts: '🔕 Більше не питати',
+      noMorePrompts: '🔕 Більше не питати',
       headerLayoutChanged: 'Макет заголовка змінено',
       playerStyleChanged: 'Стиль плеєра змінено',
       islandModeActivated: '🏝️ Острівець активовано! Перетягуйте плеєр',
@@ -871,8 +918,9 @@ const translations = {
       lightningTypePrefix: 'Тип блискавок: ',
       toastPositionChanged: 'Позицію сповіщень змінено',
       floatingPlayerUpdated: 'Налаштування плаваючого плеєра оновлено',
-         appReady: '✨ DeepRadio готовий до роботи',
-      openingEmailClient: '📧 Відкриття поштового клієнта...'
+      appReady: '✨ DeepRadio готовий до роботи',
+      openingEmailClient: '📧 Відкриття поштового клієнта...',
+        initError: 'Помилка ініціалізації застосунку'
     }
   }
 };

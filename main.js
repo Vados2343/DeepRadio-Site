@@ -1,23 +1,37 @@
 import './assets/core.css';
 import './core/patch-hls.js';
-import { store } from './core/store.js';
-import './components/station-grid.js';
+import './utils/performance.js';
+import './utils/icon-manager.js';
+import './utils/episode-modal.js';
+import './components/burger-menu.js';
+import './components/capsule-search.js';
+import './components/changelog-panel.js';
+import './components/floating-player-manager.js';
+import './components/floating-player-panel.js';
+import './components/gradient-creator-panel.js';
 import './components/player-bar.js';
 import './components/settings-panel.js';
-import './components/floating-player-panel.js';
+import './components/station-grid.js';
 import './components/stats-view.js';
 import './components/like-prompt.js';
-import './components/changelog-panel.js';
-import './components/capsule-search.js';
-import './components/gradient-creator-panel.js';
+
+import { store } from './core/store.js';
+import { t, setLanguage, initI18n } from './utils/i18n.js';
+import { throttle } from './utils/performance.js';
+import { Config } from './core/config.js';
+import { authManager } from './auth/auth-manager.js';
+import './auth/auth-panel.js';
+import { dbSync } from './utils/db-sync.js';
+import { showToast } from './utils/toast.js';
 import { BurgerMenu } from './components/burger-menu.js';
 import { FloatingPlayerManager } from './components/floating-player-manager.js';
 import { GeometricVisualizer } from './components/GeometricVisualizer.js';
 import { OrganicVisualizer } from './components/OrganicVisualizer.js';
-import { showToast } from './utils/toast.js';
-import { initI18n, t } from './utils/i18n.js';
-import { throttle } from './utils/performance.js';
-import { Config } from './core/config.js';
+
+// Global references for debugging
+window.authManager = authManager;
+window.dbSync = dbSync;
+window.store = store;
 
 class EnhancedVisualizerManager {
   constructor(canvas) {
@@ -133,37 +147,56 @@ class EnhancedApp {
     this.displayMode = 'grid';
     this.displayModes = ['grid', 'list', 'compact', 'cover'];
     this.throttledResize = throttle(this.handleResize.bind(this), Config.ui.throttleResize || 250);
-    this.init();
   }
 
-  async init() {
-    try {
-      await this.registerServiceWorker();
-      await this.createManifest();
-      await initI18n();
+ async init() {
+  try {
+    await initI18n();
+    const savedLang = store.getStorage('lang', 'en');
+    setLanguage(savedLang);
 
-      this.initializeComponents();
+    await authManager.init();
 
-      this.setupEventListeners();
-      this.loadLastState();
-      this.setupKeyboardShortcuts();
-      this.setupTheme();
-      this.setupLayout();
-      this.initVisualizer();
-      this.setupMobileUI();
-
-      requestIdleCallback(() => {
-        this.setupHotkeysHelp();
-        this.updatePlaylistsNav();
-        this.loadFavoriteButton();
-      });
-
-      showToast(t('messages.appReady'), 'success', 2000);
-    } catch (error) {
-      console.error('App initialization error:', error);
-      showToast('Ошибка инициализации приложения', 'error');
+    if (!document.querySelector('auth-panel')) {
+      const authPanel = document.createElement('auth-panel');
+      document.body.appendChild(authPanel);
     }
+
+    if (!authManager.isAuthenticated) {
+      console.log('🔐 Auth: ❌ Not authenticated — showing auth panel');
+      document.querySelector('auth-panel')?.open();
+    } else {
+      console.log('🔐 Auth: ✅ Authenticated');
+      console.log('👤 User:', authManager.user?.email);
+      await dbSync.loadFromDB();
+    }
+
+    this.initializeComponents();
+    this.setupEventListeners();
+    this.loadLastState();
+    this.setupKeyboardShortcuts();
+    this.setupTheme();
+    this.setupLayout();
+    this.initVisualizer();
+    this.setupMobileUI();
+
+    requestIdleCallback(() => {
+      this.setupHotkeysHelp();
+      this.updatePlaylistsNav();
+      this.loadFavoriteButton();
+    });
+
+    await this.registerServiceWorker();
+    await this.createManifest();
+
+    showToast(t('messages.appReady'), 'success', 2000);
+    console.log('🔥 DeepRadio initialized successfully');
+  } catch (error) {
+    console.error('App initialization error:', error);
+    showToast(t('messages.initError') || 'Ошибка инициализации приложения', 'error');
   }
+}
+
 
   initializeComponents() {
     if (!this.floatingPlayerManager) {
@@ -199,16 +232,18 @@ class EnhancedApp {
   setupEventListeners() {
     this.setupStoreEventListeners();
     this.setupDocumentEventListeners();
+    this.setupAuthEventListeners();
     window.addEventListener('resize', this.throttledResize);
     window.addEventListener('beforeunload', () => this.cleanup());
   }
 
   setupStoreEventListeners() {
     store.on('player-state-change', (e) => {
+      // Handle player state changes
     });
 
     store.on('error', (e) => {
-      const message = e.detail.message || 'Ошибка воспроизведения';
+      const message = e.detail.message || t('messages.playbackError') || 'Ошибка воспроизведения';
       if (!message.includes('DEMUXER_ERROR')) {
         showToast(message, 'error');
       }
@@ -225,6 +260,21 @@ class EnhancedApp {
     });
   }
 
+  setupAuthEventListeners() {
+    document.addEventListener('auth-changed', async (e) => {
+      if (e.detail.authenticated) {
+        console.log('🔐 User signed in:', e.detail.user?.email);
+        await dbSync.loadFromDB();
+        this.updatePlaylistsNav();
+        showToast('✅ Signed in', 'success', 2000);
+      } else {
+        console.log('🔓 User signed out');
+        this.cleanup();
+        showToast('👋 Signed out', 'info', 2000);
+      }
+    });
+  }
+
   setupDocumentEventListeners() {
     const settingsBtn = document.getElementById('settings-toggle');
     const viewToggle = document.getElementById('view-toggle');
@@ -232,7 +282,7 @@ class EnhancedApp {
 
     settingsBtn?.addEventListener('click', () => {
       if (store.isEditMode()) {
-        showToast('Сначала завершите редактирование', 'warning');
+        showToast(t('messages.finishEditing') || 'Сначала завершите редактирование', 'warning');
         return;
       }
       const settingsPanel = document.querySelector('settings-panel');
@@ -252,9 +302,10 @@ class EnhancedApp {
         setTimeout(() => changelogPanel.open(), 50);
       }
     });
-const addPlaylistBtn = document.getElementById('add-playlist');
+
+    const addPlaylistBtn = document.getElementById('add-playlist');
     addPlaylistBtn?.addEventListener('click', () => {
-      const playlistName = prompt('Введите название плейлиста:', '');
+      const playlistName = prompt(t('prompts.playlistName') || 'Введите название плейлиста:', '');
       if (playlistName && playlistName.trim()) {
         const playlistId = `playlist_${Date.now()}`;
         const newPlaylist = {
@@ -266,12 +317,13 @@ const addPlaylistBtn = document.getElementById('add-playlist');
         store.playlists[playlistId] = newPlaylist;
         store.setStorage('playlists', store.playlists);
         this.updatePlaylistsNav();
-        showToast(t('messages.playlistCreated'), 'success');
+        showToast(t('messages.playlistCreated') || 'Плейлист создан', 'success');
       }
     });
+
     viewToggle?.addEventListener('click', () => {
       if (store.isEditMode()) {
-        showToast('Сначала завершите редактирование', 'warning');
+        showToast(t('messages.finishEditing') || 'Сначала завершите редактирование', 'warning');
         return;
       }
       this.cycleDisplayMode();
@@ -280,7 +332,7 @@ const addPlaylistBtn = document.getElementById('add-playlist');
     document.querySelectorAll('.nav-item[data-view]').forEach(btn => {
       btn.addEventListener('click', () => {
         if (store.isEditMode()) {
-          showToast('Сначала завершите редактирование', 'warning');
+          showToast(t('messages.finishEditing') || 'Сначала завершите редактирование', 'warning');
           return;
         }
         document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
@@ -332,7 +384,7 @@ const addPlaylistBtn = document.getElementById('add-playlist');
         case 'escape':
           if (store.isEditMode()) {
             store.setEditMode(false);
-            showToast('Режим редактирования отключен', 'info');
+            showToast(t('messages.editModeDisabled') || 'Режим редактирования отключен', 'info');
           }
           break;
       }
@@ -477,20 +529,20 @@ const addPlaylistBtn = document.getElementById('add-playlist');
     const help = document.getElementById('hotkeys-help');
     if (help) {
       help.innerHTML = `
-        <h4>Горячие клавиши</h4>
-        <p><kbd>Space</kbd> - Воспроизведение/Пауза</p>
-        <p><kbd>←/→</kbd> - Предыдущая/Следующая станция</p>
-        <p><kbd>↑/↓</kbd> - Громкость</p>
-        <p><kbd>M</kbd> - Отключить звук</p>
-        <p><kbd>F</kbd> - В избранное</p>
-        <p><kbd>Esc</kbd> - Выход из режима редактирования</p>
+        <h4>${t('hotkeys.title') || 'Горячие клавиши'}</h4>
+        <p><kbd>Space</kbd> - ${t('hotkeys.playPause') || 'Воспроизведение/Пауза'}</p>
+        <p><kbd>←/→</kbd> - ${t('hotkeys.prevNext') || 'Предыдущая/Следующая станция'}</p>
+        <p><kbd>↑/↓</kbd> - ${t('hotkeys.volume') || 'Громкость'}</p>
+        <p><kbd>M</kbd> - ${t('hotkeys.mute') || 'Отключить звук'}</p>
+        <p><kbd>F</kbd> - ${t('hotkeys.favorite') || 'В избранное'}</p>
+        <p><kbd>Esc</kbd> - ${t('hotkeys.exitEditMode') || 'Выход из режима редактирования'}</p>
       `;
     }
   }
 
   updatePlaylistsNav() {
     const container = document.getElementById('playlists-nav');
-    const playlists = Object.values(store.playlists);
+    const playlists = Object.values(store.playlists || {});
 
     if (container) {
       container.innerHTML = playlists.map(playlist => `
@@ -513,9 +565,9 @@ const addPlaylistBtn = document.getElementById('add-playlist');
           e.stopPropagation();
           if (store.view === 'favorites') {
             store.setEditMode(!store.isEditMode());
-            showToast(store.isEditMode() ? 'Режим редактирования включен' : 'Режим редактирования выключен', 'info');
+            showToast(store.isEditMode() ? t('messages.editModeEnabled') || 'Режим редактирования включен' : t('messages.editModeDisabled') || 'Режим редактирования выключен', 'info');
           } else {
-            showToast('Сначала перейдите в раздел "Избранное"', 'warning');
+            showToast(t('messages.openFavoritesFirst') || 'Сначала перейдите в раздел "Избранное"', 'warning');
           }
         }
       });
@@ -547,7 +599,7 @@ const addPlaylistBtn = document.getElementById('add-playlist');
     const manifest = {
       name: 'DeepRadio',
       short_name: 'DeepRadio',
-      description: 'Современное интернет-радио с продвинутой визуализацией',
+      description: t('app.description') || 'Современное интернет-радио с продвинутой визуализацией',
       start_url: '/',
       display: 'standalone',
       theme_color: '#08f7fe',
@@ -579,6 +631,10 @@ const addPlaylistBtn = document.getElementById('add-playlist');
 
   getDebugInfo() {
     return {
+      auth: {
+        authenticated: authManager.isAuthenticated,
+        user: authManager.user?.email
+      },
       storeDebug: store.getDebugInfo ? store.getDebugInfo() : null,
       components: {
         visualizer: !!this.visualizerManager,
@@ -591,6 +647,7 @@ const addPlaylistBtn = document.getElementById('add-playlist');
   }
 }
 
+// Initialize app
 window.debugRadio = () => {
   if (!window.app) {
     console.warn('DeepRadio app is not initialized yet. Please wait for DOMContentLoaded.');
@@ -598,18 +655,20 @@ window.debugRadio = () => {
   }
 
   const debugInfo = window.app.getDebugInfo();
-  console.log('DeepRadio Debug Info:', debugInfo);
+  console.log('🗄️ DeepRadio Debug Info:', debugInfo);
   return debugInfo;
 };
 
+console.log('🗄️ Database sync ready');
+
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
     window.app = new EnhancedApp();
+    await window.app.init();
   }, { once: true });
 } else {
-  setTimeout(() => {
-    window.app = new EnhancedApp();
-  }, 0);
+  window.app = new EnhancedApp();
+  window.app.init();
 }
 
 window.addEventListener('load', () => {

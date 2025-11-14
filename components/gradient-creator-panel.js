@@ -108,6 +108,7 @@ template.innerHTML = `
     .content {
       padding: 1.5rem;
       overflow-y: auto;
+      overflow-x: hidden;
       flex: 1;
     }
 
@@ -129,7 +130,7 @@ template.innerHTML = `
     }
 
     .section {
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
     }
 
     .section-title {
@@ -194,31 +195,31 @@ template.innerHTML = `
     .color-picker-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1rem;
+      gap: 0.75rem;
       margin-bottom: 1rem;
     }
 
     .color-picker-item {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.375rem;
     }
 
     .color-picker-label {
-      font-size: 0.875rem;
+      font-size: 0.75rem;
       font-weight: 600;
       color: var(--text-primary);
     }
 
     .color-input-wrapper {
       display: flex;
-      gap: 0.5rem;
+      gap: 0.375rem;
       align-items: center;
     }
 
     .color-input-wrapper input[type="color"] {
-      width: 50px;
-      height: 40px;
+      width: 40px;
+      height: 36px;
       border: 2px solid var(--border);
       border-radius: var(--radius-sm);
       cursor: pointer;
@@ -233,15 +234,17 @@ template.innerHTML = `
 
     .color-input-wrapper input[type="text"] {
       flex: 1;
-      padding: 0.625rem 0.75rem;
+      max-width: 90px;
+      padding: 0.5rem 0.5rem;
       background: var(--surface);
       border: 2px solid var(--border);
       border-radius: var(--radius-sm);
       color: var(--text-primary);
-      font-size: 0.875rem;
+      font-size: 0.75rem;
       font-family: 'Courier New', monospace;
       font-weight: 600;
       transition: var(--transition);
+      text-align: center;
     }
 
     .color-input-wrapper input[type="text"]:focus {
@@ -255,14 +258,14 @@ template.innerHTML = `
     }
 
     .remove-color-btn {
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
       border: none;
       background: var(--accent2);
       color: #000;
       border-radius: var(--radius-sm);
       cursor: pointer;
-      font-size: 1.5rem;
+      font-size: 1.2rem;
       font-weight: bold;
       line-height: 1;
       transition: var(--transition);

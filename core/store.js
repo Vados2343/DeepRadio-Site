@@ -22,9 +22,9 @@ class Store extends EventTarget {
     this.loadCustomStations();
     this.current = null;
     this.currentTrack = null;
-    this.favorites = this.getStorage('favorites', []);
+    this.favorites = [];
     this.recent = this.getStorage('recent', []);
-    this.playlists = this.getStorage('playlists', {});
+    this.playlists = {};
     this.view = 'all';
     this.filter = '';
     this.audioContext = null;
@@ -51,26 +51,16 @@ class Store extends EventTarget {
       onDiagnostic: this.handlePoolDiagnostic.bind(this)
     });
 
-    // Добавляем обертку метода play для AudioPoolManager
     this.audioPool.play = async (stationId, url) => {
       const station = this.stations.find(s => s.id === stationId);
-      if (!station) {
-        throw new Error('Station not found');
-      }
+      if (!station) throw new Error('Station not found');
       const opId = this.nextOpId();
       return this.audioPool.switchToStation(station, url, this.volume, opId);
     };
 
     this.trackBuffer = this.getStorage('trackBuffer', {});
     this.trackCache = this.getStorage('trackCache', {});
-    this.listeningStats = this.getStorage('listeningStats', {
-      sessions: [],
-      genres: {},
-      stations: {},
-      totalTime: 0,
-      lastUpdated: Date.now(),
-      dailyStats: {}
-    });
+    this.listeningStats = { sessions: [], genres: {}, stations: {}, totalTime: 0, lastUpdated: Date.now(), dailyStats: {} };
 
     this.sessionStartTime = null;
     this.currentSessionId = null;
@@ -118,6 +108,108 @@ class Store extends EventTarget {
 
     logger.setSessionId(`session_${Date.now()}`);
     logger.log('Store', 'Initialized');
+
+    this.setupAuthListeners();
+  }
+
+  setupAuthListeners() {
+    document.addEventListener('auth-changed', async (e) => {
+      if (e.detail.authenticated) {
+        await this.loadFavoritesFromDB();
+        await this.loadStatsFromDB();
+      } else {
+        this.favorites = [];
+        this.listeningStats = { sessions: [], genres: {}, stations: {}, totalTime: 0, lastUpdated: Date.now(), dailyStats: {} };
+      }
+    });
+  }
+
+  async loadFavoritesFromDB() {
+    const authManager = window.authManager;
+    if (!authManager || !authManager.isAuthenticated) return;
+
+    try {
+      const response = await fetch(`/api/favorites/${authManager.user.sessionId}`, {
+        headers: { 'Authorization': `Bearer ${authManager.token}` }
+      });
+
+      if (response.ok) {
+        const { favorites } = await response.json();
+        this.favorites = favorites || [];
+        this.emit('favorites-change', this.favorites);
+      }
+    } catch (error) {
+      console.error('Error loading favorites:', error);
+    }
+  }
+
+  async loadStatsFromDB() {
+    const authManager = window.authManager;
+    if (!authManager || !authManager.isAuthenticated) return;
+
+    try {
+      const response = await fetch(`/api/stats/${authManager.user.sessionId}`, {
+        headers: { 'Authorization': `Bearer ${authManager.token}` }
+      });
+
+      if (response.ok) {
+        const { stats } = await response.json();
+        if (stats) {
+          this.listeningStats = stats;
+          this.emit('stats-update');
+        }
+      }
+    } catch (error) {
+      console.error('Error loading stats:', error);
+    }
+  }
+
+  async toggleFavorite(id) {
+    const authManager = window.authManager;
+
+    if (!authManager || !authManager.isAuthenticated) {
+      showToast('Please sign in to add favorites', 'warning', 0, {
+        actions: [{
+          text: '🔐 Sign In with Google',
+          onClick: () => authManager.login()
+        }]
+      });
+      return;
+    }
+
+    const isFav = this.favorites.includes(id);
+    const action = isFav ? 'remove' : 'add';
+
+    try {
+      const response = await fetch('/api/favorites', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${authManager.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          sessionId: authManager.user.sessionId,
+          stationId: id,
+          action
+        })
+      });
+
+      if (response.ok) {
+        if (isFav) {
+          this.favorites = this.favorites.filter(fav => fav !== id);
+        } else {
+          this.favorites.unshift(id);
+        }
+        this.emit('favorites-change', this.favorites);
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      showToast('Failed to update favorites', 'error');
+    }
+  }
+
+  isFavorite(id) {
+    return this.favorites.includes(id);
   }
 
   nextOpId() {
@@ -148,7 +240,6 @@ class Store extends EventTarget {
       this.analyserNode.fftSize = 256;
       this.analyserNode.smoothingTimeConstant = 0.85;
 
-      // Подключаем analyser к master gain из audioPool при его инициализации
       setTimeout(() => {
         if (this.audioPool && this.audioPool.masterGain && this.analyserNode) {
           try {
@@ -189,11 +280,9 @@ class Store extends EventTarget {
 
   setLoadingTimeout(callback, duration = 25000) {
     this.clearLoadingTimeout();
-
     this.loadingTimeoutId = setTimeout(() => {
       this.loadingTimeoutId = null;
       this.isProcessingAction = false;
-
       if (callback) callback();
     }, duration);
   }
@@ -254,7 +343,7 @@ class Store extends EventTarget {
         break;
 
       case PlayerStates.WAITING:
-       this.showNotification('buffering', '⏳ ' + t('messages.buffering'), 'info', 2000);
+        this.showNotification('buffering', '⏳ ' + t('messages.buffering'), 'info', 2000);
         this.emitUISync();
         break;
 
@@ -298,7 +387,7 @@ class Store extends EventTarget {
           logger.metric('stall_count', (stateChange.metadata?.stallCount || 0));
         }
         if (stateChange.metadata?.stallCount > 2) {
-         this.showNotification('connection-problem', t('messages.connectionProblem'), 'warning', 3000);
+          this.showNotification('connection-problem', t('messages.connectionProblem'), 'warning', 3000);
         }
         this.emitUISync();
         break;
@@ -417,7 +506,6 @@ class Store extends EventTarget {
       logger.log('PoolDiagnostic', diagnostic.type, diagnostic);
     }
 
-    // Обрабатываем диагностические сообщения от AudioPool
     switch (diagnostic.type) {
       case 'recovery-started':
         this.showNotification('recovery', diagnostic.message, 'info', 2000);
@@ -448,7 +536,7 @@ class Store extends EventTarget {
 
     window.addEventListener('offline', () => {
       logger.log('Network', 'Offline');
-     this.showNotification('offline', '📡 Отсутствует подключение к интернету', 'warning', 5000);
+      this.showNotification('offline', '📡 Отсутствует подключение к интернету', 'warning', 5000);
     });
   }
 
@@ -458,14 +546,9 @@ class Store extends EventTarget {
         logger.log('Visibility', 'Hidden');
       } else {
         logger.log('Visibility', 'Visible');
-      const currentState = this.playerFSM.getState();
-
+        const currentState = this.playerFSM.getState();
         const pausedStates = ['PAUSED', 'PAUSED_WAITING', 'ERROR', 'IDLE'];
-
         const isManuallyPaused = pausedStates.includes(currentState);
-
-
-
         if (this.current && this.isActuallyPlaying && !isManuallyPaused) {}
       }
     });
@@ -504,7 +587,6 @@ class Store extends EventTarget {
     try {
       const isSameStation = this.current?.id === station.id;
 
-      // Если та же станция уже играет, ничего не делаем
       if (this.playerFSM.isInStates(PlayerStates.PLAYING, PlayerStates.BUFFERING, PlayerStates.WAITING) && isSameStation) {
         this.isProcessingAction = false;
         return;
@@ -512,7 +594,7 @@ class Store extends EventTarget {
 
       logger.log('Store', 'Play', { station: station.name, isSame: isSameStation });
 
-     if (!isSameStation) {
+      if (!isSameStation) {
         this.stopTrackUpdates();
         this.clearLikePromptTimer();
 
@@ -524,9 +606,7 @@ class Store extends EventTarget {
         this.currentTrack = null;
         this.lastTrackId = null;
         this.addToRecent(station.id);
-
         this.setStorage('last', station.id);
-
         this.emit('station-changing', station);
 
         if (this.playerFSM.canTransition('SWITCH')) {
@@ -539,12 +619,9 @@ class Store extends EventTarget {
       }
 
       const opId = this.setDesired('playing', station.id);
-
       this.emit('station-active', station);
 
-      // Используем switchToStation напрямую с правильными параметрами
       await this.audioPool.switchToStation(station, station.url, this.volume, opId);
-
       this.startTrackUpdates();
 
       this.setLoadingTimeout(() => {
@@ -669,7 +746,6 @@ class Store extends EventTarget {
     this.volume = safeVolume;
     this.audioPool.setVolume(safeVolume);
     this.setStorage('volume', safeVolume);
-
     this.emit('volume-change', { volume: safeVolume, muted: this.isMuted });
 
     if (safeVolume > 0 && this.isMuted) {
@@ -740,8 +816,6 @@ class Store extends EventTarget {
     }
   }
 
-  // Остальные методы остаются без изменений...
-
   startLikePromptTimer() {
     if (this.likePromptsDisabled) return;
 
@@ -758,19 +832,18 @@ class Store extends EventTarget {
 
       if (!store.isFavorite(stationId)) {
         this.likePromptShown.add(stationId);
-      let displayName = this.current.name;
+        let displayName = this.current.name;
         if (this.currentTrack && this.currentTrack.artist && this.currentTrack.song) {
           displayName = `${this.currentTrack.artist} - ${this.currentTrack.song}`;
         }
         const notification = showToast(
-           `${t('messages.likePrompt')} "${displayName}"? 💖`,
+          `${t('messages.likePrompt')} "${displayName}"? 💖`,
           'info',
           0,
           {
             actions: [
               {
                 text: t('messages.addToFavoritesAction'),
-
                 onClick: () => {
                   store.toggleFavorite(stationId);
                   this.sessionLikes.set(stationId, true);
@@ -782,7 +855,7 @@ class Store extends EventTarget {
                 onClick: () => {
                   this.likePromptsDisabled = true;
                   this.setStorage('likePromptsDisabled', true);
-                showToast(t('messages.hintsDisabled'), 'info');
+                  showToast(t('messages.hintsDisabled'), 'info');
                 }
               }
             ]
@@ -806,7 +879,7 @@ class Store extends EventTarget {
     this.sessionStartTime = Date.now();
     this.totalPausedTime = 0;
     this.sessionPauseTime = null;
-     const currentTrack = this.currentTrack && this.currentTrack.artist && this.currentTrack.song ? {
+    const currentTrack = this.currentTrack && this.currentTrack.artist && this.currentTrack.song ? {
       id: `${this.currentTrack.artist}_${this.currentTrack.song}`,
       artist: this.currentTrack.artist,
       song: this.currentTrack.song
@@ -828,7 +901,7 @@ class Store extends EventTarget {
       station: this.current.name,
       track: currentTrack
     });
-     this.emit('stats-update');
+    this.emit('stats-update');
   }
 
   pauseSession() {
@@ -854,7 +927,7 @@ class Store extends EventTarget {
     });
   }
 
- endSession() {
+  endSession() {
     if (!this.currentSessionId || !this.sessionStartTime) return;
 
     if (this.sessionPauseTime) {
@@ -869,57 +942,8 @@ class Store extends EventTarget {
     this.currentSessionData.endTime = endTime;
     this.currentSessionData.duration = totalTime;
     this.currentSessionData.pausedTime = this.totalPausedTime;
-     this.currentSessionData.time = totalTime;
+    this.currentSessionData.time = totalTime;
     this.currentSessionData.timestamp = this.sessionStartTime;
-     console.log('[Session] Ending session with data:', {
-      station: this.currentSessionData.stationName,
-      track: this.currentSessionData.track,
-      tracksCount: this.currentSessionData.tracks?.length || 0,
-      tracks: this.currentSessionData.tracks
-    });
-
-    const stats = this.getStorage('listeningStats', {
-      sessions: [],
-      genres: {},
-      stations: {},
-      totalTime: 0,
-      lastUpdated: Date.now(),
-      dailyStats: {}
-    });
-    stats.sessions.push(this.currentSessionData);
-    stats.totalTime += totalTime;
-    stats.lastUpdated = Date.now();
-     if (!stats.stations[this.current.id]) {
-      stats.stations[this.current.id] = {
-        name: this.current.name,
-        time: 0,
-        sessions: 0
-      };
-    }
-    stats.stations[this.current.id].time += totalTime;
-    stats.stations[this.current.id].sessions += 1;
-    if (this.current.tags && Array.isArray(this.current.tags)) {
-      this.current.tags.forEach(genre => {
-        if (!stats.genres[genre]) {
-          stats.genres[genre] = 0;
-        }
-        stats.genres[genre] += totalTime;
-      });
-    }
-   const date = new Date(this.sessionStartTime);
-    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-    if (!stats.dailyStats[dateStr]) {
-      stats.dailyStats[dateStr] = {
-        time: 0,
-        sessions: []
-      };
-    }
-    stats.dailyStats[dateStr].time += totalTime;
-    stats.dailyStats[dateStr].sessions.push({
-      ...this.currentSessionData,
-      date: dateStr
-    });
-    this.setStorage('listeningStats', stats);
 
     logger.log('Session', 'Ended', {
       sessionId: this.currentSessionId,
@@ -927,14 +951,16 @@ class Store extends EventTarget {
       pausedTime: this.totalPausedTime
     });
 
+    this.emit('stats-update');
+
     this.currentSessionId = null;
     this.sessionStartTime = null;
     this.totalPausedTime = 0;
     this.sessionPauseTime = null;
     this.currentSessionData = null;
-     this.emit('stats-update');
   }
- getCurrentSession() {
+
+  getCurrentSession() {
     if (!this.currentSessionData || !this.sessionStartTime) {
       return null;
     }
@@ -951,6 +977,7 @@ class Store extends EventTarget {
       isActive: true
     };
   }
+
   startTrackUpdates() {
     this.stopTrackUpdates();
 
@@ -1006,7 +1033,7 @@ class Store extends EventTarget {
 
         this.emit('track-update', trackData);
         this.emit('track-change', this.current);
-         if (this.currentSessionData && trackData.artist && trackData.song) {
+        if (this.currentSessionData && trackData.artist && trackData.song) {
           this.currentSessionData.track = {
             id: trackId,
             artist: trackData.artist,
@@ -1131,20 +1158,6 @@ class Store extends EventTarget {
     this.emit('view-change', view);
   }
 
-  toggleFavorite(id) {
-    const index = this.favorites.indexOf(id);
-    if (index === -1) {
-       this.favorites.unshift(id);
-    } else {
-      this.favorites.splice(index, 1);
-    }
-    this.setStorage('favorites', this.favorites);
-    this.emit('favorites-change', this.favorites);
-  }
-
-  isFavorite(id) {
-    return this.favorites.includes(id);
-  }
   addToRecent(id) {
     const index = this.recent.indexOf(id);
     if (index !== -1) {
@@ -1158,16 +1171,20 @@ class Store extends EventTarget {
     this.setStorage('recent', this.recent);
     this.emit('recent-change', this.recent);
   }
+
   isEditMode() {
     return this.editMode;
   }
+
   setEditMode(enabled) {
     this.editMode = enabled;
     this.emit('edit-mode-change', enabled);
   }
+
   getFavoriteIndex(stationId) {
     return this.favorites.indexOf(stationId);
   }
+
   getDebugInfo() {
     return {
       currentState: this.playerFSM.getState(),
@@ -1177,57 +1194,12 @@ class Store extends EventTarget {
       fsmDebug: this.playerFSM.getDebugInfo()
     };
   }
-  getStats() {
-    const stats = this.getStorage('listeningStats', {
-      sessions: [],
-      genres: {},
-      stations: {},
-      totalTime: 0,
-      lastUpdated: Date.now(),
-      dailyStats: {}
-    });
-    let needsMigration = false;
-    if (stats.stations && typeof stats.stations === 'object') {
-      for (const [id, data] of Object.entries(stats.stations)) {
-        if (data && data.totalTime !== undefined && data.time === undefined) {
-          stats.stations[id].time = data.totalTime;
-          delete stats.stations[id].totalTime;
-          delete stats.stations[id].id;
-          needsMigration = true;
-        }
-      }
-    }
-    if (stats.genres && typeof stats.genres === 'object') {
-      for (const [genre, value] of Object.entries(stats.genres)) {
-        if (value && typeof value === 'object' && value.time !== undefined) {
-          stats.genres[genre] = value.time;
-          needsMigration = true;
-        }
-      }
-    }
-    if ((!stats.dailyStats || Object.keys(stats.dailyStats).length === 0) && stats.sessions && stats.sessions.length > 0) {
-      stats.dailyStats = {};
-      stats.sessions.forEach(session => {
-       let dateStr = session.date;
-        if (!dateStr && session.timestamp) {
-          const date = new Date(session.timestamp);
-          dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        }
-        if (!stats.dailyStats[dateStr]) {
-          stats.dailyStats[dateStr] = { time: 0, sessions: [] };
-        }
-        stats.dailyStats[dateStr].time += session.time || 0;
-        stats.dailyStats[dateStr].sessions.push({ ...session, date: dateStr });
-      });
-      needsMigration = true;
-    }
 
-    if (needsMigration) {
-      this.setStorage('listeningStats', stats);
-    }
-    return stats;
+  getStats() {
+    return this.listeningStats;
   }
-   resetStats() {
+
+  resetStats() {
     const emptyStats = {
       sessions: [],
       genres: {},
@@ -1236,7 +1208,7 @@ class Store extends EventTarget {
       lastUpdated: Date.now(),
       dailyStats: {}
     };
-    this.setStorage('listeningStats', emptyStats);
+    this.listeningStats = emptyStats;
     this.emit('stats-update');
   }
 }

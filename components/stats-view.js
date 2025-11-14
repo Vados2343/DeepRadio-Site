@@ -1221,19 +1221,156 @@ class StatsView extends HTMLElement {
   }
 
   connectedCallback() {
+     const { authManager } = window;
+
+  if (!authManager || !authManager.isAuthenticated) {
+    this.showAuthRequired();
+    return;
+  }
+
+  this.currentView = 'overview';
+  this.loadStats();
+  this.setupEventListeners();
+  this.startLiveUpdate();
+
+  document.addEventListener('auth-changed', (e) => {
+    if (e.detail.authenticated) {
+      this.loadStats();
+    } else {
+      this.showAuthRequired();
+    }
+  });
+}
+
+showAuthRequired() {
+  this.innerHTML = `
+    <div style="
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 400px;
+      text-align: center;
+      padding: 2rem;
+    ">
+      <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="var(--accent1)" stroke-width="2" style="margin-bottom: 1.5rem;">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+      <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-primary);">
+        Sign In Required
+      </h2>
+      <p style="color: var(--text-secondary); margin-bottom: 2rem; max-width: 400px;">
+        Please sign in with your Google account to view your listening statistics and track your music journey.
+      </p>
+      <button onclick="window.authManager.login()" style="
+        background: linear-gradient(135deg, var(--accent1), var(--accent2));
+        border: none;
+        border-radius: var(--radius-sm);
+        padding: 0.875rem 2rem;
+        color: #000;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      ">
+        🔐 Sign In with Google
+      </button>
+    </div>
+  `;
     logger.log('[StatsView]', 'Component connected to DOM');
 
-    this.setupEventListeners();
-    this.bindMethods();
-    this.attachStoreListeners();
-    this.loadStats();
-    this.initCalendar();
-    this.updateTexts();
-
-    this.updateTimer = setInterval(() => this.updateRealtimeStats(), 1000);
-    document.addEventListener('language-change', this.boundMethods.languageChange);
-
-    logger.log('[StatsView]', 'Event listeners attached');
+ if (!window.authManager || !window.authManager.isAuthenticated) {
+  logger.log('[StatsView]', 'User not authenticated, showing auth panel');
+  this.showAuthRequired();
+  return;
+}
+this.setupEventListeners();
+this.bindMethods();
+this.attachStoreListeners();
+this.loadStats();
+this.initCalendar();
+this.updateTexts();
+this.updateTimer = setInterval(() => this.updateRealtimeStats(), 1000);
+document.addEventListener('language-change', this.boundMethods.languageChange);
+window.authManager.on('auth-changed', (data) => {
+  if (!data.authenticated) {
+    this.showAuthRequired();
+  } else {
+    window.location.reload();
+  }
+});
+logger.log('[StatsView]', 'Event listeners attached');
+}
+showAuthRequired() {
+  this.shadowRoot.innerHTML = `
+    <style>
+      .auth-required {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background: var(--bg-gradient-start);
+        padding: 2rem;
+        text-align: center;
+      }
+      .auth-icon {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 2rem;
+        background: linear-gradient(135deg, var(--accent1), var(--accent2));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+      }
+      .auth-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0 0 1rem 0;
+      }
+      .auth-message {
+        font-size: 1rem;
+        color: var(--text-secondary);
+        margin: 0 0 2rem 0;
+        max-width: 400px;
+      }
+      .auth-btn {
+        background: linear-gradient(135deg, var(--accent1), var(--accent2));
+        color: #000;
+        border: none;
+        border-radius: var(--radius-sm);
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        box-shadow: 0 4px 12px rgba(8,247,254,0.3);
+      }
+      .auth-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(8,247,254,0.5);
+      }
+    </style>
+    <div class="auth-required">
+      <div class="auth-icon">📊</div>
+      <h2 class="auth-title">Требуется авторизация</h2>
+      <p class="auth-message">
+        Для просмотра статистики прослушивания необходимо войти в систему.
+        Ваша статистика будет сохраняться и синхронизироваться между устройствами.
+      </p>
+      <button class="auth-btn" id="auth-btn">🔐 Войти с Google</button>
+    </div>
+  `;
+  const authBtn = this.shadowRoot.getElementById('auth-btn');
+  authBtn?.addEventListener('click', () => {
+    if (window.authManager) {
+      window.authManager.login();
+    }
+  });
   }
 
   disconnectedCallback() {
