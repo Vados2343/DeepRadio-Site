@@ -1026,12 +1026,13 @@ player-bar.draggable {
   position: fixed;
   width: auto;
   max-width: 500px;
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-xl) !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
   cursor: move;
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
+  overflow: hidden;
 }
 
 player-bar.draggable button,
@@ -1249,9 +1250,17 @@ player-bar[player-style="island"] {
   width: auto;
   max-width: 480px;
   min-width: 320px;
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-xl) !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
   cursor: move;
+  /* Ensure island has proper spacing from edges */
+  min-top: 80px;
+}
+
+/* Island mode styling - ensure it looks like an island */
+player-bar[player-style="island"].floating-player-host {
+  border-radius: var(--radius-xl) !important;
+  overflow: hidden;
 }
 
 ::-webkit-scrollbar {

@@ -112,6 +112,38 @@ export class FloatingPlayerManager {
       }
     });
     window.addEventListener('resize', this.handleResize);
+
+    // FIX: Save position before page unload to prevent position reset
+    window.addEventListener('beforeunload', () => {
+      if (this.isFloating) {
+        this.savePosition();
+      }
+    });
+
+    // FIX: Prevent position reset when DOM changes (e.g., opening modals)
+    const observer = new MutationObserver(() => {
+      if (this.isFloating && this.playerBar) {
+        // Check if position was accidentally reset
+        const currentLeft = parseInt(this.playerBar.style.left) || 0;
+        const currentTop = parseInt(this.playerBar.style.top) || 0;
+
+        // If position is 0,0 or transform was reset, restore saved position
+        if ((currentLeft === 0 && currentTop === 0) || this.playerBar.style.transform === 'translateX(-50%)') {
+          console.log('[FloatingPlayer] Position was reset, restoring...');
+          const savedPosition = store.getStorage('floatingPlayerPosition', null);
+          if (savedPosition && savedPosition.x !== undefined && savedPosition.y !== undefined) {
+            this.updatePosition(savedPosition.x, savedPosition.y);
+          }
+        }
+      }
+    });
+
+    // Observe body for changes that might reset player position
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: false
+    });
   }
 
   enableFloating() {
@@ -295,17 +327,16 @@ export class FloatingPlayerManager {
     if (!this.playerBar) return;
 
     const rect = this.playerBar.getBoundingClientRect();
-   const padding = 20;
+    const padding = 20;
+    const topBarHeight = 80; // Height of the top navigation bar
+    const minTop = topBarHeight; // Minimum top position to avoid overlapping with top bar
 
     const maxX = window.innerWidth - rect.width - padding;
-
     const maxY = window.innerHeight - rect.height - padding;
 
-
-
     x = Math.max(padding, Math.min(x, maxX));
+    y = Math.max(minTop, Math.min(y, maxY));
 
-    y = Math.max(padding, Math.min(y, maxY));
     this.playerBar.style.right = 'auto';
     this.playerBar.style.left = `${x}px`;
     this.playerBar.style.bottom = 'auto';
